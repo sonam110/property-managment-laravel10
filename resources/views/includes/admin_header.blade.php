@@ -21,7 +21,7 @@
 
               <ul class="navbar-nav flex-row align-items-center ms-auto">
                 <!-- Language -->
-                <li class="nav-item dropdown-language dropdown me-2 me-xl-0">
+               <!--  <li class="nav-item dropdown-language dropdown me-2 me-xl-0">
                   <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
                     <i class="ti ti-language rounded-circle ti-md"></i>
                   </a>
@@ -47,11 +47,11 @@
                       </a>
                     </li>
                   </ul>
-                </li>
+                </li> -->
                 <!--/ Language -->
 
                 <!-- Style Switcher -->
-                <li class="nav-item dropdown-style-switcher dropdown me-2 me-xl-0">
+                <!-- <li class="nav-item dropdown-style-switcher dropdown me-2 me-xl-0">
                   <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
                     <i class="ti ti-md"></i>
                   </a>
@@ -72,11 +72,11 @@
                       </a>
                     </li>
                   </ul>
-                </li>
+                </li> -->
                 <!-- / Style Switcher-->
 
                 <!-- Quick links  -->
-                <li class="nav-item dropdown-shortcuts navbar-dropdown dropdown me-2 me-xl-0">
+                <!-- <li class="nav-item dropdown-shortcuts navbar-dropdown dropdown me-2 me-xl-0">
                   <a
                     class="nav-link dropdown-toggle hide-arrow"
                     href="javascript:void(0);"
@@ -166,7 +166,7 @@
                       </div>
                     </div>
                   </div>
-                </li>
+                </li> -->
                 <!-- Quick links -->
 
                 <!-- Notification -->
@@ -430,8 +430,8 @@
                             </div>
                           </div>
                           <div class="flex-grow-1">
-                            <span class="fw-medium d-block">John Doe</span>
-                            <small class="text-muted">Admin</small>
+                            <span class="fw-medium d-block">{{ auth()->user()->first_name }}</span>
+                            <small class="text-muted">{{ auth()->user()->roles[0]->name }}</small>
                           </div>
                         </div>
                       </a>
@@ -440,51 +440,33 @@
                       <div class="dropdown-divider"></div>
                     </li>
                     <li>
-                      <a class="dropdown-item" href="pages-profile-user.html">
+                      <a class="dropdown-item" href="{{ route('user-profile.index') }}">
                         <i class="ti ti-user-check me-2 ti-sm"></i>
                         <span class="align-middle">My Profile</span>
                       </a>
                     </li>
                     <li>
-                      <a class="dropdown-item" href="pages-account-settings-account.html">
+                      <a class="dropdown-item" href="{{ route('app-setting.index') }}">
                         <i class="ti ti-settings me-2 ti-sm"></i>
                         <span class="align-middle">Settings</span>
                       </a>
                     </li>
+                    
                     <li>
-                      <a class="dropdown-item" href="pages-account-settings-billing.html">
-                        <span class="d-flex align-items-center align-middle">
-                          <i class="flex-shrink-0 ti ti-credit-card me-2 ti-sm"></i>
-                          <span class="flex-grow-1 align-middle">Billing</span>
-                          <span class="flex-shrink-0 badge badge-center rounded-pill bg-label-danger w-px-20 h-px-20"
-                            >2</span
-                          >
-                        </span>
-                      </a>
+                      <div class="dropdown-divider"></div>
                     </li>
+                    
                     <li>
                       <div class="dropdown-divider"></div>
                     </li>
                     <li>
-                      <a class="dropdown-item" href="pages-faq.html">
-                        <i class="ti ti-help me-2 ti-sm"></i>
-                        <span class="align-middle">FAQ</span>
-                      </a>
-                    </li>
-                    <li>
-                      <a class="dropdown-item" href="pages-pricing.html">
-                        <i class="ti ti-currency-dollar me-2 ti-sm"></i>
-                        <span class="align-middle">Pricing</span>
-                      </a>
-                    </li>
-                    <li>
-                      <div class="dropdown-divider"></div>
-                    </li>
-                    <li>
-                      <a class="dropdown-item" href="auth-login-cover.html" target="_blank">
+                      <a class="dropdown-item" href="{{ route('logout') }}"  onclick="event.preventDefault(); document.getElementById('frm-logout').submit();" >
                         <i class="ti ti-logout me-2 ti-sm"></i>
                         <span class="align-middle">Log Out</span>
                       </a>
+                      <form id="frm-logout" action="{{ route('logout') }}" method="POST" class="d-none">
+                            {{ csrf_field() }}
+                        </form>
                     </li>
                   </ul>
                 </li>

@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('Zipcode')->nullable();
             $table->string('website_url')->nullable();
             $table->string('lease_prefix')->nullable();
+            $table->string('tenant_prefix')->nullable();
             $table->string('invoice_prefix')->nullable();
             $table->string('invoice_disclaimer')->nullable();
             $table->string('invoice_terms')->nullable();

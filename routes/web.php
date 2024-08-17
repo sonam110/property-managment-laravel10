@@ -14,7 +14,13 @@ use App\Http\Controllers\TenantController;
 use App\Http\Controllers\AppsettingController;
 use App\Http\Controllers\PropertySettingController;
 use App\Http\Controllers\LeaseSettingController;
+use App\Http\Controllers\UtilityController;
+use App\Http\Controllers\UnitTypeController;
 use App\Http\Controllers\TenantSettingController;
+use App\Http\Controllers\ExtraChargeController;
+use App\Http\Controllers\LateFeeController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PropertyController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -47,15 +53,10 @@ Route::get('/register', function () {
 
 Route::group(['middleware' => ['auth']], function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
-    Route::get('/edit-profile', 'AdminController@editprofile')->name('edit-profile');
-    Route::post('/change-password', 'AdminController@changePassword')->name('change-password');
-    Route::post('/update-profile', 'AdminController@updateProfile')->name('update-profile');
-    Route::get('need-help', 'NoMiddlewareController@needhelp')->name('need-help');
-   
-    Route::get('/logout', 'AdminController@logout')->name('logout');
    
     Route::middleware(['auth'])->group(function () {
 
+        /* --------------User Management --------------------*/
         Route::resource('roles', RoleController::class);
         Route::resource('permissions', PermissionController::class);
 
@@ -65,14 +66,36 @@ Route::group(['middleware' => ['auth']], function () {
         Route::resource('tenants', TenantController::class);
         Route::post('tenants-list', [TenantController::class, 'tenantList'])->name('api.tenant-list');
 
+
+        /* --------------Property --------------------*/
+        Route::resource('property', PropertyController::class);
+        Route::post('property-list', [PropertyController::class, 'propertyList'])->name('api.property-list');
+
+
+
+        /* --------------settings --------------------*/
         Route::resource('app-setting', AppsettingController::class);
-        Route::resource('utility', PropertySettingController::class);
-        Route::resource('unit-type', PropertySettingController::class);
+        Route::resource('utility', UtilityController::class);
+        Route::resource('unit-type', UnitTypeController::class);
         Route::resource('property-type', PropertySettingController::class);
-        Route::resource('late-fees', LeaseSettingController::class);
-        Route::resource('extra-charge', LeaseSettingController::class);
+    
+        Route::resource('extra-charge', ExtraChargeController::class);
         Route::resource('lease-type', LeaseSettingController::class);
+        Route::resource('late-fees', LateFeeController::class);
+        Route::put('leaseupdate/{id}', [LeaseSettingController::class, 'leaseupdate'])->name('leaseupdate');
+        Route::get('lease-setting', [LeaseSettingController::class, 'index'])->name('lease-setting');
+
+        Route::get('tenant-setting', [TenantSettingController::class, 'index'])->name('tenant-setting');
         Route::resource('tenant-type', TenantSettingController::class);
+        Route::resource('user-profile', ProfileController::class);
+        Route::get('change-password', [ProfileController::class, 'index'])->name('change-password');
+        Route::post('change-password-update', [ProfileController::class, 'changePasswordUpdate'])->name('change-password-update');
+        Route::put('tenantupdate/{id}', [TenantSettingController::class, 'tenantupdate'])->name('tenantupdate');
+
+
+
+       
+        
             
         
     });

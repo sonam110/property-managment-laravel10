@@ -81,19 +81,20 @@ class PermissionController extends Controller
     public function update(Request $request, Permission $permission)
     {
 
+       
         $permission = Permission::findOrFail($permission['id']);
         $this->validate(
             $request, [
-                        'name' => 'required|max:40',
+                    'name'      => 'required|unique:permissions,name,'.$permission->id,
                     ]
         );
-        $
-        $permission->se_name = $request['name'];
+        
+        $permission->se_name  = $request->name;
         $roles = $request['roles'];
         $permission->save();
 
         return redirect()->route('permissions.index')->with(
-            'success', 'Permission ' . $permission->name . ' updated!'
+            'success', 'Permission ' . $permission->se_name . ' updated!'
         );
 
 

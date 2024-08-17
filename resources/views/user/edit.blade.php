@@ -63,7 +63,7 @@
         <div class="col-md-6">
             <div class="mb-3">
             {{ Form::label('country', __('Country'), ['class' => 'form-label']) }}
-             <select name="country" id="country" class="form-control country" style="height: 47px;"
+             <select name="country"id="multicol-country" class="form-control country select2 form-select"   data-allow-clear="true"  style="height: 47px;"
                  onChange="getState();">
                  <option value="" selected>--Country--</option>
                  @foreach($countries as $county)
@@ -77,7 +77,7 @@
         <div class="col-md-6">
             <div class="mb-3">
             {{ Form::label('state', __('State'), ['class' => 'form-label']) }}
-               {!! Form::select('state', $statsList, $user->state, ['class' => 'form-control select state', 'required' => 'required']) !!}
+               {!! Form::select('state', $statsList, $user->state, ['class' => 'form-control select state select2 form-select', 'required' => 'required']) !!}
             </div>
         </div>
         <div class="col-md-6">
@@ -134,3 +134,18 @@
 </div>
 
 {{Form::close()}}
+
+<script type="text/javascript">
+    
+    // Select2 Country
+  var select2 = $('.select2');
+  if (select2.length) {
+    select2.each(function () {
+      var $this = $(this);
+      $this.wrap('<div class="position-relative"></div>').select2({
+        placeholder: 'Select value',
+        dropdownParent: $this.parent()
+      });
+    });
+  }
+</script>

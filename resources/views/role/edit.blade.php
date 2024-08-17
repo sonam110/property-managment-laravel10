@@ -46,13 +46,13 @@
 
                             @foreach($permission as $per)
                             @php
-                            $namep = explode('-',$per->name);
+                            $namep = explode('-',$per->se_name);
 
                             @endphp
                           <div class="form-check me-3 me-lg-5">
                             {{ Form::checkbox('permissions[]', $per->id, in_array($per->id, $rolePermissions) ? true : false, array('class' => 'form-check-input permission-checkbox', 'id'=>'')) }}
 
-                            <label class="form-check-label" for="{{ $per->name }}"> {{ (!empty(@$namep[1])) ? @$namep[1] : $per->name  }} </label>
+                            <label class="form-check-label" for="{{ $per->name }}"> {{ (!empty(@$namep[1])) ? @$namep[1] : $per->se_name  }} </label>
                           </div>
                           @endforeach
                          

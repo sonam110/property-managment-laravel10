@@ -46,12 +46,12 @@
 
                             @foreach($permission as $per)
                             @php
-                            $namep = explode('-',$per->name);
+                            $namep = explode('-',$per->se_name);
 
                             @endphp
                           <div class="form-check me-3 me-lg-5">
                             <input class="form-check-input permission-checkbox" type="checkbox" id="{{ $per->name }}"  name="permissions[]"  value="{!!$per->id!!}"/>
-                            <label class="form-check-label" for="{{ $per->name }}"> {{ (!empty(@$namep[1])) ? @$namep[1] : $per->name  }} </label>
+                            <label class="form-check-label" for="{{ $per->name }}"> {{ (!empty(@$namep[1])) ? @$namep[1] : $per->se_name  }} </label>
                           </div>
                           @endforeach
                          

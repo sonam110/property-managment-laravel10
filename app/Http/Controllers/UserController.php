@@ -38,6 +38,14 @@ class UserController extends Controller
     public function userList(Request $request)
     {
         $query = User::where('role_id','!=','1')->orderBy('id','DESC');
+        if(!empty($request->role_id))
+        {
+            $query->where('role_id', $request->role_id);
+        }
+        if($request->status!='')
+        {
+            $query->where('status', $request->status);
+        }
         return datatables($query)
             ->editColumn('name', function ($query)
             {
@@ -198,7 +206,7 @@ class UserController extends Controller
        
         $output = '';
         $selected = '';
-        $output .='<select class="form-select shadow-none country" id="floatingSelect" aria-label="Floating label select example" name="country"><option value="" selected> Select State</option>';
+        $output .='<select class="shadow-none state select2 form-select" id="floatingSelect" aria-label="Floating label select example" name="state" data-allow-clear="true"><option value="" selected> Select State</option>';
               foreach($statsList as $state) {
                 $output .='<option  value="'.$state->id.'"  >
                     '.ucfirst($state->name) .'

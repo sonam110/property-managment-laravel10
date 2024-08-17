@@ -1,4 +1,4 @@
-
+<h5 class="modal-title" id="exampleModalLabel">Create New User</h5>
 {{ Form::open(['url' => 'users', 'method' => 'post']) }}
 <div class="modal-body">
     <div class="row">
@@ -84,7 +84,7 @@
         <div class="col-md-6">
             <div class="mb-3">
             {{ Form::label('country', __('Country'), ['class' => 'form-label']) }}
-             <select name="country" id="country" class="form-control country" style="height: 47px;"
+             <select name="country"   id="multicol-country" class="form-control country select2 form-select"   data-allow-clear="true"  style="height: 47px;"
                  onChange="getState();">
                  <option value="" selected>--Country--</option>
                  @foreach($countries as $county)
@@ -98,7 +98,7 @@
         <div class="col-md-6">
             <div class="mb-3">
             {{ Form::label('state', __('State'), ['class' => 'form-label']) }}
-                <select name="state" id="state" class="form-control state" >     
+                <select name="state" id="state" class="form-control state select2 form-select"  data-allow-clear="true">     
                 </select>
             </div>
         </div>
@@ -156,3 +156,19 @@
 </div>
 
 {{ Form::close() }}
+
+
+<script type="text/javascript">
+    
+    // Select2 Country
+  var select2 = $('.select2');
+  if (select2.length) {
+    select2.each(function () {
+      var $this = $(this);
+      $this.wrap('<div class="position-relative"></div>').select2({
+        placeholder: 'Select value',
+        dropdownParent: $this.parent()
+      });
+    });
+  }
+</script>

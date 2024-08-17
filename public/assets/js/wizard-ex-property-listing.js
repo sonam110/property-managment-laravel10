@@ -5,63 +5,6 @@
 'use strict';
 
 (function () {
-  // Init custom option check
-  window.Helpers.initCustomOptionCheck();
-
-  const flatpickrRange = document.querySelector('.flatpickr'),
-    phoneMask = document.querySelector('.contact-number-mask'),
-    plCountry = $('#plCountry'),
-    plFurnishingDetailsSuggestionEl = document.querySelector('#plFurnishingDetails');
-
-  // Phone Number Input Mask
-  if (phoneMask) {
-    new Cleave(phoneMask, {
-      phone: true,
-      phoneRegionCode: 'US'
-    });
-  }
-
-  // select2 (Country)
-
-  if (plCountry) {
-    plCountry.wrap('<div class="position-relative"></div>');
-    plCountry.select2({
-      placeholder: 'Select country',
-      dropdownParent: plCountry.parent()
-    });
-  }
-
-  if (flatpickrRange) {
-    flatpickrRange.flatpickr();
-  }
-
-  // Tagify (Furnishing details)
-  const furnishingList = [
-    'Fridge',
-    'TV',
-    'AC',
-    'WiFi',
-    'RO',
-    'Washing Machine',
-    'Sofa',
-    'Bed',
-    'Dining Table',
-    'Microwave',
-    'Cupboard'
-  ];
-  if (plFurnishingDetailsSuggestionEl) {
-    const plFurnishingDetailsSuggestion = new Tagify(plFurnishingDetailsSuggestionEl, {
-      whitelist: furnishingList,
-      maxTags: 10,
-      dropdown: {
-        maxItems: 20,
-        classname: 'tags-inline',
-        enabled: 0,
-        closeOnSelect: false
-      }
-    });
-  }
-
   // Vertical Wizard
   // --------------------------------------------------------------------
 
@@ -70,13 +13,14 @@
     // Wizard form
     const wizardPropertyListingForm = wizardPropertyListing.querySelector('#wizard-property-listing-form');
     // Wizard steps
-    const wizardPropertyListingFormStep1 = wizardPropertyListingForm.querySelector('#personal-details');
-    const wizardPropertyListingFormStep2 = wizardPropertyListingForm.querySelector('#property-details');
-    const wizardPropertyListingFormStep3 = wizardPropertyListingForm.querySelector('#property-features');
-    const wizardPropertyListingFormStep4 = wizardPropertyListingForm.querySelector('#property-area');
-    const wizardPropertyListingFormStep5 = wizardPropertyListingForm.querySelector('#price-details');
+    const wizardPropertyListingFormStep1 = wizardPropertyListingForm.querySelector('#property-detail');
+    const wizardPropertyListingFormStep2 = wizardPropertyListingForm.querySelector('#payment-setting');
+    const wizardPropertyListingFormStep3 = wizardPropertyListingForm.querySelector('#extra-charges');
+    const wizardPropertyListingFormStep4 = wizardPropertyListingForm.querySelector('#late-fees');
+    const wizardPropertyListingFormStep5 = wizardPropertyListingForm.querySelector('#utilities');
     // Wizard next prev button
     const wizardPropertyListingNext = [].slice.call(wizardPropertyListingForm.querySelectorAll('.btn-next'));
+
     const wizardPropertyListingPrev = [].slice.call(wizardPropertyListingForm.querySelectorAll('.btn-prev'));
 
     const validationStepper = new Stepper(wizardPropertyListing, {
@@ -87,20 +31,21 @@
     const FormValidation1 = FormValidation.formValidation(wizardPropertyListingFormStep1, {
       fields: {
         // * Validate the fields here based on your requirements
-        plFirstName: {
+       /* property_name: {
           validators: {
             notEmpty: {
-              message: 'Please enter your first name'
+              message: 'Please enter property name'
             }
           }
         },
-        plLastName: {
+        property_code: {
           validators: {
             notEmpty: {
-              message: 'Please enter your last name'
+              message: 'Please enter property code'
             }
           }
-        }
+        }*/
+       
       },
 
       plugins: {
@@ -131,26 +76,7 @@
     const FormValidation2 = FormValidation.formValidation(wizardPropertyListingFormStep2, {
       fields: {
         // * Validate the fields here based on your requirements
-
-        plPropertyType: {
-          validators: {
-            notEmpty: {
-              message: 'Please select property type'
-            }
-          }
-        },
-        plZipCode: {
-          validators: {
-            notEmpty: {
-              message: 'Please enter zip code'
-            },
-            stringLength: {
-              min: 4,
-              max: 10,
-              message: 'The zip code must be more than 4 and less than 10 characters long'
-            }
-          }
-        }
+        
       },
       plugins: {
         trigger: new FormValidation.plugins.Trigger(),
@@ -177,17 +103,17 @@
     });
 
     // select2 (Property type)
-    const plPropertyType = $('#plPropertyType');
-    if (plPropertyType.length) {
-      plPropertyType.wrap('<div class="position-relative"></div>');
-      plPropertyType
+    const property_type = $('#property_type');
+    if (property_type.length) {
+      property_type.wrap('<div class="position-relative"></div>');
+      property_type
         .select2({
           placeholder: 'Select property type',
-          dropdownParent: plPropertyType.parent()
+          dropdownParent: property_type.parent()
         })
         .on('change.select2', function () {
           // Revalidate the color field when an option is chosen
-          FormValidation2.revalidateField('plPropertyType');
+          FormValidation2.revalidateField('property_type');
         });
     }
 
@@ -258,6 +184,7 @@
 
     wizardPropertyListingNext.forEach(item => {
       item.addEventListener('click', event => {
+        //alert(1);
         // When click the Next button, we will validate the current step
         switch (validationStepper._currentIndex) {
           case 0:
@@ -288,6 +215,7 @@
 
     wizardPropertyListingPrev.forEach(item => {
       item.addEventListener('click', event => {
+
         switch (validationStepper._currentIndex) {
           case 4:
             validationStepper.previous();

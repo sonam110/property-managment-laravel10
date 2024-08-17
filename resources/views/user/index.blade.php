@@ -5,8 +5,8 @@
 <div class="card">
   <div class="card-header border-bottom">
     <h5 class="card-title mb-3">Search Filter</h5>
-    <div class="d-flex justify-content-between align-items-center row pb-2 gap-3 gap-md-0">
-      <div class="col-md-3 user_role"><select id="UserRole" class="form-select text-capitalize"><option value="" > Select Role
+    <div class="d-flex  align-items-center row pb-2 gap-3 gap-md-0">
+      <div class="col-md-3 user_role"><select id="UserRole" class="select2 form-selec text-capitalize"><option value="" > Select Role
        </option>
        @foreach($roles as $key => $role)
         <option  value="{{ $key }}">
@@ -14,7 +14,7 @@
       </option> 
       @endforeach</select></div>
      
-      <div class="col-md-3 user_status"><select id="UserStatus" class="form-select text-capitalize"><option value=""> Select Status </option><option value="1">Active</option><option value="0">InActive</option></select></div>
+      <div class="col-md-3 user_status"><select id="UserStatus" class="select2 form-selec text-capitalize"><option value=""> Select Status </option><option value="1">Active</option><option value="0">InActive</option></select></div>
     </div>
   </div>
   <div class="card-datatable table-responsive">
@@ -40,12 +40,16 @@
 <script>
    $(document).ready( function () {
     var userCreateUrl = '{{ route('users.create') }}';
-    $('.datatables-users').DataTable({
+    var table = $('.datatables-users').DataTable({
        "processing": true,
        "serverSide": true,
        "ajax":{
            'url' : '{{ route('api.user-list') }}',
            'type' : 'POST',
+            "data": function(d) {
+            d.role_id   = $('#UserRole').val();
+            d.status   = $('#UserStatus').val();
+            },
            'headers': {
             'X-CSRF-TOKEN': '{{ csrf_token() }}'
         }
@@ -241,23 +245,46 @@
             }
         }
   });
+
+$('#UserRole, #UserStatus').on('change', function(e) {
+       table.draw();
+   });
 });
 
-  function getState(){
-    var country_id =  $("#country option:selected").attr('countryid');
-    $.ajax({
-      url: appurl+"get-state",
-      type: "post",
-      'headers': {
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        },
-      data: {country_id :country_id },
-      success: function(text) {
-          $(".state").html(text);
-    
-      }
+// Initialize Select2
+  $(document).ready(function() {
+      $('#multicol-country').select2();
+
+      // Attach event handler to Select2 dropdown
+      $('#multicol-country').on('change', function() {
+          getState();
+      });
+  });
+    // Select2 Country
+  var select2 = $('.select2');
+  if (select2.length) {
+    select2.each(function () {
+      var $this = $(this);
+      $this.wrap('<div class="position-relative"></div>').select2({
+        placeholder: 'Select value',
+        dropdownParent: $this.parent()
+      });
     });
-   
+  }
+  function getState() {
+      var country_id = $('#multicol-country').val(); // Get the selected value from Select2
+
+      $.ajax({
+          url: appurl + "get-state",
+          type: "post",
+          headers: {
+              'X-CSRF-TOKEN': '{{ csrf_token() }}'
+          },
+          data: { country_id: country_id },
+          success: function(response) {
+              $(".state").html(response);
+          }
+      });
   }
 
 </script>

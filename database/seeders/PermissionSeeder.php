@@ -286,16 +286,156 @@ class PermissionSeeder extends Seeder
          
         ],
         [
-          'name' => 'payment-browse',
-          'se_name' => 'payment-browse',
-          'group_name' => 'payment',
+          'name' => 'tenant-type-browse',
+          'se_name' => 'tenant-type-browse',
+          'group_name' => 'tenant-type',
           'guard_name' => 'web',
         
         ],
         [ 
-          'name' => 'payment-read',
-          'se_name' => 'payment-read',
-           'group_name' => 'payment',
+          'name' => 'tenant-type-read',
+          'se_name' => 'tenant-type-read',
+           'group_name' => 'tenant-type',
+          'guard_name' => 'web',
+         
+        ],
+        [ 
+          'name' => 'tenant-type-add',
+          'se_name' => 'tenant-type-add',
+          'group_name' => 'tenant-type',
+          'guard_name' => 'web',
+         
+        ],
+        [ 
+          'name' => 'tenant-type-edit',
+          'se_name' => 'tenant-type-edit',
+          'group_name' => 'tenant-type',
+          'guard_name' => 'web',
+         
+        ],
+        [ 
+          'name' => 'tenant-type-delete',
+          'se_name' => 'tenant-type-delete',
+          'group_name' => 'tenant-type',
+          'guard_name' => 'web',
+         
+        ],
+        [ 
+          'name' => 'report-browse',
+          'se_name' => 'report-browse',
+          'group_name' => 'report',
+          'guard_name' => 'web',
+         
+        ],
+        [ 
+          'name' => 'report-download',
+          'se_name' => 'report-download',
+           'group_name' => 'report',
+          'guard_name' => 'web',
+         
+        ],
+        [ 
+          'name' => 'property-type-add',
+          'se_name' => 'property-type-add',
+          'group_name' => 'property-type',
+          'guard_name' => 'web',
+         
+        ],
+        [ 
+          'name' => 'property-type-edit',
+          'se_name' => 'property-type-edit',
+          'group_name' => 'property-type',
+          'guard_name' => 'web',
+         
+        ],
+        [ 
+          'name' => 'property-type-delete',
+          'se_name' => 'property-type-delete',
+          'group_name' => 'property-type',
+          'guard_name' => 'web',
+         
+        ],
+        [ 
+          'name' => 'unit-type-add',
+          'se_name' => 'unit-type-add',
+          'group_name' => 'unit-type',
+          'guard_name' => 'web',
+         
+        ],
+        [ 
+          'name' => 'unit-type-edit',
+          'se_name' => 'unit-type-edit',
+          'group_name' => 'unit-type',
+          'guard_name' => 'web',
+         
+        ],
+        [ 
+          'name' => 'unit-type-delete',
+          'se_name' => 'unit-type-delete',
+          'group_name' => 'unit-type',
+          'guard_name' => 'web',
+         
+        ],
+        [ 
+          'name' => 'utility-type-add',
+          'se_name' => 'utility-type-add',
+          'group_name' => 'utility-type',
+          'guard_name' => 'web',
+         
+        ],
+        [ 
+          'name' => 'utility-type-edit',
+          'se_name' => 'utility-type-edit',
+          'group_name' => 'utility-type',
+          'guard_name' => 'web',
+         
+        ],
+        [ 
+          'name' => 'utility-type-delete',
+          'se_name' => 'utility-type-delete',
+          'group_name' => 'utility-type',
+          'guard_name' => 'web',
+         
+        ],
+        [ 
+          'name' => 'lease-type-add',
+          'se_name' => 'lease-type-add',
+          'group_name' => 'lease-type',
+          'guard_name' => 'web',
+         
+        ],
+        [ 
+          'name' => 'lease-type-edit',
+          'se_name' => 'lease-type-edit',
+          'group_name' => 'lease-type',
+          'guard_name' => 'web',
+         
+        ],
+        [ 
+          'name' => 'lease-type-delete',
+          'se_name' => 'lease-type-delete',
+          'group_name' => 'lease-type',
+          'guard_name' => 'web',
+         
+        ],
+        [ 
+          'name' => 'extra-charge-add',
+          'se_name' => 'extra-charge-add',
+          'group_name' => 'extra-charge',
+          'guard_name' => 'web',
+         
+        ],
+        [ 
+          'name' => 'extra-charge-edit',
+          'se_name' => 'extra-charge-edit',
+          'group_name' => 'extra-charge',
+          'guard_name' => 'web',
+         
+        ],
+        [ 
+          'name' => 'extra-charge-delete',
+          'se_name' => 'extra-charge-delete',
+          'group_name' => 'extra-charge',
           'guard_name' => 'web',
          
         ],
@@ -317,20 +457,6 @@ class PermissionSeeder extends Seeder
           'name' => 'payment-delete',
           'se_name' => 'payment-delete',
           'group_name' => 'payment',
-          'guard_name' => 'web',
-         
-        ],
-        [ 
-          'name' => 'report-browse',
-          'se_name' => 'report-browse',
-          'group_name' => 'report',
-          'guard_name' => 'web',
-         
-        ],
-        [ 
-          'name' => 'report-download',
-          'se_name' => 'report-download',
-           'group_name' => 'report',
           'guard_name' => 'web',
          
         ],

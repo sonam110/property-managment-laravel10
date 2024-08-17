@@ -10,7 +10,7 @@
 @section('action-btn')
     <div class="float-end">
         @can('role-add')
-            <a href="#" data-url="{{ route('roles.create') }}" data-ajax-popup="true" data-title="{{__('Create New Role')}}" data-bs-toggle="tooltip" title="{{__('Create')}}"  class="btn btn-sm btn-primary">
+            <a href="#" data-url="{{ route('roles.create') }}" data-ajax-popup="true" data-title="{{__('Create New Role')}}" data-bs-toggle="tooltip" data-size="lg" title="{{__('Create')}}"  class="btn btn-sm btn-primary">
                 <i class="ti ti-plus"></i>
             </a>
         @endcan
@@ -35,7 +35,7 @@
                                         <tr class="font-style">
                                             <td class="Role">{{ $role->se_name }}</td>
                                             <td class="Permission">
-                                                @foreach ($role->permissions()->pluck('name') as $permissionName)
+                                                @foreach ($role->permissions()->pluck('se_name') as $permissionName)
                                                     <span
                                                         class="badge rounded p-2 m-1 px-3 bg-primary">{{ $permissionName }}</span>
                                                 @endforeach
@@ -45,7 +45,7 @@
                                                     @can('role-edit')
                                                         <div class="action-btn bg-info ms-2">
                                                             <a href="#"
-                                                                class="btn btn-sm btn-info d-inline-flex align-items-center"
+                                                                class="btn btn-sm btn-primary d-inline-flex align-items-center"
                                                                 data-url="{{ route('roles.edit', $role->id) }}"
                                                                 data-ajax-popup="true" data-size="lg" data-bs-toggle="tooltip"
                                                                 title="{{ __('Edit') }}"

@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('leases', function (Blueprint $table) {
             $table->id();
+            $table->string('unique_id')->unique()->nullable();
             $table->unsignedBigInteger('user_id');
 
             $table->unsignedBigInteger('property_id');

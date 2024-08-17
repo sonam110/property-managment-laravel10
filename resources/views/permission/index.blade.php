@@ -32,16 +32,16 @@
                                             <tbody>
                                                     @foreach ($permissions as $permission)
                                                         <tr>
-                                                            <td>{{ $permission->name }}</td>
+                                                            <td>{{ $permission->se_name }}</td>
 
                                                             <td class="action">
                                                                   <div class="btn-group btn-group-xs">
                                                                     <a href="#"
-                                                                        class="btn btn-sm btn-info d-inline-flex align-items-center"
+                                                                        class="btn btn-sm btn-primary d-inline-flex align-items-center"
                                                                         data-url="{{ route('permissions.edit', $permission->id) }}"
-                                                                        data-ajax-popup="true" data-size="lg" data-bs-toggle="tooltip"
+                                                                        data-ajax-popup="true" data-size="md" data-bs-toggle="tooltip"
                                                                         title="{{ __('Edit') }}"
-                                                                        data-title="{{ __('Role Edit') }}">
+                                                                        data-title="{{ __('Edit Permissions') }}">
                                                                         <i class="ti ti-pencil text-white"></i>
                                                                     </a>
                                                                 </div>
