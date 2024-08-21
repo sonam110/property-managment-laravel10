@@ -19,8 +19,8 @@ return new class extends Migration
             $table->foreign('property_id')->references('id')->on('properties')->onDelete('cascade');
 
             $table->integer('unit')->nullable()->comment('1:Residentail.2:Commercial');
-            $table->string('unit_name');
-            $table->string('unit_floor');
+            $table->string('unit_name')->nullable();
+            $table->string('unit_floor')->nullable();
             $table->integer('rent_type')->nullable()->comment('1:Square Fit.2:Fixed');
             $table->decimal('rent_amount',10,2)->default(0);
             $table->unsignedBigInteger('unit_type')->nullable();

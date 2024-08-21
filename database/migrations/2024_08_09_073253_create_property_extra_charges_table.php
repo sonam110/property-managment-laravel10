@@ -18,8 +18,8 @@ return new class extends Migration
             $table->unsignedBigInteger('property_id');
             $table->foreign('property_id')->references('id')->on('properties')->onDelete('cascade');
 
-            $table->unsignedBigInteger('extra_charge_id');
-            $table->decimal('extra_charge_value',10,2)->default(0);
+            $table->unsignedBigInteger('extra_charge_id')->nullable();
+            $table->decimal('extra_charge_value',10,2)->default(0)->nullable();
             $table->integer('extra_charge_type')->nullable()->comment('1:Fixed,2:% of Total Rent,3: % of Total Amount Over Due');
             $table->integer('frequency')->nullable()->comment('1:Onetime,2:Period to Period,3:Daily,4:Weekly,5:Monthly');
             $table->timestamps();

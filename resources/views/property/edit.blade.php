@@ -69,14 +69,14 @@
                 </div>
                 <div class="bs-stepper-content">
                   <form id="wizard-property-listing-form" onSubmit="return false">
-                     {!! Form::hidden('id',null,array('class'=>'form-control')) !!}
+                     {!! Form::hidden('id',$property->id,array('class'=>'form-control')) !!}
                     @csrf
                     <!-- Personal Details -->
                     <div id="property-detail" class="content active">
                       <div class="row g-3">
                         <div class="col-sm-6">
                             {{ Form::label('property_name', __('Property Name'), ['class' => 'form-label']) }}
-                            {{ Form::text('property_name', null, ['class' => 'form-control','id'=>'property_name','placeholder' => __('Property Name')]) }}
+                            {{ Form::text('property_name', $property->property_name, ['class' => 'form-control','id'=>'property_name','placeholder' => __('Property Name')]) }}
                             @error('property_name')
                                 <small class="invalid-name" role="alert">
                                     <strong class="text-danger">{{ $message }}</strong>
@@ -85,7 +85,7 @@
                         </div>
                         <div class="col-sm-6">
                            {{ Form::label('property_code', __('Property Code'), ['class' => 'form-label']) }}
-                            {{ Form::text('property_code', null, ['class' => 'form-control','id'=>'property_code', 'placeholder' => __('Property Code')]) }}
+                            {{ Form::text('property_code', $property->property_code, ['class' => 'form-control','id'=>'property_code', 'placeholder' => __('Property Code')]) }}
                             @error('property_code')
                                 <small class="invalid-name" role="alert">
                                     <strong class="text-danger">{{ $message }}</strong>
@@ -94,7 +94,7 @@
                         </div>
                         <div class="col-sm-6">
                            {{ Form::label('property_location', __('Location'), ['class' => 'form-label']) }}
-                            {{ Form::text('property_location', null, ['class' => 'form-control','id'=>'property_location', 'placeholder' => __('Location')]) }}
+                            {{ Form::text('property_location', $property->property_location, ['class' => 'form-control','id'=>'property_location', 'placeholder' => __('Location')]) }}
                             @error('property_location')
                                 <small class="invalid-name" role="alert">
                                     <strong class="text-danger">{{ $message }}</strong>
@@ -103,26 +103,34 @@
                         </div>
                          <div class="col-md-6">
                             {{ Form::label('property_type', __('Property Type'), ['class' => 'form-label']) }}
-                               {!! Form::select('property_type', $propertyTypes, null, ['class' => 'form-control select property_type select2 form-select','id'=>'property_type']) !!}
+                               {!! Form::select('property_type', $propertyTypes, $property->property_type, ['class' => 'form-control select property_type select2 form-select','id'=>'property_type']) !!}
                            
                         </div>
-                        <!-- <div class="col-sm-6">
-                            {{ Form::label('partners[]', __('Partners'), ['class' => 'form-label']) }}
-                            <div class="select2-primary">
-                                {!! Form::select('partners[]', $partners, null, [
-                                    'class' => 'form-control select2 form-select',
-                                    'id' => 'select2Primary',
-                                    'multiple' => 'multiple', 
-                                    'required' => 'required'
-                                ]) !!}
-                            </div>
-                        </div> -->
+                       
                         
                         <div class="col-sm-12">
                           
                             <label for="units">Units</label>
                             <div id="unitsContainer">
-                                <!-- Unit rows will be added here dynamically -->
+                                @foreach($propertyUnit as $key=>  $unit)
+                                <div class="unit-row row" id="unitRow_{{ $key+1 }}">
+                                <div class="col-md-9">
+                                    <input type="text" class="form-control" name="unit_name[]" id="unitInput_{{ $key+1 }}" value="{{ $unit->unit_name }}" readonly>
+                                    <input type="hidden" class="form-control" name="unit[]" id="radioInput_{{ $key+1 }}" value="{{ $unit->unit }}" >
+                                    <input type="hidden" class="form-control" name="unit_floor[]" id="unitFloorInput_{{ $key+1 }}" value="{{ $unit->unit_floor }}" >
+                                    <input type="hidden" class="form-control" name="rent_amount[]" id="rentAmountInput_{{ $key+1 }}" value="{{ $unit->rent_amount }}" >
+                                    <input type="hidden" class="form-control" name="unit_type[]" id="unitTypeInput_{{ $key+1 }}" value="{{ $unit->unit_type }}" >
+                                    <input type="hidden" class="form-control" name="bed_rooms[]" id="bedRoomInput_{{ $key+1 }}" value="{{ $unit->bed_rooms }}" >
+                                    <input type="hidden" class="form-control" name="bath_rooms[]" id="bathRoomInput_{{ $key+1 }}" value="{{ $unit->bath_rooms }}" >
+                                    <input type="hidden" class="form-control" name="total_rooms[]" id="totalRoomInput_{{ $key+1 }}" value="{{ $unit->total_rooms }}" >
+                                    <input type="hidden" class="form-control" name="square_foot[]" id="squareRoomInput_{{ $key+1 }}" value="{{ $unit->square_foot }}" >
+                                </div>
+                                <div class="unit-actions col-md-3">
+                                    <button class="btn btn-secondary btn-sm copy-btn" data-id="unitInput_${unitCount}"><i class="ti ti-copy text-white"></i></button>
+                                    <button class="btn btn-danger btn-sm delete-btn" data-id="unitRow_${unitCount}"><i class="ti ti-trash text-white"></i></button>
+                                </div>
+                            </div><br>
+                                @endforeach
                             </div>
                             <div class="text-right mt-3">
                                 <button class="btn btn-primary" id="addUnitButton">+ Add Unit</button>
@@ -146,59 +154,62 @@
                     <!-- Property Details -->
                     <div id="payment-setting" class="content">
                       <div class="row g-3">
-                        
-                        
-                        <div class="col-sm-3">
-                            {{ Form::label('partners[]', __('Partners'), ['class' => 'form-label']) }}
-                            <div class="select2-primary">
-                                {!! Form::select('partners[]', $partners, null, [
-                                    'class' => 'form-control select2 form-select',
-                                    'id' => 'select2Primary',
-                                    'required' => 'required'
-                                ]) !!}
-                            </div>
-                        </div>
-                        <div class="col-sm-3">
-                           {{ Form::label('commission_value', __('Comsission Value'), ['class' => 'form-label']) }}
-                            {{ Form::text('commission_value[]', null, ['class' => 'form-control','id'=>'commission_value', 'placeholder' => __('Comsission Value')]) }}
-                            @error('commission_value')
-                                <small class="invalid-name" role="alert">
-                                    <strong class="text-danger">{{ $message }}</strong>
-                                </small>
-                              @enderror
-                        </div>
-                        
-                        <div class="col-sm-3">
-                          <label class="form-label" for="commission_type">Comsission Type</label>
-                          <select id="commission_type" name="commission_type[]" class="form-control select2 form-select" data-allow-clear="true">
-                            <option value="">Select</option>
-                            <option value="1">Fixed Value</option>
-                            <option value="2">% of Total Rent</option>
-                            <option value="3">% of Total collected Rent</option>
-                          </select>
-                        </div>
-                        <div class="col-sm-3">
-                          <label class="form-label" for="payment_methods">Payment Method</label>
-                          <select id="payment_methods" name="payment_methods[]" class="form-control select2 form-select" data-allow-clear="true">
-                            <option value="">Select</option>
-                            <option value="1">Cash</option>
-                            <option value="2">Online</option>
-                            <option value="3">Cheque</option>
-                            <option value="4">DD</option>
-                          </select>
-                        </div>
 
                         <div class="col-sm-12">
-                        
+    
                             <div id="paymentContainer" class="">
-                                <!-- Unit rows will be added here dynamically -->
-                            </div>
-                             
-                            <div class="text-right mt-3">
-                                <button class="btn btn-primary" id="addPartnerButton">+ Add Payment</button>
-                            </div>
+                                @foreach($paymentSetting as $key=>  $payment)
+                                    <div class="row g-3 textBoxWrapper"><br>
+                                        <div class="col-sm-3">
+                                            {{ Form::label('partners[]', __('Partners'), ['class' => 'form-label']) }}
+                                            <div class="select2-primary">
+                                                {!! Form::select('partners[]', $partners,$payment->user_id, [
+                                                    'class' => 'form-control select2 form-select',
+                                                    'id' => 'select2Primary',
+                                                    'required' => 'required'
+                                                ]) !!}
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-3">
+                                           {{ Form::label('commission_value', __('Comsission Value'), ['class' => 'form-label']) }}
+                                            {{ Form::text('commission_value[]', $payment->commission_value, ['class' => 'form-control','id'=>'commission_value', 'placeholder' => __('Comsission Value')]) }}
+                                            @error('commission_value')
+                                                <small class="invalid-name" role="alert">
+                                                    <strong class="text-danger">{{ $message }}</strong>
+                                                </small>
+                                              @enderror
+                                        </div>
+                                        
+                                        <div class="col-sm-2">
+                                          <label class="form-label" for="commission_type"> Type</label>
+                                          <select id="commission_type" name="commission_type[]" class="form-control select2 form-select" data-allow-clear="true">
+                                            <option value="">Select</option>
+                                            <option value="1" @if(@$payment->commission_type == '1' ) selected @endif>Fixed Value</option>
+                                            <option value="2" @if(@$payment->commission_type == '2' ) selected @endif>% of Total Rent</option>
+                                            <option value="3" @if(@$payment->commission_type == '3' ) selected @endif>% of Total collected Rent</option>
+                                          </select>
+                                        </div>
+                                        <div class="col-sm-3">
+                                          <label class="form-label" for="payment_methods">Payment Method</label>
+                                          <select id="payment_methods" name="payment_methods[]" class="form-control select2 form-select" data-allow-clear="true">
+                                            <option value="">Select</option>
+                                            <option value="1"  @if(@$payment->payment_methods == '1' ) selected @endif>Cash</option>
+                                            <option value="2"  @if(@$payment->payment_methods == '2' ) selected @endif>Online</option>
+                                            <option value="3"  @if(@$payment->payment_methods == '3' ) selected @endif>Cheque</option>
+                                            <option value="4"  @if(@$payment->payment_methods == '4' ) selected @endif>DD</option>
+                                          </select>
+                                        </div>
+                                        <div class="col-sm-1"><button type="button" class="removeButton btn btn-danger btn-sm" style="margin:10px"><i class="ti ti-trash text-white"></i></button>  </div>
+                                         <hr class="my-20" />
+                                    </div>
+                                    @endforeach
+                                </div>
+                                             
+                                <div class="text-right mt-3">
+                                    <button class="btn btn-primary" id="addPartnerButton">+ Add Payment</button>
+                                </div>
                         
-                        </div>
+                            </div>
                         
                         
                         <div class="col-12 d-flex justify-content-between mt-4">
@@ -217,51 +228,59 @@
                     <!-- Property Features -->
                     <div id="extra-charges" class="content">
                        <div class="row g-3">
-                        <div class="col-sm-3">
-                            {{ Form::label('extra_charge_id[]', __('Extra Charge Name'), ['class' => 'form-label']) }}
-                            <div class="select2-primary">
-                                {!! Form::select('extra_charge_id[]', $extraCharges, null, [
-                                    'class' => 'form-control select2 form-select',
-                                    'id' => 'select2Primary',
-                                    'required' => 'required'
-                                ]) !!}
-                            </div>
-                        </div>
-                        <div class="col-sm-3">
-                           {{ Form::label('extra_charge_value', __('Extra Charge Value'), ['class' => 'form-label']) }}
-                            {{ Form::text('extra_charge_value[]', null, ['class' => 'form-control','id'=>'extra_charge_value', 'placeholder' => __('Extra Charge Value')]) }}
-                            @error('extra_charge_value')
-                                <small class="invalid-name" role="alert">
-                                    <strong class="text-danger">{{ $message }}</strong>
-                                </small>
-                              @enderror
-                        </div>
-                        
-                        <div class="col-sm-3">
-                          <label class="form-label" for="extra_charge_type">Extra Charge Type</label>
-                          <select id="extra_charge_type" name="extra_charge_type[]" class="form-control select2 form-select" data-allow-clear="true">
-                            <option value="">Select</option>
-                            <option value="1">Fixed Value</option>
-                            <option value="2">% of Total Rent</option>
-                            <option value="3">% of Total Amount Over Due</option>
-                          </select>
-                        </div>
-                        <div class="col-sm-3">
-                          <label class="form-label" for="frequency">Frequency</label>
-                          <select id="frequency" name="frequency[]" class="form-control select2 form-select" data-allow-clear="true">
-                            <option value="">Select</option>
-                            <option value="1">Onetime</option>
-                            <option value="2">Period to Period</option>
-                            <option value="3">Daily</option>
-                            <option value="4">Weekly</option>
-                            <option value="5">Monthly</option>
-                          </select>
-                        </div>
+                       
 
                         <div class="col-sm-12">
                         
                             <div id="extraChargeContainer" class="">
-                                <!-- Unit rows will be added here dynamically -->
+                                <div class="row g-3 textBoxWrapper">
+                                    @foreach($propertyExtraCharges as $key=>  $charge)
+
+                                         <div class="col-sm-3">
+                                            {{ Form::label('extra_charge_id[]', __('Extra Charge Name'), ['class' => 'form-label']) }}
+                                            <div class="select2-primary">
+                                                {!! Form::select('extra_charge_id[]', $extraCharges, $charge->extra_charge_id, [
+                                                    'class' => 'form-control select2 form-select',
+                                                    'id' => 'select2Primary',
+                                                    'required' => 'required'
+                                                ]) !!}
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-3">
+                                           {{ Form::label('extra_charge_value', __('Extra Charge Value'), ['class' => 'form-label']) }}
+                                            {{ Form::text('extra_charge_value[]',$charge->extra_charge_value, ['class' => 'form-control','id'=>'extra_charge_value', 'placeholder' => __('Extra Charge Value')]) }}
+                                            @error('extra_charge_value')
+                                                <small class="invalid-name" role="alert">
+                                                    <strong class="text-danger">{{ $message }}</strong>
+                                                </small>
+                                              @enderror
+                                        </div>
+                                        
+                                        <div class="col-sm-3">
+                                          <label class="form-label" for="extra_charge_type">Extra Charge Type</label>
+                                          <select id="extra_charge_type" name="extra_charge_type[]" class="form-control select2 form-select" data-allow-clear="true">
+                                            <option value="">Select</option>
+                                            <option value="1" @if(@$charge->extra_charge_type == '1' ) selected @endif>Fixed Value</option>
+                                            <option value="2" @if(@$charge->extra_charge_type == '2' ) selected @endif>% of Total Rent</option>
+                                            <option value="3" @if(@$charge->extra_charge_type == '3' ) selected @endif>% of Total Amount Over Due</option>
+                                          </select>
+                                        </div>
+                                        <div class="col-sm-2">
+                                          <label class="form-label" for="frequency">Frequency</label>
+                                          <select id="frequency" name="frequency[]" class="form-control select2 form-select" data-allow-clear="true">
+                                            <option value="">Select</option>
+                                            <option value="1" @if(@$charge->frequency == '1' ) selected @endif>Onetime</option>
+                                            <option value="2" @if(@$charge->frequency == '2' ) selected @endif>Period to Period</option>
+                                            <option value="3" @if(@$charge->frequency == '3' ) selected @endif>Daily</option>
+                                            <option value="4" @if(@$charge->frequency == '4' ) selected @endif>Weekly</option>
+                                            <option value="5" @if(@$charge->frequency == '5' ) selected @endif>Monthly</option>
+                                          </select>
+                                        </div>
+
+                                        <div class="col-sm-1"><button type="button" class="removeButton btn btn-danger btn-sm" style="margin:10px"><i class="ti ti-trash text-white"></i></button>  </div>
+                                        <hr class="my-20" />
+                                    @endforeach
+                                </div>
                             </div>
                              
                             <div class="text-right mt-3">
@@ -287,53 +306,59 @@
                     <!-- Property Area -->
                     <div id="late-fees" class="content">
                       <div class="row g-3">
-                        <div class="col-sm-3">
-                            {{ Form::label('late_fee_id[]', __('Late Fee Name'), ['class' => 'form-label']) }}
-                            <div class="select2-primary">
-                                {!! Form::select('late_fee_id[]', $lateFees, null, [
-                                    'class' => 'form-control select2 form-select',
-                                    'id' => 'select2Primary',
-                                    'required' => 'required'
-                                ]) !!}
-                            </div>
-                        </div>
-                        <div class="col-sm-3">
-                           {{ Form::label('late_fee_value', __('Late Fee Value'), ['class' => 'form-label']) }}
-                            {{ Form::text('late_fee_value[]', null, ['class' => 'form-control','id'=>'late_fee_value', 'placeholder' => __('Late Fee Value')]) }}
-                            @error('late_fee_value')
-                                <small class="invalid-name" role="alert">
-                                    <strong class="text-danger">{{ $message }}</strong>
-                                </small>
-                              @enderror
-                        </div>
                         
-                        <div class="col-sm-3">
-                          <label class="form-label" for="late_fee_type">Late Fee Type</label>
-                          <select id="late_fee_type" name="late_fee_type[]" class="form-control select2 form-select" data-allow-clear="true">
-                            <option value="">Select</option>
-                            <option value="1">Fixed Value</option>
-                            <option value="2">% of Total Rent</option>
-                            <option value="3">% of Total Amount Over Due</option>
-                          </select>
-                        </div>
-                        <div class="col-sm-3">
-                          <label class="form-label" for="frequency">Frequency</label>
-                          <select id="frequency" name="frequency[]" class="form-control select2 form-select" data-allow-clear="true">
-                            <option value="">Select</option>
-                            <option value="1">Onetime</option>
-                            <option value="2">Period to Period</option>
-                            <option value="3">Daily</option>
-                            <option value="4">Weekly</option>
-                            <option value="5">Monthly</option>
-                          </select>
-                        </div>
-
                         <div class="col-sm-12">
                         
                             <div id="lateFeeContainer" class="">
-                                <!-- Unit rows will be added here dynamically -->
-                            </div>
-                             
+                                <div class="row g-3 textBoxWrapper">
+                                @foreach($propertyLateFees as $key=>  $fees)
+
+                                    <div class="col-sm-3">
+                                        {{ Form::label('late_fee_id[]', __('Late Fee Name'), ['class' => 'form-label']) }}
+                                        <div class="select2-primary">
+                                            {!! Form::select('late_fee_id[]', $lateFees, $fees->late_fee_id, [
+                                                'class' => 'form-control select2 form-select',
+                                                'id' => 'select2Primary',
+                                                'required' => 'required'
+                                            ]) !!}
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-3">
+                                       {{ Form::label('late_fee_value', __('Late Fee Value'), ['class' => 'form-label']) }}
+                                        {{ Form::text('late_fee_value[]', $fees->late_fee_value, ['class' => 'form-control','id'=>'late_fee_value', 'placeholder' => __('Late Fee Value')]) }}
+                                        @error('late_fee_value')
+                                            <small class="invalid-name" role="alert">
+                                                <strong class="text-danger">{{ $message }}</strong>
+                                            </small>
+                                          @enderror
+                                    </div>
+                                    
+                                     <div class="col-sm-3">
+                                          <label class="form-label" for="late_fee_type">Late Fee Type</label>
+                                          <select id="late_fee_type" name="late_fee_type[]" class="form-control select2 form-select" data-allow-clear="true">
+                                            <option value="">Select</option>
+                                            <option value="1" @if(@$fees->late_fee_type == '1' ) selected @endif>Fixed Value</option>
+                                            <option value="2" @if(@$fees->late_fee_type == '2' ) selected @endif>% of Total Rent</option>
+                                            <option value="3" @if(@$fees->late_fee_type == '3' ) selected @endif>% of Total Amount Over Due</option>
+                                          </select>
+                                        </div>
+                                        <div class="col-sm-2">
+                                          <label class="form-label" for="frequency">Frequency</label>
+                                          <select id="frequency" name="frequency[]" class="form-control select2 form-select" data-allow-clear="true">
+                                            <option value="">Select</option>
+                                            <option value="1" @if(@$fees->frequency == '1' ) selected @endif>Onetime</option>
+                                            <option value="2" @if(@$fees->frequency == '2' ) selected @endif>Period to Period</option>
+                                            <option value="3" @if(@$fees->frequency == '3' ) selected @endif>Daily</option>
+                                            <option value="4" @if(@$fees->frequency == '4' ) selected @endif>Weekly</option>
+                                            <option value="5" @if(@$fees->frequency == '5' ) selected @endif>Monthly</option>
+                                          </select>
+                                        </div>
+                                     <div class="col-sm-1"><button type="button" class="removeButton btn btn-danger btn-sm" style="margin:10px"><i class="ti ti-trash text-white"></i></button>  </div>
+                                        <hr class="my-20" />
+
+                                    @endforeach
+                                </div>
+                             </div>
                             <div class="text-right mt-3">
                                 <button class="btn btn-primary" id="addLateFeeButton">+ Add Late Fee</button>
                             </div>
@@ -358,41 +383,44 @@
                     <div id="utilities" class="content">
                  
                       <div class="row g-3">
-                        <div class="col-sm-4">
-                            {{ Form::label('utility_id[]', __('Utility Name'), ['class' => 'form-label']) }}
-                            <div class="select2-primary">
-                                {!! Form::select('utility_id[]', $utilities, null, [
-                                    'class' => 'form-control select2 form-select',
-                                    'id' => 'select2Primary',
-                                    'required' => 'required'
-                                ]) !!}
-                            </div>
-                        </div>
-                        <div class="col-sm-4">
-                           {{ Form::label('variable_cost', __('Variable Cost'), ['class' => 'form-label']) }}
-                            {{ Form::text('variable_cost[]', null, ['class' => 'form-control','id'=>'variable_cost', 'placeholder' => __('Variable Cost')]) }}
-                            @error('variable_cost')
-                                <small class="invalid-name" role="alert">
-                                    <strong class="text-danger">{{ $message }}</strong>
-                                </small>
-                              @enderror
-                        </div>
-                        <div class="col-sm-4">
-                           {{ Form::label('fixed_cost', __('Fixed Cost'), ['class' => 'form-label']) }}
-                            {{ Form::text('fixed_cost[]', null, ['class' => 'form-control','id'=>'fixed_cost', 'placeholder' => __('Fixed Cost')]) }}
-                            @error('fixed_cost')
-                                <small class="invalid-name" role="alert">
-                                    <strong class="text-danger">{{ $message }}</strong>
-                                </small>
-                              @enderror
-                        </div>
-                        
-                       
-
+                    
                         <div class="col-sm-12">
                         
                             <div id="utilityContainer" class="">
-                                <!-- Unit rows will be added here dynamically -->
+                                @foreach($propertyUtility as $key=>  $utility)
+                                    <div class="row g-3 textBoxWrapper">
+                                        <div class="col-sm-3">
+                                            {{ Form::label('utility_id[]', __('Utility Name'), ['class' => 'form-label']) }}
+                                            <div class="select2-primary">
+                                                {!! Form::select('utility_id[]', $utilities, $utility->utility_id, [
+                                                    'class' => 'form-control select2 form-select',
+                                                    'id' => 'select2Primary',
+                                                    'required' => 'required'
+                                                ]) !!}
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-3">
+                                           {{ Form::label('variable_cost', __('Variable Cost'), ['class' => 'form-label']) }}
+                                            {{ Form::text('variable_cost[]', $utility->variable_cost, ['class' => 'form-control','id'=>'variable_cost', 'placeholder' => __('Variable Cost')]) }}
+                                            @error('variable_cost')
+                                                <small class="invalid-name" role="alert">
+                                                    <strong class="text-danger">{{ $message }}</strong>
+                                                </small>
+                                              @enderror
+                                        </div>
+                                        <div class="col-sm-3">
+                                           {{ Form::label('fixed_cost', __('Fixed Cost'), ['class' => 'form-label']) }}
+                                            {{ Form::text('fixed_cost[]', $utility->fixed_cost, ['class' => 'form-control','id'=>'fixed_cost', 'placeholder' => __('Fixed Cost')]) }}
+                                            @error('fixed_cost')
+                                                <small class="invalid-name" role="alert">
+                                                    <strong class="text-danger">{{ $message }}</strong>
+                                                </small>
+                                              @enderror
+                                        </div>
+                                        <div class="col-sm-3"><button type="button" class="removeButton btn btn-danger btn-sm" style="margin:10px"><i class="ti ti-trash text-white"></i></button>  </div>
+                        
+                                    </div>
+                                @endforeach
                             </div>
                              
                             <div class="text-right mt-3">
@@ -472,7 +500,7 @@
                                             type="radio"
                                             value="1"
                                             id="customRadioBuilder"
-                                            checked />
+                                             />
                                         </label>
                                       </div>
                                     </div>
@@ -580,7 +608,7 @@
     <script src="{{ asset('assets/js/wizard-ex-property-listing.js') }}"></script>
     <script>
    $(document).ready(function() {
-    let unitCount = 0;
+    let unitCount = parseInt($('#unitsContainer .unit-row').length) || 0;
     let currentInputId = '';
     let isCopyAction = false;
 
@@ -589,6 +617,11 @@
         console.log(inputId);
         $('#unitModal').modal('show');
 
+        if ($('.residential').is(':checked')) {
+            $('.onlyforcommercial').show();
+        } else {
+            $('.onlyforcommercial').hide();
+        }
         // Pre-fill the modal with existing data if updating
         if (inputId) {
             const newInput = inputId.split('_')[1];
@@ -719,13 +752,15 @@
             $('.onlyforcommercial').hide();
         }
     });
+
+
 });
 
  // Add text box
   $(document).ready(function(){
     /*----------------------Partner Payment-------------------*/
         $("#addPartnerButton").click(function(){
-            var textBoxHtml = '<div class="row g-3 textBoxWrapper"><br><hr class="my-0" /><br> <div class="col-sm-3"> <label for="partners" class="form-label">Partners</label> <div class="select2-primary"> <select class="form-control select2 form-select"  required="required" name="partners[]"><?php foreach ($partners as $key =>  $row): ?><option value="<?php echo $key ?>"><?php echo $row ?></option><?php endforeach ?></select> </div> </div> <div class="col-sm-3"> <label for="commission_value" class="form-label">Comsission Value</label> <input class="form-control" id="commission_value" placeholder="Comsission Value" name="commission_value[]" type="text"> </div> <div class="col-sm-2"> <label class="form-label" for="commission_type">Type</label> <select id="commission_type" name="commission_type[]" class="form-control select2 form-select" > <option value="">Select</option> <option value="1">Fixed Value</option> <option value="2">% of Total Rent</option> <option value="3">% of Total collected Rent</option> </select> </div> <div class="col-sm-3"> <label class="form-label" for="payment_methods">Payment Method</label> <select id="payment_methods" name="payment_methods[]" class="form-control select2 form-select" > <option value="">Select</option> <option value="1">Cash</option> <option value="2">Online</option> <option value="3">Cheque</option> <option value="4">DD</option> </select> </div> <div class="col-sm-1"><button type="button" class="removeButton btn btn-danger btn-sm" style="margin:10px"><i class="ti ti-trash text-white"></i></button>  </div></div> <br>';
+            var textBoxHtml = '<br><div class="row g-3 textBoxWrapper"><br><hr class="my-0" /><br> <div class="col-sm-3"> <label for="partners" class="form-label">Partners</label> <div class="select2-primary"> <select class="form-control select2 form-select"  required="required" name="partners[]"><?php foreach ($partners as $key =>  $row): ?><option value="<?php echo $key ?>"><?php echo $row ?></option><?php endforeach ?></select> </div> </div> <div class="col-sm-3"> <label for="commission_value" class="form-label">Comsission Value</label> <input class="form-control" id="commission_value" placeholder="Comsission Value" name="commission_value[]" type="text"> </div> <div class="col-sm-2"> <label class="form-label" for="commission_type">Type</label> <select id="commission_type" name="commission_type[]" class="form-control select2 form-select" > <option value="">Select</option> <option value="1">Fixed Value</option> <option value="2">% of Total Rent</option> <option value="3">% of Total collected Rent</option> </select> </div> <div class="col-sm-3"> <label class="form-label" for="payment_methods">Payment Method</label> <select id="payment_methods" name="payment_methods[]" class="form-control select2 form-select" > <option value="">Select</option> <option value="1">Cash</option> <option value="2">Online</option> <option value="3">Cheque</option> <option value="4">DD</option> </select> </div> <div class="col-sm-1"><button type="button" class="removeButton btn btn-danger btn-sm" style="margin:10px"><i class="ti ti-trash text-white"></i></button>  </div></div> <br>';
             $("#paymentContainer").append(textBoxHtml);
         });
 
@@ -736,7 +771,7 @@
 
         /*--------------Extra charge--------------------------------*/
         $("#addExtraChargeButton").click(function(){
-            var textBoxHtml = '<div class="row g-3 textBoxWrapper"><br><hr class="my-0" /><br> <div class="col-sm-3"> <label for="partners" class="form-label">Extra Charge Name</label> <div class="select2-primary"> <select class="form-control select2 form-select"  required="required" name="extra_charge_id[]"><?php foreach ($extraCharges as $key =>  $row): ?><option value="<?php echo $key ?>"><?php echo $row ?></option><?php endforeach ?></select> </div> </div> <div class="col-sm-3"> <label for="extra_charge_value" class="form-label">Extra Charge Value</label> <input class="form-control" id="extra_charge_value" placeholder="Etxra Charge Value" name="extra_charge_value[]" type="text"> </div> <div class="col-sm-3"> <label class="form-label" for="extra_charge_type">Extra Charge Type</label> <select id="extra_charge_type" name="extra_charge_type[]" class="form-control select2 form-select" > <option value="">Select</option> <option value="1">Fixed Value</option> <option value="2">% of Total Rent</option> <option value="3">% of Total Amount Over Due</option> </select> </div> <div class="col-sm-2"> <label class="form-label" for="frequency">Frequency</label> <select id="frequency" name="frequency[]" class="form-control select2 form-select" > <option value="">Select</option> <option value="1">Onetime</option> <option value="2">Period to Period</option> <option value="3">Daily</option> <option value="4">Weekly</option><option value="5">Monthly</option>  </select> </div> <div class="col-sm-1"><button type="button" class="removeButton btn btn-danger btn-sm" style="margin:10px"><i class="ti ti-trash text-white"></i></button>  </div></div> <br>';
+            var textBoxHtml = '<br><div class="row g-3 textBoxWrapper"><br><hr class="my-0" /><br> <div class="col-sm-3"> <label for="partners" class="form-label">Extra Charge Name</label> <div class="select2-primary"> <select class="form-control select2 form-select"  required="required" name="extra_charge_id[]"><?php foreach ($extraCharges as $key =>  $row): ?><option value="<?php echo $key ?>"><?php echo $row ?></option><?php endforeach ?></select> </div> </div> <div class="col-sm-3"> <label for="extra_charge_value" class="form-label">Extra Charge Value</label> <input class="form-control" id="extra_charge_value" placeholder="Etxra Charge Value" name="extra_charge_value[]" type="text"> </div> <div class="col-sm-3"> <label class="form-label" for="extra_charge_type">Extra Charge Type</label> <select id="extra_charge_type" name="extra_charge_type[]" class="form-control select2 form-select" > <option value="">Select</option> <option value="1">Fixed Value</option> <option value="2">% of Total Rent</option> <option value="3">% of Total Amount Over Due</option> </select> </div> <div class="col-sm-2"> <label class="form-label" for="frequency">Frequency</label> <select id="frequency" name="frequency[]" class="form-control select2 form-select" > <option value="">Select</option> <option value="1">Onetime</option> <option value="2">Period to Period</option> <option value="3">Daily</option> <option value="4">Weekly</option><option value="5">Monthly</option>  </select> </div> <div class="col-sm-1"><button type="button" class="removeButton btn btn-danger btn-sm" style="margin:10px"><i class="ti ti-trash text-white"></i></button>  </div></div> <br>';
             $("#extraChargeContainer").append(textBoxHtml);
         });
 
@@ -748,7 +783,7 @@
 
         /*--------------Late Fee--------------------------------*/
         $("#addLateFeeButton").click(function(){
-            var textBoxHtml = '<div class="row g-3 textBoxWrapper"><br><hr class="my-0" /><br> <div class="col-sm-3"> <label for="late_fee_id" class="form-label">Late Fee Name</label> <div class="select2-primary"> <select class="form-control select2 form-select"  required="required" name="late_fee_id[]"><?php foreach ($lateFees as $key =>  $row): ?><option value="<?php echo $key ?>"><?php echo $row ?></option><?php endforeach ?></select> </div> </div> <div class="col-sm-3"> <label for="late_fee_value" class="form-label">Late Fee Value</label> <input class="form-control" id="late_fee_value" placeholder="Late Fee Value" name="late_fee_value[]" type="text"> </div> <div class="col-sm-3"> <label class="form-label" for="late_fee_type">Late Fee Type</label> <select id="late_fee_type" name="late_fee_type[]" class="form-control select2 form-select" > <option value="">Select</option> <option value="1">Fixed Value</option> <option value="2">% of Total Rent</option> <option value="3">% of Total Amount Over Due</option> </select> </div> <div class="col-sm-2"> <label class="form-label" for="frequency">Frequency</label> <select id="frequency" name="frequency[]" class="form-control select2 form-select" > <option value="">Select</option> <option value="1">Onetime</option> <option value="2">Period to Period</option> <option value="3">Daily</option> <option value="4">Weekly</option><option value="5">Monthly</option>  </select> </div> <div class="col-sm-1"><button type="button" class="removeButton btn btn-danger btn-sm" style="margin:10px"><i class="ti ti-trash text-white"></i></button>  </div></div> <br>';
+            var textBoxHtml = '<br><div class="row g-3 textBoxWrapper"><br><hr class="my-0" /><br> <div class="col-sm-3"> <label for="late_fee_id" class="form-label">Late Fee Name</label> <div class="select2-primary"> <select class="form-control select2 form-select"  required="required" name="late_fee_id[]"><?php foreach ($lateFees as $key =>  $row): ?><option value="<?php echo $key ?>"><?php echo $row ?></option><?php endforeach ?></select> </div> </div> <div class="col-sm-3"> <label for="late_fee_value" class="form-label">Late Fee Value</label> <input class="form-control" id="late_fee_value" placeholder="Late Fee Value" name="late_fee_value[]" type="text"> </div> <div class="col-sm-3"> <label class="form-label" for="late_fee_type">Late Fee Type</label> <select id="late_fee_type" name="late_fee_type[]" class="form-control select2 form-select" > <option value="">Select</option> <option value="1">Fixed Value</option> <option value="2">% of Total Rent</option> <option value="3">% of Total Amount Over Due</option> </select> </div> <div class="col-sm-2"> <label class="form-label" for="frequency">Frequency</label> <select id="frequency" name="frequency[]" class="form-control select2 form-select" > <option value="">Select</option> <option value="1">Onetime</option> <option value="2">Period to Period</option> <option value="3">Daily</option> <option value="4">Weekly</option><option value="5">Monthly</option>  </select> </div> <div class="col-sm-1"><button type="button" class="removeButton btn btn-danger btn-sm" style="margin:10px"><i class="ti ti-trash text-white"></i></button>  </div></div> <br>';
             $("#lateFeeContainer").append(textBoxHtml);
         });
 
@@ -760,7 +795,7 @@
 
          /*--------------utility--------------------------------*/
         $("#addUtilityButton").click(function(){
-            var textBoxHtml = '<div class="row g-3 textBoxWrapper"><br><hr class="my-0" /><br> <div class="col-sm-4"> <label for="utility_id" class="form-label">Utility Name</label> <div class="select2-primary"> <select class="form-control select2 form-select"  required="required" name="utility_id[]"><?php foreach ($utilities as $key =>  $row): ?><option value="<?php echo $key ?>"><?php echo $row ?></option><?php endforeach ?></select> </div> </div> <div class="col-sm-3"> <label for="variable_cost" class="form-label">Variable cost</label> <input class="form-control" id="variable_cost" placeholder="Variable cost" name="variable_cost[]" type="text"> </div> <div class="col-sm-3"> <label for="fixed_cost" class="form-label">Fixed cost</label> <input class="form-control" id="fixed_cost" placeholder="Fixed cost" name="fixed_cost[]" type="text"> </div> <div class="col-sm-2"><button type="button" class="removeButton btn btn-danger btn-sm" style="margin:25px"><i class="ti ti-trash text-white"></i></button>  </div></div> <br>';
+            var textBoxHtml = '<br><div class="row g-3 textBoxWrapper"><br><hr class="my-0" /><br> <div class="col-sm-4"> <label for="utility_id" class="form-label">Utility Name</label> <div class="select2-primary"> <select class="form-control select2 form-select"  required="required" name="utility_id[]"><?php foreach ($utilities as $key =>  $row): ?><option value="<?php echo $key ?>"><?php echo $row ?></option><?php endforeach ?></select> </div> </div> <div class="col-sm-3"> <label for="variable_cost" class="form-label">Variable cost</label> <input class="form-control" id="variable_cost" placeholder="Variable cost" name="variable_cost[]" type="text"> </div> <div class="col-sm-3"> <label for="fixed_cost" class="form-label">Fixed cost</label> <input class="form-control" id="fixed_cost" placeholder="Fixed cost" name="fixed_cost[]" type="text"> </div> <div class="col-sm-2"><button type="button" class="removeButton btn btn-danger btn-sm" style="margin:25px"><i class="ti ti-trash text-white"></i></button>  </div></div> <br>';
             $("#utilityContainer").append(textBoxHtml);
         });
 

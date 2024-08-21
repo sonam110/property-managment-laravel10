@@ -18,9 +18,9 @@ return new class extends Migration
             $table->unsignedBigInteger('property_id');
             $table->foreign('property_id')->references('id')->on('properties')->onDelete('cascade');
 
-            $table->unsignedBigInteger('utility_id');  
-            $table->decimal('variable_cost',10,2)->default(0);
-            $table->decimal('fixed_cost',10,2)->default(0);
+            $table->unsignedBigInteger('utility_id')->nullable();  
+            $table->decimal('variable_cost',10,2)->default(0)->nullable();
+            $table->decimal('fixed_cost',10,2)->default(0)->nullable();
             $table->timestamps();
         });
     }

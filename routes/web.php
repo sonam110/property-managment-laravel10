@@ -65,11 +65,17 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('user-delete/{id}', [UserController::class, 'destroy'])->name('user-delete');
         Route::resource('tenants', TenantController::class);
         Route::post('tenants-list', [TenantController::class, 'tenantList'])->name('api.tenant-list');
+        Route::get('tenants-destroy/{id}', [TenantController::class, 'destroy'])->name('tenants-destroy');
+
+
 
 
         /* --------------Property --------------------*/
         Route::resource('property', PropertyController::class);
         Route::post('property-list', [PropertyController::class, 'propertyList'])->name('api.property-list');
+        Route::get('property-destroy/{id}', [PropertyController::class, 'destroy'])->name('property-destroy');
+
+        Route::get('property-copy/{id}', [PropertyController::class, 'copy'])->name('property-copy');
 
 
 

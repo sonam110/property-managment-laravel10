@@ -18,7 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('property_id');
             $table->foreign('property_id')->references('id')->on('properties')->onDelete('cascade');
 
-            $table->decimal('commission_value',10,2)->default(0);
+            $table->decimal('commission_value',10,2)->default(0)->nullable();
             $table->integer('commission_type')->nullable()->comment('1:Fixed,2:% of Total Rent,3: % of Total collected Rent');
             $table->longText('payment_methods')->nullable();
             $table->timestamps();

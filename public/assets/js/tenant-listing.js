@@ -20,11 +20,10 @@
     // Wizard form
     const wizardPropertyListingForm = wizardPropertyListing.querySelector('#wizard-property-listing-form');
     // Wizard steps
-    const wizardPropertyListingFormStep1 = wizardPropertyListingForm.querySelector('#property-detail');
-    const wizardPropertyListingFormStep2 = wizardPropertyListingForm.querySelector('#payment-setting');
-    const wizardPropertyListingFormStep3 = wizardPropertyListingForm.querySelector('#extra-charges');
-    const wizardPropertyListingFormStep4 = wizardPropertyListingForm.querySelector('#late-fees');
-    const wizardPropertyListingFormStep5 = wizardPropertyListingForm.querySelector('#utilities');
+    const wizardPropertyListingFormStep1 = wizardPropertyListingForm.querySelector('#tenant-info');
+    const wizardPropertyListingFormStep2 = wizardPropertyListingForm.querySelector('#kin-relation');
+    const wizardPropertyListingFormStep3 = wizardPropertyListingForm.querySelector('#employment');
+    const wizardPropertyListingFormStep4 = wizardPropertyListingForm.querySelector('#business-details');
     // Wizard next prev button
     const wizardPropertyListingNext = [].slice.call(wizardPropertyListingForm.querySelectorAll('.btn-next'));
 
@@ -38,22 +37,37 @@
     const FormValidation1 = FormValidation.formValidation(wizardPropertyListingFormStep1, {
       fields: {
         // * Validate the fields here based on your requirements
-        property_name: {
+        first_name: {
           validators: {
             notEmpty: {
-              message: 'Please enter property name'
+              message: 'Please enter first name'
             }
           }
         },
-        property_code: {
+        email: {
           validators: {
             notEmpty: {
-              message: 'Please enter property code'
+              message: 'Please enter email'
+            }
+          }
+        },
+        password: {
+          validators: {
+            notEmpty: {
+              message: 'Please enter password'
+            }
+          }
+        },
+        confirm_password: {
+          validators: {
+            notEmpty: {
+              message: 'Please enter confirm password'
             }
           }
         }
        
       },
+
 
       plugins: {
         trigger: new FormValidation.plugins.Trigger(),
@@ -110,17 +124,17 @@
     });
 
     // select2 (Property type)
-    const property_type = $('#property_type');
+    const property_type = $('#multicol-country');
     if (property_type.length) {
       property_type.wrap('<div class="position-relative"></div>');
       property_type
         .select2({
-          placeholder: 'Select property type',
+          placeholder: 'Select country',
           dropdownParent: property_type.parent()
         })
         .on('change.select2', function () {
           // Revalidate the color field when an option is chosen
-          FormValidation2.revalidateField('property_type');
+          FormValidation2.revalidateField('country');
         });
     }
 
@@ -144,29 +158,10 @@
       validationStepper.next();
     });
 
-    // Property Area
-    const FormValidation4 = FormValidation.formValidation(wizardPropertyListingFormStep4, {
-      fields: {
-        // * Validate the fields here based on your requirements
-      },
-      plugins: {
-        trigger: new FormValidation.plugins.Trigger(),
-        bootstrap5: new FormValidation.plugins.Bootstrap5({
-          // Use this for enabling/changing valid/invalid class
-          // eleInvalidClass: '',
-          eleValidClass: '',
-          rowSelector: '.col-md-12'
-        }),
-        autoFocus: new FormValidation.plugins.AutoFocus(),
-        submitButton: new FormValidation.plugins.SubmitButton()
-      }
-    }).on('core.form.valid', function () {
-      // Jump to the next step when all fields in the current step are valid
-      validationStepper.next();
-    });
+    
 
     // Price Details
-    const FormValidation5 = FormValidation.formValidation(wizardPropertyListingFormStep5, {
+    const FormValidation4 = FormValidation.formValidation(wizardPropertyListingFormStep4, {
       fields: {
         // * Validate the fields here based on your requirements
       },
@@ -258,14 +253,14 @@
 
 function submitFormViaAjax(formData) {
     $.ajax({
-        url: appurl + 'property', // Replace with your server endpoint
+        url: appurl + 'tenants', // Replace with your server endpoint
         type: 'POST',
         data: formData,
         contentType: false, // Important: Tell jQuery not to set Content-Type
         processData: false, // Important: Prevent jQuery from processing the data
         success: function(response) {
             toastr.success(response.message || "Submitted successfully!");
-            window.location.href = '/property'; // Change this URL to the desired route
+            window.location.href = '/tenants'; // Change this URL to the desired route
         },
         error: function(xhr) {
             const errors = xhr.responseJSON.errors;

@@ -30,7 +30,7 @@
             </li>
             @endcan
              @can('user-browse')
-            <li class="menu-item {{ (request()->is('users*') ? 'active open' : '')}}">
+            <li class="menu-item {{ (request()->is('users*') || request()->is('tenants*') ? 'active open' : '')}}">
               <a href="javascript:void(0);" class="menu-link menu-toggle">
                 <i class="menu-icon tf-icons ti ti-users"></i>
                 <div data-i18n="Manage Users">Manage Users</div>

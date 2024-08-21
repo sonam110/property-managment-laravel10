@@ -4,7 +4,7 @@
 <!-- Users List Table -->
 <div class="card">
   <div class="card-header border-bottom">
-    <h5 class="card-title mb-3">Search Filter</h5>
+    <h5 class="card-title mb-3">Property</h5>
     <!-- <div class="d-flex  align-items-center row pb-2 gap-3 gap-md-0">
       <div class="col-md-3 user_role"><select id="UserRole" class="select2 form-selec text-capitalize"><option value="" > Select Role
        </option>
