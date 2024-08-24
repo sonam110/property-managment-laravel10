@@ -13,21 +13,16 @@ return new class extends Migration
     {
         Schema::create('property_units', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
-            
+
             $table->unsignedBigInteger('property_id');
             $table->foreign('property_id')->references('id')->on('properties')->onDelete('cascade');
-
-            $table->integer('unit')->nullable()->comment('1:Residentail.2:Commercial');
-            $table->string('unit_name')->nullable();
-            $table->string('unit_floor')->nullable();
-            $table->integer('rent_type')->nullable()->comment('1:Square Fit.2:Fixed');
-            $table->decimal('rent_amount',10,2)->default(0);
+            $table->string('property_code')->nullable();
             $table->unsignedBigInteger('unit_type')->nullable();
-            $table->integer('bed_rooms')->nullable();
-            $table->integer('bath_rooms')->nullable();
-            $table->integer('total_rooms')->nullable();
-            $table->decimal('square_foot',10,2)->nullable();
+            $table->string('unit_name')->nullable();
+            $table->string('unit_name_prefix')->nullable();
+            $table->string('unit_floor')->nullable();
+            $table->integer('total_shop')->nullable();
+            $table->boolean('is_rented ')->default(0)->comment('0:No,1:Yes');
             $table->timestamps();
         });
     }

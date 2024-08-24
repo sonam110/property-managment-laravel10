@@ -27,6 +27,7 @@ class PropertySettingController extends Controller
         return view('property-type.create');
         
     }
+    
 
     public function store(Request $request)
     {

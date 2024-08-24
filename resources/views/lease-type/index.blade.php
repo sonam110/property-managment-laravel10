@@ -85,7 +85,7 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        {{ Form::label('lease_prefix', __('Lease Number Prefix'), ['class' => 'form-label']) }}
+                                        {{ Form::label('lease_prefix', __('Lease Number Prefix'), ['class' => 'form-label']) }} <span class="requiredLabel">*</span>
                                         {{ Form::text('lease_prefix', 'LS', ['class' => 'form-control', 'placeholder' => __('Lease Number Prefix'), 'required' => 'required']) }}
                                         @error('lease_prefix')
                                             <small class="invalid-name" role="alert">
@@ -97,7 +97,7 @@
                                 
                                <div class="col-md-6">
                                     <div class="mb-3">
-                                        {{ Form::label('invoice_prefix', __('Invoice Number Prefix'), ['class' => 'form-label']) }}
+                                        {{ Form::label('invoice_prefix', __('Invoice Number Prefix'), ['class' => 'form-label']) }} <span class="requiredLabel">*</span>
                                         {{ Form::text('invoice_prefix', 'INV', ['class' => 'form-control', 'placeholder' => __('Invoice Number Prefix'), 'required' => 'required']) }}
                                         @error('invoice_prefix')
                                             <small class="invalid-name" role="alert">

@@ -28,30 +28,14 @@
             <li class="menu-header small text-uppercase">
               <span class="menu-header-text">USER MANAGEMENT</span>
             </li>
-            @endcan
-             @can('user-browse')
-            <li class="menu-item {{ (request()->is('users*') || request()->is('tenants*') ? 'active open' : '')}}">
-              <a href="javascript:void(0);" class="menu-link menu-toggle">
-                <i class="menu-icon tf-icons ti ti-users"></i>
-                <div data-i18n="Manage Users">Manage Users</div>
+            <li class="menu-item {{ (request()->is('users*') ? 'active' : '')}}">
+              <a href="{{ route('users.index') }}" class="menu-link">
+                 <i class="menu-icon tf-icons ti ti-color-swatch"></i>
+                <div data-i18n="Users">Users</div>
               </a>
-              <ul class="menu-sub">
-                <li class="menu-item {{ (request()->is('users*') ? 'active' : '')}}">
-                  <a href="{{ route('users.index') }}" class="menu-link">
-                    <div data-i18n="Users">Users</div>
-                  </a>
-                </li>
-                <li class="menu-item {{ (request()->is('tenants*') ? 'active' : '')}}">
-                  <a href="{{ route('tenants.index') }}" class="menu-link">
-                    <div data-i18n="Tenants">Tenants</div>
-                  </a>
-                </li>
-
-                
-              </ul>
             </li>
             @endcan
-           
+             
             <li class="menu-item {{ (request()->is('roles*') || request()->is('permissions*') ? 'active open' : '')}}">
               <a href="javascript:void(0);" class="menu-link menu-toggle">
                 <i class="menu-icon tf-icons ti ti-layout-sidebar"></i>
@@ -76,16 +60,34 @@
               </ul>
             </li>
 
-             <!-- Dashboards -->
-             <li class="menu-header small text-uppercase">
+             <!-- PROPERTY -->
+            <li class="menu-header small text-uppercase">
               <span class="menu-header-text">PROPERTY MANAGEMENT</span>
             </li>
             <li class="menu-item {{ (request()->is('property*') ? 'active' : '')}}">
               <a href="{{ route('property.index') }}" class="menu-link">
                  <i class="menu-icon tf-icons ti ti-color-swatch"></i>
-                <div data-i18n="Property">Property</div>
+                <div data-i18n="Properties">Properties</div>
               </a>
             </li>
+            <!-- TENANT -->
+            <li class="menu-header small text-uppercase">
+              <span class="menu-header-text">LEASE MANAGEMENT</span>
+            </li>
+            <li class="menu-item {{ (request()->is('tenants*') ? 'active' : '')}}">
+              <a href="{{ route('tenants.index') }}" class="menu-link">
+                 <i class="menu-icon tf-icons ti ti-color-swatch"></i>
+                <div data-i18n="Tenants">Tenants</div>
+              </a>
+            </li>
+            <li class="menu-item {{ (request()->is('leases*') ? 'active' : '')}}">
+              <a href="{{ route('leases.index') }}" class="menu-link">
+                 <i class="menu-icon tf-icons ti ti-color-swatch"></i>
+                <div data-i18n="Leases">Leases</div>
+              </a>
+            </li>
+             
+
             <li class="menu-header small text-uppercase">
               <span class="menu-header-text">SETTINGS</span>
             </li>

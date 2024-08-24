@@ -4,7 +4,7 @@
     <div class="row">
         <div class="col-6">
             <div class="mb-3">
-                {{Form::label('name',__('Name'),['class'=>'form-label'])}}
+                {{Form::label('name',__('Name'),['class'=>'form-label'])}} <span class="requiredLabel">*</span>
                 {{Form::text('name',null,array('class'=>'form-control','placeholder'=>__('Enter  Name'),'required'=> 'required'))}}
                 @error('name')
                 <span class="invalid-name" role="alert">
@@ -14,8 +14,8 @@
             </div>
         </div>
         <div class="col-6">
-            <div class="mb-3">
-                {{Form::label('display_name',__('Display Name'),['class'=>'form-label'])}}
+            <div class="mb-3"> 
+                {{Form::label('display_name',__('Display Name'),['class'=>'form-label'])}} <span class="requiredLabel">*</span>
                 {{Form::text('display_name',null,array('class'=>'form-control','placeholder'=>__('Display Name'),'required'=> 'required'))}}
                 @error('display_name')
                 <span class="invalid-name" role="alert">

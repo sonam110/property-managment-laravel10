@@ -3,7 +3,7 @@
     <div class="row">
         <div class="col-lg-12 col-md-12 col-sm-12">
             <div class="mb-3">
-                {{Form::label('name',__('Name'),['class'=>'form-label'])}}
+                {{Form::label('name',__('Name'),['class'=>'form-label'])}} <span class="requiredLabel">*</span>
                 {{Form::text('name',null,array('class'=>'form-control','placeholder'=>__('Enter Role Name'),'required' => 'required'))}}
                 @error('name')
                 <small class="invalid-name" role="alert">

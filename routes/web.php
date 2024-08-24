@@ -21,6 +21,7 @@ use App\Http\Controllers\ExtraChargeController;
 use App\Http\Controllers\LateFeeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PropertyController;
+use App\Http\Controllers\LeaseController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -49,7 +50,12 @@ Route::get('/register', function () {
     return view('admin.register');
 });
 
+Route::get('/unit-map', function () {
+    return view('units-map');
+});
+
  Route::post('get-state', [UserController::class, 'getState'])->name('api.get-state');
+ Route::post('get-units', [LeaseController::class, 'getUnits'])->name('api.get-units');
 
 Route::group(['middleware' => ['auth']], function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
@@ -68,15 +74,22 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('tenants-destroy/{id}', [TenantController::class, 'destroy'])->name('tenants-destroy');
 
 
-
-
         /* --------------Property --------------------*/
         Route::resource('property', PropertyController::class);
         Route::post('property-list', [PropertyController::class, 'propertyList'])->name('api.property-list');
         Route::get('property-destroy/{id}', [PropertyController::class, 'destroy'])->name('property-destroy');
 
         Route::get('property-copy/{id}', [PropertyController::class, 'copy'])->name('property-copy');
+        Route::get('property-units/{id}', [PropertyController::class, 'propertyUnits'])->name('property-units');
+        Route::get('unitsall', [PropertyController::class, 'unitsall'])->name('unitsall');
+        
 
+        /* --------------leases --------------------*/
+        Route::resource('leases', LeaseController::class);
+        Route::post('leases-list', [LeaseController::class, 'leaseList'])->name('api.leases-list');
+        Route::get('leases-destroy/{id}', [LeaseController::class, 'destroy'])->name('leases-destroy');
+
+        Route::get('leases-copy/{id}', [LeaseController::class, 'copy'])->name('leases-copy');
 
 
         /* --------------settings --------------------*/

@@ -53,7 +53,7 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        {{ Form::label('tenant_prefix', __('Tenant Number Prefix'), ['class' => 'form-label']) }}
+                                        {{ Form::label('tenant_prefix', __('Tenant Number Prefix'), ['class' => 'form-label']) }} <span class="requiredLabel">*</span>
                                         {{ Form::text('tenant_prefix', 'TNT', ['class' => 'form-control', 'placeholder' => __('Tenant Number Prefix'), 'required' => 'required']) }}
                                         @error('tenant_prefix')
                                             <small class="invalid-name" role="alert">

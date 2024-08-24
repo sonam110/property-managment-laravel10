@@ -18,12 +18,13 @@ return new class extends Migration
 
             $table->string('property_name');
             $table->string('property_code');
-            $table->unsignedBigInteger('property_type')->nullable();
+            $table->unsignedBigInteger('property_type')->default('1')->nullable();
             $table->string('property_location')->nullable();
             $table->text('property_address')->nullable();
             $table->string('property_lat')->nullable();
             $table->string('property_long')->nullable();
             $table->text('property_description')->nullable();
+            $table->string('file_path')->nullable();
             $table->unsignedBigInteger('created_by');
             $table->boolean('status')->default('1')->comment('1:Active, 0:Inactive');
             $table->timestamps();

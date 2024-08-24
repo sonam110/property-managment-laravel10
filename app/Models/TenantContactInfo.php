@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class PropertyLateFees extends Model
+class TenantContactInfo extends Model
 {
     use HasFactory;
 }

@@ -37,7 +37,7 @@ class UserController extends Controller
     }
     public function userList(Request $request)
     {
-        $query = User::where('role_id','!=','1')->orderBy('id','DESC');
+        $query = User::whereNotIn('role_id',['1','3'])->orderBy('id','DESC');
         if(!empty($request->role_id))
         {
             $query->where('role_id', $request->role_id);

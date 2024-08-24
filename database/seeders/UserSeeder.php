@@ -32,13 +32,7 @@ class UserSeeder extends Seeder
             'se_name' => 'Partner',
             'guard_name' => 'web',
         ]);
-        Role::create([
-            'id' => '3',
-            'name' => 'Tenant',
-            'se_name' => 'Tenant',
-            'guard_name' => 'web',
-        ]);
-
+        
         $adminUser = new User();
         $adminUser->role_id                 = '1';
         $adminUser->first_name                    = 'admin';

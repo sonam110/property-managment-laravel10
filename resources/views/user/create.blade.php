@@ -4,7 +4,7 @@
     <div class="row">
         <div class="col-md-6">
             <div class="mb-3">
-                {{ Form::label('first_name', __('First Name'), ['class' => 'form-label']) }}
+                {{ Form::label('first_name', __('First Name'), ['class' => 'form-label']) }} <span class="requiredLabel">*</span>
                 {{ Form::text('first_name', null, ['class' => 'form-control', 'placeholder' => __('First Name'), 'required' => 'required']) }}
                 @error('first_name')
                     <small class="invalid-name" role="alert">
@@ -38,7 +38,7 @@
         
         <div class="col-md-6">
             <div class="mb-3">
-                {{ Form::label('email', __('Email'), ['class' => 'form-label']) }}
+                {{ Form::label('email', __('Email'), ['class' => 'form-label']) }} <span class="requiredLabel">*</span>
                 {{ Form::text('email', null, ['class' => 'form-control', 'placeholder' => __('User Email'), 'required' => 'required']) }}
                 @error('email')
                     <small class="invalid-email" role="alert">
@@ -50,7 +50,7 @@
     
         <div class="col-md-6">
             <div class="mb-3">
-                {{ Form::label('password', __('Password'), ['class' => 'form-label']) }}
+                {{ Form::label('password', __('Password'), ['class' => 'form-label']) }} <span class="requiredLabel">*</span>
                 {{ Form::password('password', ['class' => 'form-control', 'placeholder' => __('Password'), 'minlength' => '6']) }}
                 @error('password')
                     <small class="invalid-password" role="alert">
@@ -61,7 +61,7 @@
         </div>
          <div class="col-md-6 ">
             <div class="mb-3">
-                {{ Form::label('confirm-password', __('Confirm Password'), ['class' => 'form-label']) }}
+                {{ Form::label('confirm-password', __('Confirm Password'), ['class' => 'form-label']) }} <span class="requiredLabel">*</span>
                 {!! Form::password('confirm-password',array('id'=>'confirm-password','class'=> $errors->has('confirm-password') ? 'form-control is-invalid state-invalid' : 'form-control', 'placeholder'=>'Confirm Password', 'autocomplete'=>'off','required'=>'required')) !!}
                 @error('confirm-password')
                     <small class="invalid-password" role="alert">
@@ -72,7 +72,7 @@
         </div>
         <div class="col-md-6">
             <div class="mb-3">
-                {{ Form::label('mobile', __('Phone'), ['class' => 'form-label']) }}
+                {{ Form::label('mobile', __('Phone'), ['class' => 'form-label']) }} <span class="requiredLabel">*</span>
                 {{ Form::text('mobile', null, ['class' => 'form-control', 'placeholder' => __('User Phone'), 'required' => 'required']) }}
                 @error('mobile')
                     <small class="invalid-email" role="alert">
@@ -81,7 +81,7 @@
                 @enderror
             </div>
         </div>
-        <div class="col-md-6">
+        <!-- <div class="col-md-6">
             <div class="mb-3">
             {{ Form::label('country', __('Country'), ['class' => 'form-label']) }}
              <select name="country"   id="multicol-country" class="form-control country select2 form-select"   data-allow-clear="true"  style="height: 47px;"
@@ -94,7 +94,7 @@
                  @endforeach
               </select>
             </div>
-        </div>
+        </div> -->
         <div class="col-md-6">
             <div class="mb-3">
             {{ Form::label('state', __('State'), ['class' => 'form-label']) }}
@@ -115,7 +115,7 @@
         </div>
         <div class="col-md-6 ">
             <div class="mb-3">
-                {{ Form::label('role_id', __('User Role'), ['class' => 'form-label']) }}
+                {{ Form::label('role_id', __('User Role'), ['class' => 'form-label']) }} <span class="requiredLabel">*</span>
                 {!! Form::select('role_id', $roles, null, ['class' => 'form-control select', 'required' => 'required']) !!}
                 @error('role_id')
                     <small class="invalid-role" role="alert">
@@ -159,7 +159,10 @@
 
 
 <script type="text/javascript">
-    
+    $(document).ready(function() {
+        getState();
+      
+    });
     // Select2 Country
   var select2 = $('.select2');
   if (select2.length) {

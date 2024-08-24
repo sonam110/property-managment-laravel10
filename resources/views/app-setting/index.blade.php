@@ -50,7 +50,7 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="mb-3">
-                                {{ Form::label('app_name', __('App Name'), ['class' => 'form-label']) }}
+                                {{ Form::label('app_name', __('App Name'), ['class' => 'form-label']) }} <span class="requiredLabel">*</span>
                                 {{ Form::text('app_name', null, ['class' => 'form-control', 'placeholder' => __('App Name'), 'required' => 'required']) }}
                                 @error('app_name')
                                     <small class="invalid-name" role="alert">
@@ -62,7 +62,7 @@
                         
                         <div class="col-md-6">
                             <div class="mb-3">
-                                {{ Form::label('email', __('Email'), ['class' => 'form-label']) }}
+                                {{ Form::label('email', __('Email'), ['class' => 'form-label']) }} <span class="requiredLabel">*</span>
                                 {{ Form::text('email', null, ['class' => 'form-control', 'placeholder' => __('User Email'), 'required' => 'required']) }}
                                 @error('email')
                                     <small class="invalid-email" role="alert">
@@ -75,7 +75,7 @@
 
                         <div class="col-md-6">
                             <div class="mb-3">
-                                {{ Form::label('mobile_no', __('Mobile / Contact Number'), ['class' => 'form-label']) }}
+                                {{ Form::label('mobile_no', __('Mobile / Contact Number'), ['class' => 'form-label']) }} <span class="requiredLabel">*</span>
                                 {{ Form::text('mobile_no', null, ['class' => 'form-control', 'placeholder' => __('Contact No'),'required' => 'required']) }}
                                 @error('mobile_no')
                                     <small class="invalid-email" role="alert">

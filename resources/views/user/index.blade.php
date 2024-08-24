@@ -1,12 +1,18 @@
 @extends('layouts.master')
+@section('page-title')
+    {{ __('Manage User') }}
+@endsection
+@section('breadcrumb')
+    <li class="breadcrumb-item"><a href="{{route('users.index')}}">{{__('User Management')}}</a></li>
+    <li class="breadcrumb-item">{{__('Users')}}</li>
+@endsection
 @section('content')
-
 <!-- Users List Table -->
 <div class="card">
   <div class="card-header border-bottom">
     <h5 class="card-title mb-3">Search Filter</h5>
     <div class="d-flex  align-items-center row pb-2 gap-3 gap-md-0">
-      <div class="col-md-3 user_role"><select id="UserRole" class="select2 form-selec text-capitalize"><option value="" > Select Role
+      <div class="col-md-3 user_role">{{ Form::label('UserRole', __('Select Role'), ['class' => 'form-label']) }}<select id="UserRole" class="select2 form-selec text-capitalize"><option value="" > Select Role
        </option>
        @foreach($roles as $key => $role)
         <option  value="{{ $key }}">
@@ -14,7 +20,7 @@
       </option> 
       @endforeach</select></div>
      
-      <div class="col-md-3 user_status"><select id="UserStatus" class="select2 form-selec text-capitalize"><option value=""> Select Status </option><option value="1">Active</option><option value="0">InActive</option></select></div>
+      <div class="col-md-3 user_status">{{ Form::label('UserStatus', __('Select Status'), ['class' => 'form-label']) }}<select id="UserStatus" class="select2 form-selec text-capitalize"><option value=""> Select Status </option><option value="1">Active</option><option value="0">InActive</option></select></div>
     </div>
   </div>
   <div class="card-datatable table-responsive">
@@ -253,12 +259,13 @@ $('#UserRole, #UserStatus').on('change', function(e) {
 
 // Initialize Select2
   $(document).ready(function() {
-      $('#multicol-country').select2();
+    getState();
+      /*$('#multicol-country').select2();
 
       // Attach event handler to Select2 dropdown
       $('#multicol-country').on('change', function() {
           getState();
-      });
+      });*/
   });
     // Select2 Country
   var select2 = $('.select2');
@@ -272,7 +279,7 @@ $('#UserRole, #UserStatus').on('change', function(e) {
     });
   }
   function getState() {
-      var country_id = $('#multicol-country').val(); // Get the selected value from Select2
+      var country_id = '101' // Get the selected value from Select2
 
       $.ajax({
           url: appurl + "get-state",

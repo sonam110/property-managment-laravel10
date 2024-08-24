@@ -1,30 +1,36 @@
 @extends('layouts.master')
 @section('page-title')
-    {{ __('Manage Tenant') }}
+    {{ __('Manage Lease') }}
 @endsection
 @section('breadcrumb')
-    <li class="breadcrumb-item"><a href="{{route('users.index')}}">{{__('User Management')}}</a></li>
-    <li class="breadcrumb-item">{{__('Tenants')}}</li>
+    <li class="breadcrumb-item"><a href="{{route('users.index')}}">{{__('Lease Management')}}</a></li>
+    <li class="breadcrumb-item">{{__('Leases')}}</li>
 @endsection
 @section('content')
 
 <!-- Users List Table -->
 <div class="card">
   <div class="card-header border-bottom">
-    <h5 class="card-title mb-3">Search Filter</h5>
-    <div class="d-flex  align-items-center row pb-2 gap-3 gap-md-0">
-    
-      <div class="col-md-3 user_status">{{ Form::label('UserStatus', __('Select Status'), ['class' => 'form-label']) }}<select id="UserStatus" class="select2 form-selec text-capitalize"><option value=""> Select Status </option><option value="1">Active</option><option value="0">InActive</option></select></div>
-    </div>
+    <h5 class="card-title mb-3">Search filter</h5>
+    <!-- <div class="d-flex  align-items-center row pb-2 gap-3 gap-md-0">
+      <div class="col-md-3 user_role"><select id="UserRole" class="select2 form-selec text-capitalize"><option value="" > Select Role
+       </option>
+       </select></div>
+     -->
+      <div class="col-md-3 user_status">{{ Form::label('UserStatus', __('Select Status'), ['class' => 'form-label']) }}<select id="UserStatus" class="select2 form-selec text-capitalize"><option value=""> Select Status </option><option value="Pending">Pending</option><option value="InProcess">InProcess</option><option value="Approved">Approved</option></select></div>
+    </div> 
   </div>
   <div class="card-datatable table-responsive">
     <table class="datatables-users table">
       <thead class="border-top">
         <tr>
           <th></th>
-          <th>Full name</th>
-          <th>Email</th>
-          <th>Phone</th>
+          <th>Lease Number</th>
+          <th>Property Code</th>
+          <th>Unit</th>
+          <th>Rent Amount</th>
+          <th>Start date</th>
+          <th>Status</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -37,14 +43,15 @@
  <!-- <script src="{{ asset('assets/js/app-user-list.js') }}"></script>   -->       
 <script>
    $(document).ready( function () {
-    var userCreateUrl = '{{ route('tenants.create') }}';
+    var userCreateUrl = '{{ route('leases.create') }}';
     var table = $('.datatables-users').DataTable({
        "processing": true,
        "serverSide": true,
        "ajax":{
-           'url' : '{{ route('api.tenant-list') }}',
+           'url' : '{{ route('api.leases-list') }}',
            'type' : 'POST',
             "data": function(d) {
+            d.role_id   = $('#UserRole').val();
             d.status   = $('#UserStatus').val();
             },
            'headers': {
@@ -54,9 +61,11 @@
     "order": [["1", "desc" ]],
     "columns": [
             { "data": 'DT_RowIndex', "name": 'DT_RowIndex' , orderable: false, searchable: false },
-            { "data": 'full_name'},
-            { "data": "email"},
-            { "data": "phone"},
+            { "data": 'unique_id '},
+            { "data": 'property_id '},
+            { "data": "property_name"},
+            { "data": "property_location"},
+            { "data": "unit"},
             { "data": "action"},
         ],
         order: [[1, 'desc']],
@@ -217,10 +226,10 @@
           ]
         },
         {
-                text: '<i class="ti ti-plus me-0 me-sm-1 ti-xs"></i><span class="d-none d-sm-inline-block">Add New Tenant</span>',
+                text: '<i class="ti ti-plus me-0 me-sm-1 ti-xs"></i><span class="d-none d-sm-inline-block">Add New Lease</span>',
                 className: 'add-new btn btn-primary',
                 action: function (e, dt, node, config) {
-                    var url = '{{ route('tenants.create') }}'; // URL to load modal content
+                    var url = '{{ route('leases.create') }}'; // URL to load modal content
 
                     // Fetch the content and show in the modal
                     $.get(url, function (data) {

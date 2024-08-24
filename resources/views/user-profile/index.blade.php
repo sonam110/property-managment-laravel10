@@ -84,7 +84,7 @@
                              <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        {{ Form::label('first_name', __('First Name'), ['class' => 'form-label']) }}
+                                        {{ Form::label('first_name', __('First Name'), ['class' => 'form-label']) }} <span class="requiredLabel">*</span>
                                         {{ Form::text('first_name', null, ['class' => 'form-control', 'placeholder' => __('First Name'), 'required' => 'required']) }}
                                         @error('first_name')
                                             <small class="invalid-name" role="alert">
@@ -118,7 +118,7 @@
                                 
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        {{ Form::label('email', __('Email'), ['class' => 'form-label']) }}
+                                        {{ Form::label('email', __('Email'), ['class' => 'form-label']) }} <span class="requiredLabel">*</span>
                                         {{ Form::text('email', null, ['class' => 'form-control', 'placeholder' => __('User Email'), 'required' => 'required']) }}
                                         @error('email')
                                             <small class="invalid-email" role="alert">
@@ -131,7 +131,7 @@
 
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        {{ Form::label('mobile', __('Phone'), ['class' => 'form-label']) }}
+                                        {{ Form::label('mobile', __('Phone'), ['class' => 'form-label']) }} <span class="requiredLabel">*</span>
                                         {{ Form::text('mobile', null, ['class' => 'form-control', 'placeholder' => __('User Phone'), 'required' => 'required']) }}
                                         @error('mobile')
                                             <small class="invalid-email" role="alert">

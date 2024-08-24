@@ -1,10 +1,17 @@
 @extends('layouts.master')
+@section('page-title')
+    {{ __('Manage Property') }}
+@endsection
+@section('breadcrumb')
+    <li class="breadcrumb-item"><a href="{{route('users.index')}}">{{__('Property Management')}}</a></li>
+    <li class="breadcrumb-item">{{__('Properties')}}</li>
+@endsection
 @section('content')
 
 <!-- Users List Table -->
 <div class="card">
   <div class="card-header border-bottom">
-    <h5 class="card-title mb-3">Property</h5>
+    <h5 class="card-title mb-3">Properties</h5>
     <!-- <div class="d-flex  align-items-center row pb-2 gap-3 gap-md-0">
       <div class="col-md-3 user_role"><select id="UserRole" class="select2 form-selec text-capitalize"><option value="" > Select Role
        </option>
