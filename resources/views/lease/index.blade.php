@@ -12,12 +12,16 @@
 <div class="card">
   <div class="card-header border-bottom">
     <h5 class="card-title mb-3">Search filter</h5>
-    <!-- <div class="d-flex  align-items-center row pb-2 gap-3 gap-md-0">
-      <div class="col-md-3 user_role"><select id="UserRole" class="select2 form-selec text-capitalize"><option value="" > Select Role
+    <div class="d-flex  align-items-center row pb-2 gap-3 gap-md-0">
+      <div class="col-md-3 user_role">{{ Form::label('UserRole', __('Select Property'), ['class' => 'form-label']) }}<select id="property_id" class="select2 form-selec text-capitalize"><option value="" > Select Property
        </option>
-       </select></div>
-     -->
-      <div class="col-md-3 user_status">{{ Form::label('UserStatus', __('Select Status'), ['class' => 'form-label']) }}<select id="UserStatus" class="select2 form-selec text-capitalize"><option value=""> Select Status </option><option value="Pending">Pending</option><option value="InProcess">InProcess</option><option value="Approved">Approved</option></select></div>
+       @foreach($propertyTypes as $key => $pp)
+        <option  value="{{ $key }}">
+        {{ $pp }}
+      </option> 
+      @endforeach</select></div>
+    
+      <div class="col-md-3 user_status">{{ Form::label('UserStatus', __('Select Status'), ['class' => 'form-label']) }}<select id="status" class="select2 form-selec text-capitalize"><option value=""> Select Status </option><option value="Pending">Pending</option><option value="Processing">Processing</option><option value="Approved">Approved</option></select></div>
     </div> 
   </div>
   <div class="card-datatable table-responsive">
@@ -27,8 +31,7 @@
           <th></th>
           <th>Lease Number</th>
           <th>Property Code</th>
-          <th>Unit</th>
-          <th>Rent Amount</th>
+          <th>Tenant Info</th>
           <th>Start date</th>
           <th>Status</th>
           <th>Actions</th>
@@ -51,8 +54,8 @@
            'url' : '{{ route('api.leases-list') }}',
            'type' : 'POST',
             "data": function(d) {
-            d.role_id   = $('#UserRole').val();
-            d.status   = $('#UserStatus').val();
+            d.property_id   = $('#property_id').val();
+            d.status   = $('#status').val();
             },
            'headers': {
             'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -61,11 +64,11 @@
     "order": [["1", "desc" ]],
     "columns": [
             { "data": 'DT_RowIndex', "name": 'DT_RowIndex' , orderable: false, searchable: false },
-            { "data": 'unique_id '},
-            { "data": 'property_id '},
-            { "data": "property_name"},
-            { "data": "property_location"},
-            { "data": "unit"},
+            { "data": "unique_id"},
+            { "data": "property_id"},
+            { "data": "tenant_id"},
+            { "data": "start_date"},
+            { "data": "status"},
             { "data": "action"},
         ],
         order: [[1, 'desc']],
@@ -249,7 +252,7 @@
         }
   });
 
-$('#UserRole, #UserStatus').on('change', function(e) {
+$('#property_id, #status').on('change', function(e) {
        table.draw();
    });
 });

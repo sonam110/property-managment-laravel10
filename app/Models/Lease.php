@@ -13,4 +13,12 @@ class Lease extends Model
     {
         return $this->belongsTo(Property::class, 'property_id', 'id');
     }
+    public function tenant()
+    {
+        return $this->belongsTo(Tenant::class, 'tenant_id', 'id');
+    }
+    public function blacklists()
+    {
+        return $this->hasMany(Blacklist::class, 'create_by', 'id');
+    }
 }

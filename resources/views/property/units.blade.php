@@ -8,7 +8,7 @@
     .containernew {
         display: flex;
         flex-direction: column;
-        gap: 20px;
+        gap: 4px;
     }
     .floor {
         display: grid;
@@ -19,9 +19,10 @@
         box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
     .unit {
+        width: 50px;
         background-color: #f9f9f9;
         border: 1px solid #333;
-        padding: 10px;
+        padding: 0px;
         aspect-ratio: 1 / 1; /* Keeps the box square */
         display: flex;
         align-items: center;
@@ -146,10 +147,10 @@
           @foreach($propertyUnit as $floor)
           @php $allUnits = \App\Models\PropertyUnit::where('property_id',$floor->property_id)->where('unit_name_prefix',$floor->unit_name_prefix)->orderby('id','ASC')->get();     @endphp
             <div class="floor">
-                <h2 style="grid-column: span 12;"><span class="badge bg-label-primary">Floor {{ $floor->unit_floor }} ({{ $floor->unit_name_prefix }})</span></h2>
+                <h6 style="grid-column: span 12;"><span class="badge bg-label-primary">Floor {{ $floor->unit_floor }} ({{ $floor->unit_name_prefix }})</span></h6>
                 @foreach($allUnits as $unit)
                 @php  
-                  $is_rented =  ($unit->is_rented =='1') ? '#b68282' :'' ;
+                  $is_rented =  ($unit->is_rented =='1') ? 'red' :'' ;
                   $is_rented_color =  ($unit->is_rented =='1') ? '#fff' :'' ;
                 @endphp
                     <div class="unit" style="background:{{ $is_rented }};color:{{ $is_rented_color  }}">

@@ -30,7 +30,7 @@
             </li>
             <li class="menu-item {{ (request()->is('users*') ? 'active' : '')}}">
               <a href="{{ route('users.index') }}" class="menu-link">
-                 <i class="menu-icon tf-icons ti ti-color-swatch"></i>
+                 <i class="menu-icon tf-icons ti ti-user"></i>
                 <div data-i18n="Users">Users</div>
               </a>
             </li>
@@ -66,7 +66,7 @@
             </li>
             <li class="menu-item {{ (request()->is('property*') ? 'active' : '')}}">
               <a href="{{ route('property.index') }}" class="menu-link">
-                 <i class="menu-icon tf-icons ti ti-color-swatch"></i>
+                 <i class="menu-icon tf-icons ti ti-home"></i>
                 <div data-i18n="Properties">Properties</div>
               </a>
             </li>
@@ -76,14 +76,20 @@
             </li>
             <li class="menu-item {{ (request()->is('tenants*') ? 'active' : '')}}">
               <a href="{{ route('tenants.index') }}" class="menu-link">
-                 <i class="menu-icon tf-icons ti ti-color-swatch"></i>
+                 <i class="menu-icon tf-icons ti ti-user"></i>
                 <div data-i18n="Tenants">Tenants</div>
               </a>
             </li>
             <li class="menu-item {{ (request()->is('leases*') ? 'active' : '')}}">
               <a href="{{ route('leases.index') }}" class="menu-link">
-                 <i class="menu-icon tf-icons ti ti-color-swatch"></i>
+                 <i class="menu-icon tf-icons ti ti-server"></i>
                 <div data-i18n="Leases">Leases</div>
+              </a>
+            </li>
+            <li class="menu-item {{ (request()->is('contract-document*') ? 'active' : '')}}">
+              <a href="{{ route('contract-document') }}" class="menu-link">
+                 <i class="menu-icon tf-icons ti ti-files"></i>
+                <div data-i18n="Contract Document">Contract Document </div>
               </a>
             </li>
              

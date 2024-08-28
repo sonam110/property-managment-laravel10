@@ -90,6 +90,18 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('leases-destroy/{id}', [LeaseController::class, 'destroy'])->name('leases-destroy');
 
         Route::get('leases-copy/{id}', [LeaseController::class, 'copy'])->name('leases-copy');
+        Route::get('contract-document', [LeaseController::class, 'contractDocument'])->name('contract-document');
+
+        Route::get('generate-pdf/{id}', [LeaseController::class, 'generatePDF'])->name('generate-pdf');
+       
+        Route::get('lease-show', function () {
+            return view('lease.lease-pdf');
+        })->name('lease-show');
+
+        Route::post('lease-fetch', [LeaseController::class, 'fetchLeaseData'])->name('leases.fetch');
+        Route::post('leases-preview/{id}', [LeaseController::class, 'previewPdf'])->name('leases.preview');
+
+
 
 
         /* --------------settings --------------------*/

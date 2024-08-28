@@ -45,8 +45,8 @@
                     <div id="tenant-info" class="content active">
                       <div class="row g-3">
                         <div class="col-sm-6">
-                            {{ Form::label('full_name', __('Full Name'), ['class' => 'form-label']) }} <span class="requiredLabel">*</span>
-                            {{ Form::text('full_name', $tenant->full_name, ['class' => 'form-control', 'placeholder' => __('Full Name')]) }}
+                            {{ Form::label('full_name', __('Company Name'), ['class' => 'form-label']) }} <span class="requiredLabel">*</span>
+                            {{ Form::text('full_name', $tenant->full_name, ['class' => 'form-control', 'placeholder' => __('Company Name')]) }}
                             @error('full_name')
                                 <small class="invalid-name" role="alert">
                                     <strong class="text-danger">{{ $message }}</strong>

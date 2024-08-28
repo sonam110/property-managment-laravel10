@@ -14,7 +14,7 @@
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 .unit {
-    width: 43px;
+    width: 48px;
     position: relative;
     background-color: #f9f9f9;
     border: 1px solid grey;
@@ -167,27 +167,41 @@
                             </div>
                         </div> -->
                         <div class="col-sm-6">
-                            <div class="mb-3">
-                                {{ Form::label('start_date', __('Start date'), ['class' => 'form-label']) }}
-                                {{ Form::date('start_date', null, ['class' => 'form-control', 'placeholder' => __('Start date')]) }}
-                                @error('start_date')
-                                    <small class="invalid-email" role="alert">
-                                        <strong class="text-danger">{{ $message }}</strong>
-                                    </small>
-                                @enderror
-                            </div>
+                            {{ Form::label('start_date', __('Start date'), ['class' => 'form-label']) }}
+                            {{ Form::date('start_date', null, ['class' => 'form-control', 'placeholder' => __('Start date')]) }}
+                            @error('start_date')
+                                <small class="invalid-email" role="alert">
+                                    <strong class="text-danger">{{ $message }}</strong>
+                                </small>
+                            @enderror
                         </div>
                         <div class="col-sm-6">
-                            <div class="mb-3">
-                                {{ Form::label('due_on', __('Due on(Day of month)'), ['class' => 'form-label']) }}
-                                {{ Form::number('due_on', null, ['class' => 'form-control', 'placeholder' => __('Due on(Day of month)')]) }}
-                                @error('due_on')
-                                    <small class="invalid-email" role="alert">
-                                        <strong class="text-danger">{{ $message }}</strong>
-                                    </small>
-                                @enderror
-                            </div>
+                            {{ Form::label('end_month', __('End months'), ['class' => 'form-label']) }}
+                            {{ Form::number('end_month', null, ['class' => 'form-control', 'placeholder' => __('End months')]) }}
+                            @error('end_month')
+                                <small class="invalid-email" role="alert">
+                                    <strong class="text-danger">{{ $message }}</strong>
+                                </small>
+                            @enderror
                         </div>
+                        <div class="col-sm-6">
+                            {{ Form::label('due_on', __('Due on(Day of month)'), ['class' => 'form-label']) }}
+                            {{ Form::number('due_on', null, ['class' => 'form-control', 'placeholder' => __('Due on(Day of month)')]) }}
+                            @error('due_on')
+                                <small class="invalid-email" role="alert">
+                                    <strong class="text-danger">{{ $message }}</strong>
+                                </small>
+                            @enderror
+                        </div>
+                        <div class="col-sm-6">
+                            {{ Form::label('status', __('Status'), ['class' => 'form-label']) }}
+                            <select name="status" class="form-control select2 form-select">
+                                <option  value="Pending" selected>Pending</option>
+                                <option  value="Processing" >Processing</option>
+                                <option  value="Approved" >Approved</option>
+                            </select>
+                        </div>
+
 
                         <div class="col-12 d-flex justify-content-between mt-4">
                           <button class="btn btn-label-secondary btn-prev" disabled>
@@ -207,9 +221,9 @@
                       <div class="row g-3">
                         
                         <div class="col-sm-4">
-                           {{ Form::label('total_sqaure', __('Total Square'), ['class' => 'form-label']) }}
-                            {{ Form::number('total_sqaure', null, ['class' => 'form-control','id'=>'total_sqaure','min'=>'1', 'placeholder' => __('Total Square')]) }}
-                            @error('total_sqaure')
+                           {{ Form::label('total_square', __('Total Area of Square Foot'), ['class' => 'form-label']) }}
+                            {{ Form::number('total_square', null, ['class' => 'form-control','id'=>'total_square','min'=>'1', 'placeholder' => __('Total Square')]) }}
+                            @error('total_square')
                                 <small class="invalid-name" role="alert">
                                     <strong class="text-danger">{{ $message }}</strong>
                                 </small>
@@ -217,18 +231,40 @@
                         </div>
                         
                         <div class="col-sm-4">
-                           {{ Form::label('sqare_foot', __('Square Foot'), ['class' => 'form-label']) }}
-                            {{ Form::number('sqare_foot', null, ['class' => 'form-control','id'=>'sqare_foot','min'=>'1','step'=>'1', 'placeholder' => __('Square Foot')]) }}
-                            @error('sqare_foot')
+                           {{ Form::label('price', __('Price/Square foot'), ['class' => 'form-label']) }}
+                            {{ Form::number('price', null, ['class' => 'form-control','id'=>'price','min'=>'1', 'placeholder' => __('Price/Square')]) }}
+                            @error('price')
                                 <small class="invalid-name" role="alert">
                                     <strong class="text-danger">{{ $message }}</strong>
                                 </small>
                               @enderror
                         </div>
                         <div class="col-sm-4">
-                           {{ Form::label('price', __('Price/Sqare'), ['class' => 'form-label']) }}
-                            {{ Form::number('price', null, ['class' => 'form-control','id'=>'price','min'=>'1', 'placeholder' => __('Price/Sqare')]) }}
-                            @error('price')
+                           {{ Form::label('fixed_price', __('Fixed Price'), ['class' => 'form-label']) }}
+                            {{ Form::number('fixed_price', null, ['class' => 'form-control','id'=>'fixed_price','min'=>'1','step'=>'1', 'placeholder' => __('Fixed Price')]) }}
+                            @error('fixed_price')
+                                <small class="invalid-name" role="alert">
+                                    <strong class="text-danger">{{ $message }}</strong>
+                                </small>
+                              @enderror
+                        </div>
+                        <hr class="my-5" />
+                        <div class="col-sm-12">
+                            <h6> Rent Incremental Term:</h6>
+                        </div>
+                        <div class="col-sm-6">
+                           {{ Form::label('month', __('Every Month'), ['class' => 'form-label']) }}
+                            {{ Form::number('month', null, ['class' => 'form-control','id'=>'month','min'=>'1','step'=>'1', 'placeholder' => __('Every Month')]) }}
+                            @error('month')
+                                <small class="invalid-name" role="alert">
+                                    <strong class="text-danger">{{ $message }}</strong>
+                                </small>
+                              @enderror
+                        </div>
+                        <div class="col-sm-6">
+                           {{ Form::label('inc_percenatge', __('Increment %'), ['class' => 'form-label']) }}
+                            {{ Form::number('inc_percenatge', null, ['class' => 'form-control','id'=>'inc_percenatge', 'placeholder' => __('Increment %')]) }}
+                            @error('inc_percenatge')
                                 <small class="invalid-name" role="alert">
                                     <strong class="text-danger">{{ $message }}</strong>
                                 </small>
@@ -251,25 +287,26 @@
                     <!-- CAM -->
                     <div id="cam" class="content">
                        <div class="row g-3">
-                        <div class="col-sm-4">
-                           {{ Form::label('cam_sqare_foot', __('Square Foot'), ['class' => 'form-label']) }}
-                            {{ Form::number('cam_sqare_foot', null, ['class' => 'form-control','id'=>'cam_sqare_foot','min'=>'1','step'=>'1', 'placeholder' => __('Square Foot')]) }}
-                            @error('cam_sqare_foot')
-                                <small class="invalid-name" role="alert">
-                                    <strong class="text-danger">{{ $message }}</strong>
-                                </small>
-                              @enderror
-                        </div>
-                        <div class="col-sm-4">
-                           {{ Form::label('camp_price', __('Price/Sqare'), ['class' => 'form-label']) }}
-                            {{ Form::number('camp_price', null, ['class' => 'form-control','id'=>'camp_price','min'=>'1', 'placeholder' => __('Price/Sqare')]) }}
-                            @error('camp_price')
+                          <div class="col-sm-4">
+                           {{ Form::label('camp_price', __('Price/Square foot'), ['class' => 'form-label']) }}
+                            {{ Form::number('camp_price', null, ['class' => 'form-control','id'=>'camp_price','min'=>'1', 'placeholder' => __('Price/Square')]) }}
+                            @error('price')
                                 <small class="invalid-name" role="alert">
                                     <strong class="text-danger">{{ $message }}</strong>
                                 </small>
                               @enderror
                         </div>
                         
+                        <div class="col-sm-4">
+                           {{ Form::label('camp_fixed_price', __('Fixed Price'), ['class' => 'form-label']) }}
+                            {{ Form::number('camp_fixed_price', null, ['class' => 'form-control','id'=>'camp_fixed_price','min'=>'1','step'=>'1', 'placeholder' => __('Square Foot')]) }}
+                            @error('camp_fixed_price')
+                                <small class="invalid-name" role="alert">
+                                    <strong class="text-danger">{{ $message }}</strong>
+                                </small>
+                              @enderror
+                        </div>
+                      
                         
                         <div class="col-12 d-flex justify-content-between mt-4">
                           <button class="btn btn-label-secondary btn-prev">
@@ -285,56 +322,34 @@
                     </div>
                     <div id="security-deposit" class="content">
                       <div class="row g-3">
-                        
-                        
-                        <div class="col-sm-3">
-                            {{ Form::label('partners[]', __('Partners'), ['class' => 'form-label']) }}
+                        <div class="col-sm-4">
+                            {{ Form::label('utility[]', __('Utility Name'), ['class' => 'form-label']) }}
                             <div class="select2-primary">
-                                {!! Form::select('partners[]', $partners, null, [
+                                {!! Form::select('utility[]', $utilities, null, [
                                     'class' => 'form-control select2 form-select',
                                     'id' => 'select2Primary',
                                     'required' => 'required'
                                 ]) !!}
                             </div>
                         </div>
-                        <div class="col-sm-3">
-                           {{ Form::label('commission_value', __('Comsission Value'), ['class' => 'form-label']) }}
-                            {{ Form::text('commission_value[]', null, ['class' => 'form-control','id'=>'commission_value', 'placeholder' => __('Comsission Value')]) }}
-                            @error('commission_value')
+                        <div class="col-sm-4">
+                           {{ Form::label('deposit_amount', __('Deposit Amount'), ['class' => 'form-label']) }}
+                            {{ Form::text('deposit_amount[]', null, ['class' => 'form-control','id'=>'deposit_amount', 'placeholder' => __('Deposit Amount')]) }}
+                            @error('deposit_amount')
                                 <small class="invalid-name" role="alert">
                                     <strong class="text-danger">{{ $message }}</strong>
                                 </small>
                               @enderror
                         </div>
                         
-                        <div class="col-sm-3">
-                          <label class="form-label" for="commission_type">Comsission Type</label>
-                          <select id="commission_type" name="commission_type[]" class="form-control select2 form-select" data-allow-clear="true">
-                            <option value="">Select</option>
-                            <option value="1">Fixed Value</option>
-                            <option value="2">% of Total Rent</option>
-                            <option value="3">% of Total collected Rent</option>
-                          </select>
-                        </div>
-                        <div class="col-sm-3">
-                          <label class="form-label" for="payment_methods">Payment Method</label>
-                          <select id="payment_methods" name="payment_methods[]" class="form-control select2 form-select" data-allow-clear="true">
-                            <option value="">Select</option>
-                            <option value="1">Cash</option>
-                            <option value="2">Online</option>
-                            <option value="3">Cheque</option>
-                            <option value="4">DD</option>
-                          </select>
-                        </div>
-
                         <div class="col-sm-12">
                         
-                            <div id="paymentContainer" class="">
+                            <div id="securityDepositContainer" class="">
                                 <!-- Unit rows will be added here dynamically -->
                             </div>
                              
                             <div class="text-right mt-3">
-                                <button class="btn btn-primary" id="addPartnerButton">+ Add Payment</button>
+                                <button class="btn btn-primary" id="addsecurityDepositButton">+ Add More</button>
                             </div>
                         
                         </div>
@@ -352,7 +367,6 @@
                         </div>
                       </div>
                     </div>
-
                     
 
                      <!-- extra charge -->
@@ -384,7 +398,6 @@
                             <option value="">Select</option>
                             <option value="1">Fixed Value</option>
                             <option value="2">% of Total Rent</option>
-                            <option value="3">% of Total Amount Over Due</option>
                           </select>
                         </div>
                         <div class="col-sm-3">
@@ -431,7 +444,7 @@
                     <div id="utilities" class="content">
                  
                       <div class="row g-3">
-                        <div class="col-sm-4">
+                        <div class="col-sm-3">
                             {{ Form::label('utility_id[]', __('Utility Name'), ['class' => 'form-label']) }}
                             <div class="select2-primary">
                                 {!! Form::select('utility_id[]', $utilities, null, [
@@ -441,7 +454,7 @@
                                 ]) !!}
                             </div>
                         </div>
-                        <div class="col-sm-4">
+                        <div class="col-sm-3">
                            {{ Form::label('variable_cost', __('Variable Cost'), ['class' => 'form-label']) }}
                             {{ Form::text('variable_cost[]', null, ['class' => 'form-control','id'=>'variable_cost', 'placeholder' => __('Variable Cost')]) }}
                             @error('variable_cost')
@@ -450,7 +463,7 @@
                                 </small>
                               @enderror
                         </div>
-                        <div class="col-sm-4">
+                        <div class="col-sm-3">
                            {{ Form::label('fixed_cost', __('Fixed Cost'), ['class' => 'form-label']) }}
                             {{ Form::text('fixed_cost[]', null, ['class' => 'form-control','id'=>'fixed_cost', 'placeholder' => __('Fixed Cost')]) }}
                             @error('fixed_cost')
@@ -460,8 +473,6 @@
                               @enderror
                         </div>
                         
-                       
-
                         <div class="col-sm-12">
                         
                             <div id="utilityContainer" class="">
@@ -469,7 +480,7 @@
                             </div>
                              
                             <div class="text-right mt-3">
-                                <button class="btn btn-primary" id="addUtilityButton">+ Add Utility</button>
+                                <button class="btn btn-primary" id="addUtilityButton">+ Add More</button>
                             </div>
                         
                         </div>
@@ -531,16 +542,17 @@
 
  // Add text box
   $(document).ready(function(){
-    /*----------------------Partner Payment-------------------*/
-        $("#addPartnerButton").click(function(){
-            var textBoxHtml = '<div class="row g-3 textBoxWrapper"><br><hr class="my-0" /><br> <div class="col-sm-3"> <label for="partners" class="form-label">Partners</label> <div class="select2-primary"> <select class="form-control select2 form-select"  required="required" name="partners[]"><?php foreach ($partners as $key =>  $row): ?><option value="<?php echo $key ?>"><?php echo $row ?></option><?php endforeach ?></select> </div> </div> <div class="col-sm-3"> <label for="commission_value" class="form-label">Comsission Value</label> <input class="form-control" id="commission_value" placeholder="Comsission Value" name="commission_value[]" type="text"> </div> <div class="col-sm-2"> <label class="form-label" for="commission_type">Type</label> <select id="commission_type" name="commission_type[]" class="form-control select2 form-select" > <option value="">Select</option> <option value="1">Fixed Value</option> <option value="2">% of Total Rent</option> <option value="3">% of Total collected Rent</option> </select> </div> <div class="col-sm-3"> <label class="form-label" for="payment_methods">Payment Method</label> <select id="payment_methods" name="payment_methods[]" class="form-control select2 form-select" > <option value="">Select</option> <option value="1">Cash</option> <option value="2">Online</option> <option value="3">Cheque</option> <option value="4">DD</option> </select> </div> <div class="col-sm-1"><label for="button" class="form-label">&nbsp;<label><button type="button" class="removeButton btn btn-sm btn-danger" ><i class="ti ti-trash text-white"></i></button>  </div></div> <br>';
-            $("#paymentContainer").append(textBoxHtml);
+        /*--------------utility--------------------------------*/
+        $("#addsecurityDepositButton").click(function(){
+            var textBoxHtml = '<div class="row g-3 textBoxWrapper"><br><hr class="my-0" /><br> <div class="col-sm-4"> <label for="utility" class="form-label">Utility Name</label> <div class="select2-primary"> <select class="form-control select2 form-select"  required="required" name="utility[]"><?php foreach ($utilities as $key =>  $row): ?><option value="<?php echo $key ?>"><?php echo $row ?></option><?php endforeach ?></select> </div> </div> <div class="col-sm-4"> <label for="deposit_amount" class="form-label">Deposit Amount</label> <input class="form-control" id="deposit_amount" placeholder="Deposit Amount" name="deposit_amount[]" type="text"> </div>  <div class="col-sm-4"> <label for="button" class="form-label">&nbsp;<label><button type="button" class="removeButton btn btn-sm btn-danger" ><i class="ti ti-trash text-white"></i></button>  </div></div> <br>';
+            $("#securityDepositContainer").append(textBoxHtml);
         });
 
         // Remove text box
-        $("#paymentContainer").on("click", ".removeButton", function(){
+        $("#securityDepositContainer").on("click", ".removeButton", function(){
             $(this).closest(".textBoxWrapper").remove();
         });
+        
 
         /*--------------Extra charge--------------------------------*/
         $("#addExtraChargeButton").click(function(){
@@ -554,16 +566,6 @@
         });
 
 
-        /*--------------Late Fee--------------------------------*/
-        $("#addLateFeeButton").click(function(){
-            var textBoxHtml = '<div class="row g-3 textBoxWrapper"><br><hr class="my-0" /><br> <div class="col-sm-3"> <label for="late_fee_id" class="form-label">Late Fee Name</label> <div class="select2-primary"> <select class="form-control select2 form-select"  required="required" name="late_fee_id[]"><?php foreach ($lateFees as $key =>  $row): ?><option value="<?php echo $key ?>"><?php echo $row ?></option><?php endforeach ?></select> </div> </div> <div class="col-sm-3"> <label for="late_fee_value" class="form-label">Late Fee Value</label> <input class="form-control" id="late_fee_value" placeholder="Late Fee Value" name="late_fee_value[]" type="text"> </div> <div class="col-sm-3"> <label class="form-label" for="late_fee_type">Late Fee Type</label> <select id="late_fee_type" name="late_fee_type[]" class="form-control select2 form-select" > <option value="">Select</option> <option value="1">Fixed Value</option> <option value="2">% of Total Rent</option> <option value="3">% of Total Amount Over Due</option> </select> </div> <div class="col-sm-2"> <label class="form-label" for="frequency">Frequency</label> <select id="frequency" name="frequency[]" class="form-control select2 form-select" > <option value="">Select</option> <option value="1">Onetime</option> <option value="2">Period to Period</option> <option value="3">Daily</option> <option value="4">Weekly</option><option value="5">Monthly</option>  </select> </div> <div class="col-sm-1"><label for="button" class="form-label">&nbsp;<label><button type="button" class="removeButton btn btn-sm btn-danger" ><i class="ti ti-trash text-white"></i></button>  </div></div> <br>';
-            $("#lateFeeContainer").append(textBoxHtml);
-        });
-
-        // Remove text box
-        $("#lateFeeContainer").on("click", ".removeButton", function(){
-            $(this).closest(".textBoxWrapper").remove();
-        });
 
 
          /*--------------utility--------------------------------*/

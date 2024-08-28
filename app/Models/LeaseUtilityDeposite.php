@@ -8,4 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class LeaseUtilityDeposite extends Model
 {
     use HasFactory;
+    public function utilityInfo()
+    {
+        return $this->belongsTo(Utility::class, 'utility', 'id');
+    }
 }

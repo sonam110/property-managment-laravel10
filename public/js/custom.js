@@ -594,3 +594,20 @@ $(document).ready(function() {
     $('#example').DataTable();
     $('#thirdTable').DataTable();
 });
+
+$('.document').summernote({
+    toolbar: false  ,
+     placeholder: `documnet`,
+     followingToolbar: false   ,
+     focus: true,
+     spellcheck: false,
+     height: 46,
+     disableResizeEditor: true ,
+     callbacks: {
+       onKeyup: function (contents, $editable) {
+         
+
+       }
+       
+     }
+  });

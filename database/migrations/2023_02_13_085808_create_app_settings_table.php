@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('mobile_no')->nullable();
             $table->text('address')->nullable();
             $table->string('Zipcode')->nullable();
+            $table->string('gst_no')->nullable();
             $table->string('website_url')->nullable();
             $table->string('lease_prefix')->nullable();
             $table->string('tenant_prefix')->nullable();
@@ -32,6 +33,7 @@ return new class extends Migration
             $table->string('date_format')->nullable();
             $table->integer('generate_invoice_day')->nullable();
             $table->text('invoice_conditions')->nullable();
+            $table->longText('document')->nullable();
             $table->timestamps();
         });
     }

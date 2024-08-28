@@ -1,4 +1,12 @@
 @extends('layouts.master')
+@section('extracss')
+<!-- include summernote css/js -->
+<!-- Summernote CSS -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.18/summernote-bs4.min.css" rel="stylesheet">
+
+
+
+@endsection
 @section('page-title')
     {{__('App Setting')}}
 @endsection
@@ -33,7 +41,7 @@
                               name="app_logo"
                               class="account-file-input"
                               hidden
-                              accept="image/png, image/jpeg" required />
+                              accept="image/png, image/jpeg" />
                           </label>
                           <button type="button" class="btn btn-label-secondary account-image-reset mb-3">
                             <i class="ti ti-refresh-dot d-block d-sm-none"></i>
@@ -50,7 +58,7 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="mb-3">
-                                {{ Form::label('app_name', __('App Name'), ['class' => 'form-label']) }} <span class="requiredLabel">*</span>
+                                {{ Form::label('app_name', __('Company Name'), ['class' => 'form-label']) }} <span class="requiredLabel">*</span>
                                 {{ Form::text('app_name', null, ['class' => 'form-control', 'placeholder' => __('App Name'), 'required' => 'required']) }}
                                 @error('app_name')
                                     <small class="invalid-name" role="alert">
@@ -99,7 +107,18 @@
                               
                             </div>
                         </div>
-                         <div class="col-md-6">
+                         <div class="col-md-4">
+                            <div class="mb-3">
+                                {{ Form::label('gst_no', __('GST NO'), ['class' => 'form-label']) }}
+                                {{ Form::text('gst_no', null, ['class' => 'form-control','id'=>'gst_no', 'placeholder' => __('GST NO')]) }}
+                                @error('gst_no')
+                                    <small class="invalid-email" role="alert">
+                                        <strong class="text-danger">{{ $message }}</strong>
+                                    </small>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="col-md-4">
                             <div class="mb-3">
                                 {{ Form::label('Zipcode', __('Zipcode'), ['class' => 'form-label']) }}
                                 {{ Form::text('Zipcode', null, ['class' => 'form-control','id'=>'zipCode', 'placeholder' => __(' Zipcode')]) }}
@@ -111,10 +130,17 @@
                             </div>
                         </div>
                        
-                         <div class="col-md-6">
+                         <div class="col-md-4">
                             <div class="mb-3">
                                 {{ Form::label('website_url', __('Website url'), ['class' => 'form-label']) }}
                                 {{ Form::text('website_url', null, ['class' => 'form-control', 'placeholder' => __('Website Url')]) }}
+                                
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="mb-3">
+                                {{ Form::label('document', __('Contract format'), ['class' => 'form-label']) }}
+                                 <textarea id="content" name="document" class="form-control">{!! $appSetting->document !!}</textarea>
                                 
                             </div>
                         </div>
@@ -135,4 +161,14 @@
 @section('extrajs')     
 
  <script src="{{ asset('assets/js/pages-account-settings-account.js') }}"></script>
- @endsection
+ <!-- Summernote JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.18/summernote-bs4.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+            $('#content').summernote({
+                height: 1000, // Set the height of the editor
+                // Customize options here
+            });
+        });
+</script>
+@endsection

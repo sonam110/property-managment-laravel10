@@ -21,11 +21,18 @@ return new class extends Migration
 
             $table->unsignedBigInteger('tenant_id');
             $table->longText('unit_ids');
-            $table->unsignedBigInteger('lease_type')->nullable();
-            $table->decimal('rent_amount',10,2)->default(0);
             $table->timestamp('start_date');
             $table->integer('due_on')->default(1);
-            $table->decimal('rent_deposite_amount',10,2)->default(0);
+            $table->decimal('total_square',10,2)->default(0);
+            $table->decimal('price',10,2)->default(0)->nullable();
+            $table->decimal('fixed_price',10,2)->default(0)->nullable();
+            $table->decimal('square_foot',10,2)->default(0)->nullable();
+            $table->decimal('cam_square_foot',10,2)->default(0)->nullable();
+            $table->decimal('camp_price',10,2)->default(0)->nullable();
+            $table->decimal('camp_fixed_price',10,2)->default(0)->nullable();
+            $table->integer('end_month')->default(11)->nullable();
+            $table->integer('month')->nullable();
+            $table->decimal('inc_percenatge',10,2)->nullable();
             $table->unsignedBigInteger('created_by');
             $table->integer('generate_invoice_day')->nullable();
             $table->text('invoice_conditions')->nullable();

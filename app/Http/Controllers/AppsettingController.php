@@ -77,7 +77,9 @@ class AppsettingController extends Controller
         $appsetting->address          = $request->address;
         $appsetting->description          = $request->description;
         $appsetting->Zipcode     = $request->Zipcode;
+        $appsetting->gst_no     = $request->gst_no;
         $appsetting->website_url   = $request->website_url;
+        $appsetting->document   = $request->document;
         $appsetting->app_logo         = $saveFile;
         $appsetting->save();
         if($appsetting)

@@ -33,7 +33,7 @@
                                 Lease Setting
                               </button>
                             </li>
-                            <li class="nav-item">
+                            <!-- <li class="nav-item">
                               <button
                                 class="nav-link {{ (request()->is('lease-type*') ? 'active ' : '')}}"
                                 class="nav-link "
@@ -43,7 +43,7 @@
                                 aria-selected="false">
                                 Lease Type
                               </button>
-                            </li>
+                            </li> -->
                             <li class="nav-item">
                               <button
                                 class="nav-link {{ (request()->is('extra-charge*') ? 'active ' : '')}}"
@@ -55,7 +55,7 @@
                                 Extra Charge 
                               </button>
                             </li>
-                            <li class="nav-item">
+                           <!--  <li class="nav-item">
                               <button
                                 class="nav-link {{ (request()->is('late-fees*') ? 'active ' : '')}}"
                                 class="nav-link "
@@ -65,7 +65,7 @@
                                 aria-selected="false">
                                 Late Fees 
                               </button>
-                            </li>
+                            </li> 
                             <li class="nav-item">
                               <button
                                 class="nav-link"
@@ -75,7 +75,7 @@
                                 aria-selected="false">
                                 Contract Document 
                               </button>
-                            </li>
+                            </li>-->
                           </ul>
                         </div>
 

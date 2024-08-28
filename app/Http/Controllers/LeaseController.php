@@ -18,27 +18,135 @@ use App\Models\LateFees;
 use App\Models\Lease;
 use App\Models\LeaseType;
 use App\Models\Tenant;
+use App\Models\LeaseUtilityDeposite;
+use App\Models\LeaseExtraCharge;
+use App\Models\LeaseUtility;
+use App\Models\AppSetting;
 use Validator;
 use Auth;
 use Exception;
 use DB;
 use Str;
+use PDF;
 class LeaseController extends Controller
 {
     public function index()
     {
         if (\Auth::user()->can('lease-browse')) {
             $data = Lease::get();
-            $propertyTypes = LeaseType::get()->pluck('display_name', 'id');
+            $propertyTypes = Property::get()->pluck('property_name', 'id');
             $partners = User::get()->pluck('first_name', 'id');
             return View('lease.index',compact('propertyTypes','data','partners'));
         } else {
             return redirect()->back();
         }
     }
+
+    public function generatePDF($id)
+    {
+        $lease = Lease::where('id',$id)->with('property','tenant')->first();
+        $LeaseUtilityDeposite = LeaseUtilityDeposite::where('lease_id',$id)->with('utilityInfo')->get();
+        $leaseExtraCharges = LeaseExtraCharge::where('lease_id',$id)->with('extraCharge')->get();
+        $leaseUtilities = LeaseUtility::where('lease_id',$id)->get();
+        $appSetting = AppSetting::first();
+        $invoice_prefix = (!empty($appSetting->invoice_prefix)) ? $appSetting->invoice_prefix :'INV';
+        $invoice_number = $invoice_prefix.'-'.rand(0,99999);
+        $total_square = $lease->total_square;
+        $price = $lease->price;
+        $square_foot = $lease->square_foot;
+        $price_per_sqare_ft = $price;
+        $monthly_rent =  $total_square * $price_per_sqare_ft;
+        $cam_amount =  $total_square * $lease->camp_price;
+        $data =[
+            'lease' => $lease,
+            'LeaseUtilityDeposite' =>$LeaseUtilityDeposite,
+            'leaseExtraCharges' =>$leaseExtraCharges,
+            'leaseUtilities' =>$leaseUtilities,
+            'invoice_number' =>$invoice_number,
+            'monthly_rent' =>$monthly_rent,
+            'cam_amount' =>$cam_amount,
+        ];
+        // Load the view and generate the PDF
+        //return view('lease.lease-template',compact($data));
+        $pdf = PDF::loadView('lease.lease-temp', $data);
+
+        $fileName = $lease->unique_id.'.pdf';
+        // Save the PDF to a temporary location
+        $pdfPath = storage_path('app/public/uploads/' . $fileName);
+
+        $pdf->save($pdfPath);
+
+        // Generate the URL to access the PDF
+    $fullPath = url('storage/uploads/' . $fileName);
+    $unit_ids = explode(',', $lease->unit_ids);
+
+    $propertyUnit = PropertyUnit::where('property_id',$lease->property_id)->groupby('unit_name_prefix')->orderby('id','ASC')->get();
+    // Redirect to the PDF viewer
+    return view('lease.lease-pdf', compact('fullPath','propertyUnit','unit_ids'));
+    }
+
+
+    public function contractDocument()
+    {
+        if (\Auth::user()->can('lease-browse')) {
+            $data = Lease::pluck('unique_id','id')->toArray();
+            $propertyTypes = Property::get()->pluck('property_name', 'id');
+            $partners = User::get()->pluck('first_name', 'id');
+            return View('lease.contract-document',compact('data'));
+        } else {
+            return redirect()->back();
+        }
+    }
+    public function fetchLeaseData(Request $request)
+    {
+        $lease = Lease::with('property','tenant')->find($request->id);
+
+        return response()->json([
+            'content' => $this->generateLeaseContent($lease,$request)
+        ]);
+    }
+
+public function previewPdf(Request $request, $id)
+{
+    $content = $request->input('content');
+    $pdf = PDF::loadHTML($content); // Use a PDF library like Dompdf or Snappy
+    $pdfPath = storage_path('app/public/lease_preview.pdf');
+    $pdf->save($pdfPath);
+
+    return response()->json(['pdfUrl' => asset('storage/lease_preview.pdf')]);
+}
+
+
+private function generateLeaseContent($lease,$request)
+{
+    $appSetting = AppSetting::first();
+    $total_square = $lease->total_square;
+    $price_per_sqare_ft = $lease->price;
+    $monthly_rent =  $total_square * $price_per_sqare_ft;
+    $cam_amount =  $total_square * $lease->camp_price;
+    // Generate dynamic content using the lease data
+    $content = "Lease Agreement for {$lease->property_name}...";
+    // Replace placeholders with actual data
+    $content = str_replace([
+        '{owner_name}', '{owner_address}', '{owner_phone}', '{owner_email}', '{property_name}',
+        '{property_code}', '{lease_area_of_sq}', '{property_address}', '{tenant_name}', '{tenant_address}',
+        '{tenant_phone}', '{tenant_email}', '{lease_start_date}', '{monthly_rent_amount}', '{lease_price_per_sq}',
+        '{lease_units}', '{lease_end}', '{lease_cam}'
+    ], [
+        $appSetting->app_name, $appSetting->address, $appSetting->mobile_no, $appSetting->email, $lease->property->property_name,
+        $lease->property->property_code, $lease->total_square, $lease->property->location, $lease->tenant->firm_name, $lease->tenant->business_address,
+        $lease->tenant->phone, $lease->tenant->email, $lease->start_date, $monthly_rent, $lease->price,
+        $lease->unit_ids, $lease->end_month, $cam_amount
+    ], $request->content);
+
+    return $content;
+}
+
+    
     public function leaseList(Request $request)
     {
-        $query = Lease::orderBy('id','DESC');
+        $query = Lease::orderBy('id','DESC')->with('property','tenant');
+       
         if(!empty($request->property_id))
         {
             $query->where('property_id', $request->property_id);
@@ -53,18 +161,28 @@ class LeaseController extends Controller
                 
                 return $query->property->property_code;
             })
+            ->editColumn('tenant_id', function ($query)
+            {
+                
+                return $query->tenant->firm_name;
+            })
            
             ->editColumn('status', function ($query)
             {
-                if ($query->status == 1)
+                if ($query->status == 'Approved')
                 {
-                    $status = 'Active';
+                    $status = 'Approved';
                     $class='bg-label-success';
+                }
+                elseif ($query->status == 'Processing')
+                {
+                    $status = 'Processing';
+                    $class='bg-label-info';
                 }
                 else
                 {
-                    $status = 'Inactive';
-                    $class='bg-label-secondary';
+                    $status = 'Pending';
+                    $class='bg-label-primary';
                 }
 
                 return '<span class="badge '.$class.' text-capitalize ">' . $status . '</span>';
@@ -73,18 +191,21 @@ class LeaseController extends Controller
             ->addColumn('action', function ($query)
             {
 
-                 $edit =' <a class="btn btn-sm btn-primary" href="'.route('property.edit', $query->id) .'" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"><i class="fa fa-edit"></i></a>';
-                $delete = '<a href="'.route('property-destroy', $query->id) .'" 
+                if($query->status != 'Approved') {
+                    $edit =' <a class="btn btn-sm btn-primary" href="'.route('leases.edit', $query->id) .'" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"><i class="fa fa-edit"></i></a>';
+                } else{
+                    $edit ='';
+                }
+                $delete = '<a href="'.route('leases-destroy', $query->id) .'" 
                                  class="btn btn-sm btn-danger"
                                 onClick="return confirm(\'Are you sure you want to delete this?\');" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete">
                                 <i class="fa fa-trash"></i>
                             </a>';
-                $copy =' <a class="btn btn-sm btn-info" href="'.route('property-copy', $query->id) .'"  onClick="return confirm(\'Are you sure you want to copy this?\');" data-toggle="tooltip" data-placement="top" title="" data-original-title="Copy"><i class="fa fa-copy"></i></a>';
+                $view =' <a class="btn btn-sm btn-primary" href="'.route('generate-pdf', $query->id) .'" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"><i class="fa fa-eye"></i></a>';
 
 
-                
 
-                return '<div class="btn-group btn-group-xs">'.$edit.$delete.$copy.'</div>';
+                return '<div class="btn-group btn-group-xs">'.$edit.$view.$delete.'</div>';
             })
         ->escapeColumns(['action'])
         ->addIndexColumn()
@@ -101,7 +222,7 @@ class LeaseController extends Controller
             $propertyTypes = PropertyType::get()->pluck('display_name', 'id');
             $partners = User::where('role_id','2')->get()->pluck('first_name', 'id');
             $unitTypes = UnitType::get()->pluck('display_name', 'id');
-            $utilities = Utility::get()->pluck('display_name', 'id');
+            $utilities = Utility::pluck('display_name', 'id')->toArray();
             $extraCharges = ExtraCharge::get()->pluck('display_name', 'id');
             $lateFees = LateFees::get()->pluck('display_name', 'id');
             return View('lease.create',compact('propertyTypes','partners','unitTypes','utilities','extraCharges','lateFees','leaseTypes','properties','tenants'));
@@ -112,13 +233,17 @@ class LeaseController extends Controller
     public function store(Request $request)
     {
 
-       
+      
        if(!empty($request->id))
         {
             $validator = \Validator::make(
                 $request->all(), [
-                    'property_name' => 'required',
-                    'property_code' => 'required|unique:properties,property_code,'.$request->id,
+                    'tenant_id' => 'required|exists:tenants,id',
+                    'property_id' => 'required|exists:properties,id',
+                    'unit_ids.*' => 'required','unit_ids' => 'required|array|min:1',
+                    'unit_ids.*' => 'integer|distinct',
+                    'total_square' => 'required',
+                    'price' => 'required',
                 ]
             );
             if ($validator->fails()) {
@@ -127,11 +252,24 @@ class LeaseController extends Controller
                 ], 422);
             }
 
+            $checkLeaseApproved = Lease::where('id',$request->id)->where('status','Approved')->first();
+            if(!empty($checkLeaseApproved)){
+                if ($validator->fails()) {
+                    return response()->json([
+                        'errors' => "You can't' edit this lease"
+                    ], 422);
+                }
+            }
+
         } else{
             $validator = \Validator::make(
                 $request->all(), [
-                   'property_name' => 'required',
-                   'property_code' => 'required|unique:properties,property_code',
+                    'tenant_id' => 'required|exists:tenants,id',
+                    'property_id' => 'required|exists:properties,id',
+                    'unit_ids' => 'required|array|min:1',
+                    'unit_ids.*' => 'integer|distinct',
+                    'total_square' => 'required',
+                    'price' => 'required',
                 ]
             );
             if ($validator->fails()) {
@@ -146,78 +284,86 @@ class LeaseController extends Controller
         DB::beginTransaction();
         try{
 
+                $checkAlready = Lease::where('property_id',$request->property_id)->where('tenant_id',$request->tenant_id)->first();
+                if(!empty($checkAlready)){
+                    if ($validator->fails()) {
+                         return response()->json([
+                            'errors' => 'A lease already exists for this tenant or property'
+                        ], 422);
+                    }
+
+                }
                 if(!empty($request->id))
                 {
-                    $property = Property::find($request->id);
+                    $lease = Lease::find($request->id);
                     
 
                 } else{
-                    $property = new Property;
+                    $lease = new Lease;
                 }
-                $property->user_id = auth()->user()->id;
-                $property->property_name       = $request->property_name;
-                $property->property_code       = $request->property_code;
-                $property->property_location       = $request->property_location;
-                $property->property_type       = $request->property_type;
-                $property->created_by       = auth()->user()->id;
-                $property->save();
+                $appSetting = AppSetting::first();
+                $lease_prefix = (!empty($appSetting->lease_prefix)) ? $appSetting->lease_prefix :'LS';
+                $unit_ids  = (!empty($request->unit_ids)) ? implode(',',$request->unit_ids) :'';
+                
+                $lease->user_id = auth()->user()->id;
+                $lease->unique_id       = $lease_prefix.'-'.rand(0,99999);
+                $lease->property_id       = $request->property_id;
+                $lease->tenant_id       = $request->tenant_id;
+                $lease->unit_ids       = $unit_ids;
+                $lease->start_date       = (!empty($request->start_date)) ? $request->start_date :date('Y-m-d');
+                $lease->due_on       = $request->due_on;
+                $lease->total_square       = $request->total_square;
+                $lease->price       = $request->price;
+                $lease->fixed_price       = $request->fixed_price;
+                $lease->square_foot       = $request->square_foot;
+                $lease->cam_square_foot       = $request->cam_square_foot;
+                $lease->camp_price       = $request->camp_price;
+                $lease->camp_fixed_price       = $request->camp_fixed_price;
+                $lease->month       = $request->month;
+                $lease->end_month       = $request->end_month;
+                $lease->inc_percenatge       = $request->inc_percenatge;
+                $lease->status       = $request->status;
+                $lease->created_by       = auth()->user()->id;
+                $lease->save();
 
-                if($property) {
-                    $messages = 'Property successfully created';
+
+                if($lease) {
+
+                    $messages = 'Lease successfully created';
+
                     if(!empty($request->id))
                     {
-                        PropertyUnit::where('property_id',$request->id)->delete();
-                        PropertyPaymentSetting::where('property_id',$request->id)->delete();
-                        PropertyExtraCharges::where('property_id',$request->id)->delete();
-                        PropertyLateFees::where('property_id',$request->id)->delete();
-                        PropertyUtility::where('property_id',$request->id)->delete();
-                        $messages = 'Property successfully updated';
+                        LeaseUtilityDeposite::where('lease_id',$request->id)->delete();
+                        LeaseExtraCharge::where('lease_id',$request->id)->delete();
+                        LeaseUtility::where('lease_id',$request->id)->delete();
+        
+                        $messages = 'Lease successfully updated';
                     }
                     /*--------Unit---------------------*/
-                    if(is_array(@$request->unit_name) && count(@$request->unit_name) >0 ){
-                        for ($i = 0;$i <= count($request->unit_name);$i++) {
-                            if (!empty($request->unit_name[$i])) {
-                                $unit = new PropertyUnit;
-                                $unit->user_id = auth()->user()->id;
-                                $unit->property_id = $property->id;
-                                $unit->unit = $request->unit[$i];
-                                $unit->unit_name = $request->unit_name[$i];
-                                $unit->unit_floor = $request->unit_floor[$i];
-                                $unit->rent_amount = $request->rent_amount[$i];
-                                $unit->unit_type = $request->unit_type[$i];
-                                $unit->bed_rooms = $request->bed_rooms[$i];
-                                $unit->bath_rooms = $request->bath_rooms[$i];
-                                $unit->total_rooms = $request->total_rooms[$i];
-                                $unit->square_foot = $request->square_foot[$i];
-                                $unit->save();
+                    if(is_array(@$request->utility) && count(@$request->utility) >0 ){
+                        for ($i = 0;$i <= count($request->utility);$i++) {
+                            if (!empty($request->utility[$i])) {
+                                $leaseDeposit = new LeaseUtilityDeposite;
+                                $leaseDeposit->lease_id  = $lease->id;
+                                $leaseDeposit->property_id  = $request->property_id ;
+                                $leaseDeposit->utility = $request->utility[$i];
+                                $leaseDeposit->deposit_amount = $request->deposit_amount[$i];
+                                $leaseDeposit->save();
+                                
 
                             }
                         }
                     }
-
-                    /*--------Commission---------------------*/
-                    if(is_array(@$request->partners) && count(@$request->partners) >0 ){
-                        for ($i = 0;$i <= count($request->partners);$i++) {
-                            if (!empty($request->partners[$i])) {
-                                $paymentSetting = new PropertyPaymentSetting;
-                                $paymentSetting->user_id = $request->partners[$i];
-                                $paymentSetting->property_id = $property->id;
-                                $paymentSetting->commission_value = $request->commission_value[$i];
-                                $paymentSetting->commission_type = $request->commission_type[$i];
-                                $paymentSetting->payment_methods = $request->payment_methods[$i];
-                                $paymentSetting->save();
-
-                            }
-                        }
-                    }
-
+                   
+                   
                     /*--------Extra Charge---------------------*/
-                    if(is_array(@$request->extra_charge_id) && count(@$request->extra_charge_id) >0 ){
-                        for ($i = 0;$i <= count($request->extra_charge_id);$i++) {
-                            if (!empty($request->extra_charge_id[$i])) {
-                                $extraCharge = new PropertyExtraCharges;
-                                $extraCharge->user_id = auth()->user()->id;
-                                $extraCharge->property_id = $property->id;
+                    if(is_array(@$request->extra_charge_value) && count(@$request->extra_charge_value) >0 ){
+                        for ($i = 0;$i <= count($request->extra_charge_value);$i++) {
+                            if (!empty($request->extra_charge_value[$i])) {
+                                $extraCharge = new LeaseExtraCharge;
+                                $extraCharge->lease_id = $lease->id;
+                                $extraCharge->property_id = $request->property_id;
+                                $extraCharge->property_id = $request->tenant_id;
                                 $extraCharge->extra_charge_id = $request->extra_charge_id[$i];
                                 $extraCharge->extra_charge_value = $request->extra_charge_value[$i];
                                 $extraCharge->extra_charge_type = $request->extra_charge_type[$i];
@@ -227,38 +373,28 @@ class LeaseController extends Controller
                             }
                         }
                     }
-                    /*--------Late Fees---------------------*/
-                    if(is_array(@$request->late_fee_id) && count(@$request->late_fee_id) >0 ){
-                        for ($i = 0;$i <= count($request->late_fee_id);$i++) {
-                            if (!empty($request->late_fee_id[$i])) {
-                                $latefee = new PropertyLateFees;
-                                $latefee->user_id = auth()->user()->id;
-                                $latefee->property_id = $property->id;
-                                $latefee->late_fee_id = $request->late_fee_id[$i];
-                                $latefee->late_fee_value = $request->late_fee_value[$i];
-                                $latefee->late_fee_type = $request->late_fee_type[$i];
-                                $latefee->frequency = $request->frequency[$i];
-                                $latefee->save();
-
-                            }
-                        }
-                    }
-
+                   
 
                     /*--------Utilities---------------------*/
                     if(is_array(@$request->utility_id) && count(@$request->utility_id) >0 ){
                         for ($i = 0;$i <= count($request->utility_id);$i++) {
                             if (!empty($request->utility_id[$i])) {
-                                $latefee = new PropertyUtility;
-                                $latefee->user_id = auth()->user()->id;
-                                $latefee->property_id = $property->id;
-                                $latefee->utility_id = $request->utility_id[$i];
-                                $latefee->variable_cost = $request->variable_cost[$i];
-                                $latefee->fixed_cost = $request->fixed_cost[$i];
-                                $latefee->save();
+                                $leaseutility = new LeaseUtility;
+                                $leaseutility->lease_id = $lease->id;
+                                $leaseutility->property_id = $request->property_id;
+                                $leaseutility->tenant_id = $request->tenant_id;
+                                $leaseutility->utility_id = $request->utility_id[$i];
+                                $leaseutility->variable_cost = $request->variable_cost[$i];
+                                $leaseutility->fixed_cost = $request->fixed_cost[$i];
+                                $leaseutility->save();
 
                             }
                         }
+                    }
+
+                   
+                    if($request->status ='Approved'){
+                        PropertyUnit::whereIn('id',$request->unit_ids)->update(['is_rented'=>'1']);
                     }
 
              
@@ -283,20 +419,24 @@ class LeaseController extends Controller
     public function edit($id)
     {
         if (\Auth::user()->can('lease-edit')) {
-            $property = Property::findOrFail($id);
-            $propertyUnit = PropertyUnit::where('property_id',$id)->get();
-            $paymentSetting = PropertyPaymentSetting::where('property_id',$id)->get();
-            $propertyExtraCharges = PropertyExtraCharges::where('property_id',$id)->get();
-            $propertyLateFees = PropertyLateFees::where('property_id',$id)->get();
-            $propertyUtility = PropertyUtility::where('property_id',$id)->get();
-            
-            $propertyTypes = PropertyType::get()->pluck('display_name', 'id');
+            $lease = Lease::findOrFail($id);
+            $checkLeaseApproved = Lease::where('id',$id)->where('status','Approved')->first();
+            if(!empty($checkLeaseApproved)){
+               return redirect()->back()->with('error', __("You can't  edit this lease."));
+            }
+            $unit_ids = explode(',', $lease->unit_ids);
+
+            $propertyUnit = PropertyUnit::where('property_id',$lease->property_id)->groupby('unit_name_prefix')->orderby('id','ASC')->get();
+            $rented_units = PropertyUnit::select('id')->where('property_id',$lease->property_id)->where('is_rented','1')->orderby('id','ASC')->get()->toArray();
+            $properties = Property::pluck('property_name','id')->toArray();
+            $tenants = Tenant::pluck('firm_name','id')->toArray();
+            $leaseDeposits = LeaseUtilityDeposite::where('lease_id',$id)->get();
+            $leaseExtraCharges = LeaseExtraCharge::where('lease_id',$id)->get();;
+            $leaseUtilities = LeaseUtility::where('lease_id',$id)->get();;
             $partners = User::where('role_id','2')->get()->pluck('first_name', 'id');
-            $unitTypes = UnitType::get()->pluck('display_name', 'id');
-            $utilities = Utility::get()->pluck('display_name', 'id');
+            $utilities = Utility::pluck('display_name', 'id')->toArray();
             $extraCharges = ExtraCharge::get()->pluck('display_name', 'id');
-            $lateFees = LateFees::get()->pluck('display_name', 'id');
-            return View('lease.edit',compact('propertyTypes','partners','unitTypes','utilities','extraCharges','lateFees','property','propertyUnit','paymentSetting','propertyExtraCharges','propertyLateFees','propertyUtility'));
+            return View('lease.edit',compact('lease','properties','tenants','leaseDeposits','leaseExtraCharges','leaseUtilities','utilities','extraCharges','propertyUnit','unit_ids','rented_units'));
         } else {
             return redirect()->back();
         }
@@ -305,23 +445,21 @@ class LeaseController extends Controller
     {
         if (\Auth::user()->can('lease-delete')) {
 
-            $leaseExist = Lease::where('property_id',$id)->where('status','Approved')->count();
+            $leaseExist = Lease::where('id',$id)->where('status','Approved')->count();
             if($leaseExist > 0){
-                return redirect()->back()->with('error', __("You can't  delete this property."));
+                return redirect()->back()->with('error', __("You can't  delete this lease."));
             }
 
-            $property = Property::find($id);
-            if ($property) {
+            $lease = Lease::find($id);
+            if ($lease) {
                 
-                $property->delete();
-                PropertyUnit::where('property_id',$id)->delete();
-                PropertyPaymentSetting::where('property_id',$id)->delete();
-                PropertyExtraCharges::where('property_id',$id)->delete();
-                PropertyLateFees::where('property_id',$id)->delete();
-                PropertyUtility::where('property_id',$id)->delete();
-                return redirect()->route('property.index')->with('success', __('Property successfully deleted .'));
+                $lease->delete();
+                LeaseUtilityDeposite::where('lease_id',$id)->delete();
+                LeaseExtraCharge::where('lease_id',$id)->delete();
+                LeaseUtility::where('lease_id',$id)->delete();
+                return redirect()->route('leases.index')->with('success', __('Lease successfully deleted .'));
             } else {
-                return redirect()->back()->with('error', __('Property not found.'));
+                return redirect()->back()->with('error', __('Lease not found.'));
             }
         } else {
             return redirect()->back();

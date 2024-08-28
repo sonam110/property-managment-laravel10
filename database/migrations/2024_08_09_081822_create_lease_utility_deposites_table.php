@@ -19,8 +19,8 @@ return new class extends Migration
             $table->unsignedBigInteger('property_id');
             $table->foreign('property_id')->references('id')->on('properties')->onDelete('cascade');
 
-            $table->unsignedBigInteger('utility_id');
-            $table->decimal('deposite_amount',10,2)->default(0);
+            $table->unsignedBigInteger('utility');
+            $table->decimal('deposit_amount',10,2)->default(0);
 
             $table->timestamps();
         });

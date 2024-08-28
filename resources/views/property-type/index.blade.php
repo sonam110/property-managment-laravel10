@@ -23,7 +23,7 @@
                       <div class="card mb-3">
                         <div class="card-header pt-2">
                           <ul class="nav nav-tabs card-header-tabs" role="tablist">
-                            <li class="nav-item">
+                            <!-- <li class="nav-item">
                               <button
                                 class="nav-link {{ (request()->is('property-type*') ? 'active' : '')}}"
                                 data-bs-toggle="tab"
@@ -32,7 +32,7 @@
                                 aria-selected="true">
                                 Property Type
                               </button>
-                            </li>
+                            </li> -->
                             <li class="nav-item">
                               <button
                                 class="nav-link {{ (request()->is('utility*') ? 'active' : '')}}"

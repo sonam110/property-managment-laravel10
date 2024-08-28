@@ -91,6 +91,22 @@
     const FormValidation2 = FormValidation.formValidation(wizardPropertyListingFormStep2, {
       fields: {
         // * Validate the fields here based on your requirements
+        total_square: {
+          validators: {
+            notEmpty: {
+              message: 'Please enter total area of sqare foot'
+            }
+          }
+        },
+        
+        price: {
+          validators: {
+            notEmpty: {
+              message: 'Please enter price per sqare foot'
+            }
+          }
+        }
+        
         
       },
       plugins: {
@@ -99,18 +115,25 @@
           // Use this for enabling/changing valid/invalid class
           // eleInvalidClass: '',
           eleValidClass: '',
-          rowSelector: function (field, ele) {
-            // field is the field name & ele is the field element
-            switch (field) {
-              case 'plAddress':
-                return '.col-lg-12';
-              default:
-                return '.col-sm-6';
-            }
-          }
+          rowSelector: '.col-sm-4'
         }),
         autoFocus: new FormValidation.plugins.AutoFocus(),
         submitButton: new FormValidation.plugins.SubmitButton()
+      },
+      init: instance => {
+        instance.on('core.form.validate', function (e) {
+          const price = instance.getFieldElement('price').value;
+          const fixedPrice = instance.getFieldElement('fixed_price').value;
+
+          if (!price && !fixedPrice) {
+            instance.updateFieldStatus('price', 'INVALID', 'Please enter either price per square foot or a fixed price');
+            instance.updateFieldStatus('fixed_price', 'INVALID', 'Please enter either price per square foot or a fixed price');
+            e.preventDefault();
+          } else {
+            instance.updateFieldStatus('price', 'VALID');
+            instance.updateFieldStatus('fixed_price', 'VALID');
+          }
+        });
       }
     }).on('core.form.valid', function () {
       // Jump to the next step when all fields in the current step are valid
@@ -305,7 +328,7 @@ function submitFormViaAjax(formData) {
         processData: false, // Important: Prevent jQuery from processing the data
         success: function(response) {
             toastr.success(response.message || "Submitted successfully!");
-            window.location.href = appurl+'property'; // Change this URL to the desired route
+            window.location.href = appurl+'leases'; // Change this URL to the desired route
         },
         error: function(xhr) {
             const errors = xhr.responseJSON.errors;

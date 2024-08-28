@@ -151,8 +151,13 @@
                                            
                                           </select>
                                         </div>
+                                         <div class="col-sm-2">
+                                            <label class="form-label" for="is_gst"> &nbsp;</label>
+                                            <input class="form-check-input gst-checkbox" type="checkbox" id="is_gst"  name="is_gst[]"  value="1" {{ ($payment->is_gst =='1') ? ' checked':'' }}/>
+                                            <label class="form-check-label" for="is_gst">Gst Invoice </label>
+                                        </div>
                                         
-                                        <div class="col-sm-3"><button type="button" class="removeButton btn btn-danger btn-sm" style="margin:10px"><i class="ti ti-trash text-white"></i></button>  </div>
+                                        <div class="col-sm-1"><button type="button" class="removeButton btn btn-danger btn-sm" style="margin:10px"><i class="ti ti-trash text-white"></i></button>  </div>
                                          <hr class="my-20" />
                                     </div>
                                     @endforeach
@@ -352,7 +357,7 @@
   $(document).ready(function(){
     /*----------------------Partner Payment-------------------*/
         $("#addPartnerButton").click(function(){
-            var textBoxHtml = '<div class="row g-3 textBoxWrapper"><br><hr class="my-0" /><br> <div class="col-sm-3"> <label for="partners" class="form-label">Partners</label> <div class="select2-primary"> <select class="form-control select2 form-select"  required="required" name="partners[]"><?php foreach ($partners as $key =>  $row): ?><option value="<?php echo $key ?>"><?php echo $row ?></option><?php endforeach ?></select> </div> </div> <div class="col-sm-3"> <label for="commission_value" class="form-label">\Partner\'s share</label> <input class="form-control" id="commission_value" placeholder="\Partner\'s share" name="commission_value[]" type="text"> </div> <div class="col-sm-3"> <label class="form-label" for="commission_type">Type</label> <select id="commission_type" name="commission_type[]" class="form-control select2 form-select" > <option value="">Select</option> <option value="1">Fixed Value</option> <option value="2">% of Total Rent</option> <option value="3">% of Total collected Rent</option> </select> </div>  <div class="col-sm-3"><label for="button" class="form-label">&nbsp;<label><button type="button" class="removeButton btn btn-sm btn-danger" ><i class="ti ti-trash text-white"></i></button>  </div></div> <br>';
+            var textBoxHtml = '<div class="row g-3 textBoxWrapper"><br><hr class="my-0" /><br> <div class="col-sm-3"> <label for="partners" class="form-label">Partners</label> <div class="select2-primary"> <select class="form-control select2 form-select"  required="required" name="partners[]"><?php foreach ($partners as $key =>  $row): ?><option value="<?php echo $key ?>"><?php echo $row ?></option><?php endforeach ?></select> </div> </div> <div class="col-sm-3"> <label for="commission_value" class="form-label">\Partner\'s share</label> <input class="form-control" id="commission_value" placeholder="\Partner\'s share" name="commission_value[]" type="text"> </div> <div class="col-sm-3"> <label class="form-label" for="commission_type">Type</label> <select id="commission_type" name="commission_type[]" class="form-control select2 form-select" > <option value="">Select</option> <option value="1">Fixed Value</option> <option value="2">% of Total Rent</option> <option value="3">% of Total collected Rent</option> </select> </div> <div class="col-sm-2"> <label class="form-label" for="is_gst"> &nbsp;</label> <input class="form-check-input gst-checkbox" type="checkbox" id="is_gst"  name="is_gst"  value="1"/> <label class="form-check-label" for="is_gst">Is Gst Invoice </label> </div> <div class="col-sm-1"><label for="button" class="form-label">&nbsp;<label><button type="button" class="removeButton btn btn-sm btn-danger" ><i class="ti ti-trash text-white"></i></button>  </div></div> <br>';
             $("#paymentContainer").append(textBoxHtml);
         });
 

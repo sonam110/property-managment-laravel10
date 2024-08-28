@@ -86,7 +86,7 @@ class PropertyController extends Controller
 
                 
 
-                return '<div class="btn-group btn-group-xs">'.$edit.$delete.$copy.$view.'</div>';
+                return '<div class="btn-group btn-group-xs">'.$edit.$copy.$view.$delete.'</div>';
             })
         ->escapeColumns(['action'])
         ->addIndexColumn()
@@ -210,6 +210,7 @@ class PropertyController extends Controller
                                 $paymentSetting->property_id = $property->id;
                                 $paymentSetting->commission_value = $request->commission_value[$i];
                                 $paymentSetting->commission_type = $request->commission_type[$i];
+                                $paymentSetting->is_gst = $request->is_gst[$i];
                                 $paymentSetting->save();
 
                             }
@@ -255,7 +256,7 @@ class PropertyController extends Controller
     {
         if (\Auth::user()->can('property-edit')) {
             $property = Property::findOrFail($id);
-            $propertyUnit = PropertyUnit::where('property_id',$id)->groupby('unit_name_prefix')->orderby('id','DESC')->get();
+            $propertyUnit = PropertyUnit::where('property_id',$id)->groupby('unit_name_prefix')->orderby('id','ASC')->get();
             $paymentSetting = PropertyPaymentSetting::where('property_id',$id)->get();
             $unitTypes = UnitType::get()->pluck('display_name', 'id');
             $partners = User::where('role_id','2')->get()->pluck('first_name', 'id');
