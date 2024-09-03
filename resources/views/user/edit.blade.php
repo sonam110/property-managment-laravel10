@@ -102,10 +102,17 @@
                 @enderror
             </div>
         </div>
-         <div class="col-md-6">
+          <div class="col-md-6">
             <div class="mb-3">
-                {{ Form::label('national_id_no', __('National Id/ Passport'), ['class' => 'form-label']) }}
-                {{ Form::text('national_id_no', null, ['class' => 'form-control', 'placeholder' => __('NationalId')]) }}
+                {{ Form::label('gst_no', __('GST NO'), ['class' => 'form-label']) }}
+                {{ Form::text('gst_no', null, ['class' => 'form-control', 'placeholder' => __('GST NO')]) }}
+                
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="mb-3">
+                {{ Form::label('pan_no', __('PAN NO'), ['class' => 'form-label']) }}
+                {{ Form::text('pan_no', null, ['class' => 'form-control', 'placeholder' => __('PAN NO')]) }}
                 
             </div>
         </div>

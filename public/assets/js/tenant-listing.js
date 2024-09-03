@@ -42,6 +42,14 @@
             }
           }
         },
+        firm_name: {
+          validators: {
+            notEmpty: {
+              message: 'Please enter firm name'
+            }
+          }
+        },
+        
         email: {
           validators: {
             notEmpty: {

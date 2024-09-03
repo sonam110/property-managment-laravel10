@@ -10,6 +10,13 @@ use Spatie\Permission\Models\Role;
 class PermissionController extends Controller
 {
 
+    public function __construct()
+    {
+        $this->middleware('permission:permission-browse',['only' => ['index']]);
+        $this->middleware('permission:permission-add', ['only' => ['store']]);
+        $this->middleware('permission:permission-edit', ['only' => ['update']]);
+        $this->middleware('permission:permission-delete', ['only' => ['destroy']]);
+    }
 
     public function index()
     {

@@ -1,69 +1,119 @@
 @extends('layouts.master')
 @section('page-title')
-    {{ __('Manage Lease') }}
+    {{ __('Manage Invoice') }}
 @endsection
 @section('breadcrumb')
-    <li class="breadcrumb-item"><a href="{{route('users.index')}}">{{__('Lease Management')}}</a></li>
-    <li class="breadcrumb-item">{{__('Leases')}}</li>
+    <li class="breadcrumb-item"><a href="{{route('users.index')}}">{{__('Invoice Management')}}</a></li>
+    <li class="breadcrumb-item">{{__('Invoices')}}</li>
 @endsection
 @section('content')
+<h4 class="py-3 mb-4"><span class="text-muted fw-light">Invoice /</span> List</h4>
 
-<!-- Users List Table -->
-<div class="card">
-  <div class="card-header border-bottom">
-    <h5 class="card-title mb-3">Search filter</h5>
-    <div class="d-flex  align-items-center row pb-2 gap-3 gap-md-0">
-      <div class="col-md-3 user_role">{{ Form::label('UserRole', __('Select Tenant'), ['class' => 'form-label']) }}<select id="tenant_id" class="select2 form-selec text-capitalize"><option value="" > Select Tenant
-       </option>
-       @foreach($tenants as $key => $tenant)
-        <option  value="{{ $key }}" {{ ($id ==$key)? 'Selected':'' }} >
-        {{ $tenant }}
-      </option> 
-      @endforeach</select></div>
-      <div class="col-md-3 user_role">{{ Form::label('UserRole', __('Select Property'), ['class' => 'form-label']) }}<select id="property_id" class="select2 form-selec text-capitalize"><option value="" > Select Property
-       </option>
-       @foreach($propertyTypes as $key => $pp)
-        <option  value="{{ $key }}">
-        {{ $pp }}
-      </option> 
-      @endforeach</select></div>
-    
-      <div class="col-md-3 user_status">{{ Form::label('UserStatus', __('Select Status'), ['class' => 'form-label']) }}<select id="status" class="select2 form-selec text-capitalize"><option value=""> Select Status </option><option value="Pending">Pending</option><option value="Processing">Processing</option><option value="Approved">Approved</option></select></div>
-    </div> 
+<!-- Invoice List Widget -->
+
+<div class="card mb-4">
+  <div class="card-widget-separator-wrapper">
+    <div class="card-body card-widget-separator">
+      <div class="row gy-4 gy-sm-1">
+        <div class="col-sm-6 col-lg-3">
+          <div
+            class="d-flex justify-content-between align-items-start card-widget-1 border-end pb-3 pb-sm-0">
+            <div>
+              <h3 class="mb-1">24</h3>
+              <p class="mb-0">Tenants</p>
+            </div>
+            <span class="avatar me-sm-4">
+              <span class="avatar-initial bg-label-secondary rounded"
+                ><i class="ti ti-user ti-md"></i
+              ></span>
+            </span>
+          </div>
+          <hr class="d-none d-sm-block d-lg-none me-4" />
+        </div>
+        <div class="col-sm-6 col-lg-3">
+          <div
+            class="d-flex justify-content-between align-items-start card-widget-2 border-end pb-3 pb-sm-0">
+            <div>
+              <h3 class="mb-1">165</h3>
+              <p class="mb-0">Invoices</p>
+            </div>
+            <span class="avatar me-lg-4">
+              <span class="avatar-initial bg-label-secondary rounded"
+                ><i class="ti ti-file-invoice ti-md"></i
+              ></span>
+            </span>
+          </div>
+          <hr class="d-none d-sm-block d-lg-none" />
+        </div>
+        <div class="col-sm-6 col-lg-3">
+          <div
+            class="d-flex justify-content-between align-items-start border-end pb-3 pb-sm-0 card-widget-3">
+            <div>
+              <h3 class="mb-1">$2.46k</h3>
+              <p class="mb-0">Paid</p>
+            </div>
+            <span class="avatar me-sm-4">
+              <span class="avatar-initial bg-label-secondary rounded"
+                ><i class="ti ti-checks ti-md"></i
+              ></span>
+            </span>
+          </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <h3 class="mb-1">$876</h3>
+              <p class="mb-0">Unpaid</p>
+            </div>
+            <span class="avatar">
+              <span class="avatar-initial bg-label-secondary rounded"
+                ><i class="ti ti-circle-off ti-md"></i
+              ></span>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
+</div>
+
+<!-- Invoice List Table -->
+<div class="card">
   <div class="card-datatable table-responsive">
-    <table class="datatables-users table">
-      <thead class="border-top">
+    <table class="invoice-list-table table border-top">
+      <thead>
         <tr>
           <th></th>
-          <th>Lease Number</th>
-          <th>Property Code</th>
-          <th>Tenant Info</th>
-          <th>Start date</th>
-          <th>Status</th>
-          <th>Actions</th>
+          <th>#Invoice No</th>
+          <th>Lease</th>
+          <th>Partner</th>
+          <th>Tenant</th>
+          <th>Total</th>
+          <th class="text-truncate">Issued Date</th>
+          <th>Invoice Status</th>
+          <th class="cell-fit">Actions</th>
         </tr>
       </thead>
     </table>
   </div>
-  
 </div>
+
 @endsection
 @section('extrajs')     
+<!-- <script src="{{ asset('assets/js/app-invoice-list.js') }}"></script> -->
  <!-- <script src="{{ asset('assets/js/app-user-list.js') }}"></script>   -->       
 <script>
    $(document).ready( function () {
     var userCreateUrl = '{{ route('leases.create') }}';
-    var table = $('.datatables-users').DataTable({
+    var table = $('.invoice-list-table').DataTable({
        "processing": true,
        "serverSide": true,
        "ajax":{
-           'url' : '{{ route('api.leases-list') }}',
+           'url' : '{{ route('invoice-list') }}',
            'type' : 'POST',
             "data": function(d) {
             d.property_id   = $('#property_id').val();
             d.status   = $('#status').val();
-            d.tenant_id   = $('#tenant_id').val();
             },
            'headers': {
             'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -72,10 +122,12 @@
     "order": [["1", "desc" ]],
     "columns": [
             { "data": 'DT_RowIndex', "name": 'DT_RowIndex' , orderable: false, searchable: false },
-            { "data": "unique_id"},
-            { "data": "property_id"},
+            { "data": "invoice_no"},
+            { "data": "lease_id"},
+            { "data": "partner_id"},
             { "data": "tenant_id"},
-            { "data": "start_date"},
+            { "data": "grand_total"},
+            { "data": "invoice_date"},
             { "data": "status"},
             { "data": "action"},
         ],
@@ -235,23 +287,12 @@
               }
             }
           ]
-        },
-        {
-                text: '<i class="ti ti-plus me-0 me-sm-1 ti-xs"></i><span class="d-none d-sm-inline-block">Add New Lease</span>',
-                className: 'add-new btn btn-primary',
-                action: function (e, dt, node, config) {
-                    var url = '{{ route('leases.create') }}'; // URL to load modal content
-
-                    // Fetch the content and show in the modal
-                    $.get(url, function (data) {
-                       window.location = url ;
-                    });
-                }
-            }
+        }
+        
       ],
         preDrawCallback: function(settings) {
-            if ($.fn.DataTable.isDataTable('.datatables-users')) {
-                var dt = $('.datatables-users').DataTable();
+            if ($.fn.DataTable.isDataTable('.invoice-list-table')) {
+                var dt = $('.invoice-list-table').DataTable();
                 var settings = dt.settings();
                 if (settings[0].jqXHR) {
                     settings[0].jqXHR.abort();
@@ -260,7 +301,7 @@
         }
   });
 
-$('#property_id, #status,#tenant_id').on('change', function(e) {
+$('#property_id, #status').on('change', function(e) {
        table.draw();
    });
 });

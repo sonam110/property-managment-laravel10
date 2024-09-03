@@ -28,6 +28,9 @@ return new class extends Migration
             $table->string('city')->nullable();
             $table->string('zipCode')->nullable();
             $table->string('national_id_no')->nullable();
+            $table->string('gst_no')->nullable();
+            $table->string('pan_no')->nullable();
+            $table->string('national_id_no')->nullable();
             $table->string('profile_pic')->nullable();
             $table->string('locktimeout')->default('10')->comment('System auto logout if no activity found.');
             $table->boolean('status')->default('1')->comment('1:Active, 0:Inactive');

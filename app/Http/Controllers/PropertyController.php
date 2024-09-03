@@ -12,6 +12,7 @@ use App\Models\UnitType;
 use App\Models\Utility;
 use App\Models\ExtraCharge;
 use App\Models\LateFees;
+use App\Models\Lease;
 use Validator;
 use Auth;
 use Exception;
@@ -20,6 +21,15 @@ use Str;
 class PropertyController extends Controller
 {
 
+    public function __construct()
+    {
+        $this->middleware('permission:property-browse',['only' => ['index']]);
+        $this->middleware('permission:property-add', ['only' => ['store']]);
+        $this->middleware('permission:property-edit', ['only' => ['update']]);
+        $this->middleware('permission:property-read', ['only' => ['show']]);
+        $this->middleware('permission:property-delete', ['only' => ['destroy']]);
+    }
+    
     public function unitsall()
     {
         $units = PropertyUnit::all();
@@ -73,7 +83,10 @@ class PropertyController extends Controller
             ->addColumn('action', function ($query)
             {
 
-                 $edit =' <a class="btn btn-sm btn-primary" href="'.route('property.edit', $query->id) .'" data-toggle="tooltip" data-placement="top" title="Edit" data-original-title="Edit"><i class="fa fa-edit"></i></a>';
+                $checkLeaseExist = Lease::where('property_id',$query->id)->count();
+                
+                    $edit =' <a class="btn btn-sm btn-primary" href="'.route('property.edit', $query->id) .'" data-toggle="tooltip" data-placement="top" title="Edit" data-original-title="Edit"><i class="fa fa-edit"></i></a>';
+               
                 $delete = '<a href="'.route('property-destroy', $query->id) .'" 
                                  class="btn btn-sm btn-danger"
                                 onClick="return confirm(\'Are you sure you want to delete this?\');" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete">
@@ -123,6 +136,13 @@ class PropertyController extends Controller
             if ($validator->fails()) {
                 return response()->json([
                     'errors' => $validator->errors()
+                ], 422);
+            }
+
+            $checkLeaseExist = Lease::where('property_id',$request->id)->count();
+            if($checkLeaseExist > 0 ) {
+                return response()->json([
+                    'errors' => "You can't edit this property"
                 ], 422);
             }
 
@@ -241,13 +261,15 @@ class PropertyController extends Controller
     public function edit($id)
     {
         if (\Auth::user()->can('property-edit')) {
+            $checkLeaseExist = Lease::where('property_id',$id)->count();
+            
             $property = Property::findOrFail($id);
             $propertyUnit = PropertyUnit::where('property_id',$id)->groupby('unit_name_prefix')->orderby('id','ASC')->get();
             $paymentSetting = PropertyPaymentSetting::where('property_id',$id)->with('partner')->get();
             $unitTypes = UnitType::get()->pluck('display_name', 'id');
             $partners = User::where('role_id','2')->get()->pluck('first_name', 'id');
            
-            return View('property.edit',compact('partners','property','propertyUnit','paymentSetting','unitTypes'));
+            return View('property.edit',compact('partners','property','propertyUnit','paymentSetting','unitTypes','checkLeaseExist'));
         } else {
             return redirect()->back();
         }

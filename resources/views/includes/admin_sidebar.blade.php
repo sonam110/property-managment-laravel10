@@ -61,39 +61,60 @@
             </li>
 
              <!-- PROPERTY -->
+             @can('property-browse')
             <li class="menu-header small text-uppercase">
               <span class="menu-header-text">PROPERTY MANAGEMENT</span>
             </li>
+           
             <li class="menu-item {{ (request()->is('property*') ? 'active' : '')}}">
               <a href="{{ route('property.index') }}" class="menu-link">
                  <i class="menu-icon tf-icons ti ti-home"></i>
                 <div data-i18n="Properties">Properties</div>
               </a>
             </li>
+            @endcan
+              </ul>
             <!-- TENANT -->
             <li class="menu-header small text-uppercase">
               <span class="menu-header-text">LEASE MANAGEMENT</span>
             </li>
+             @can('tenant-browse')
             <li class="menu-item {{ (request()->is('tenants*') ? 'active' : '')}}">
               <a href="{{ route('tenants.index') }}" class="menu-link">
                  <i class="menu-icon tf-icons ti ti-user"></i>
                 <div data-i18n="Tenants">Tenants</div>
               </a>
             </li>
+             @endcan
+             @can('lease-browse')
             <li class="menu-item {{ (request()->is('leases*') ? 'active' : '')}}">
               <a href="{{ route('leases.index') }}" class="menu-link">
                  <i class="menu-icon tf-icons ti ti-server"></i>
                 <div data-i18n="Leases">Leases</div>
               </a>
             </li>
+            @endcan
+            @can('lease-contract')
+            
             <li class="menu-item {{ (request()->is('contract-document*') ? 'active' : '')}}">
               <a href="{{ route('contract-document') }}" class="menu-link">
                  <i class="menu-icon tf-icons ti ti-files"></i>
                 <div data-i18n="Contract Document">Contract Document </div>
               </a>
             </li>
-             
-
+              @endcan
+              @can('invoice-browse')
+             <li class="menu-header small text-uppercase">
+              <span class="menu-header-text">INVOICE MANAGEMENT</span>
+            </li>
+            <li class="menu-item {{ (request()->is('invoice*') ? 'active' : '')}}">
+              <a href="{{ route('invoice') }}" class="menu-link">
+                 <i class="menu-icon tf-icons ti ti-file-invoice"></i>
+                <div data-i18n="Invoices">Invoices</div>
+              </a>
+            </li>
+             @endcan
+             @can('app-setting')
             <li class="menu-header small text-uppercase">
               <span class="menu-header-text">SETTINGS</span>
             </li>
@@ -103,7 +124,7 @@
                 <div data-i18n="System Setup">System Setup</div>
               </a>
             </li>
-
+            @endcan
           
           </ul>
         </aside>

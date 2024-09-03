@@ -30,13 +30,21 @@ use Str;
 use PDF;
 class LeaseController extends Controller
 {
-    public function index()
+     public function __construct()
+    {
+        $this->middleware('permission:invoice-browse',['only' => ['index']]);
+        $this->middleware('permission:invoice-read', ['only' => ['show']]);
+    }
+
+    public function index($id = NULL)
     {
         if (\Auth::user()->can('lease-browse')) {
             $data = Lease::get();
             $propertyTypes = Property::get()->pluck('property_name', 'id');
             $partners = User::get()->pluck('first_name', 'id');
-            return View('lease.index',compact('propertyTypes','data','partners'));
+            $tenants = Tenant::get()->pluck('firm_name', 'id');
+            $id = $id;
+            return View('lease.index',compact('propertyTypes','data','partners','tenants','id'));
         } else {
             return redirect()->back();
         }
@@ -151,6 +159,10 @@ private function generateLeaseContent($lease,$request)
         {
             $query->where('property_id', $request->property_id);
         }
+        if(!empty($request->tenant_id))
+        {
+            $query->where('tenant_id', $request->tenant_id);
+        }
         if($request->status!='')
         {
             $query->where('status', $request->status);
@@ -254,11 +266,9 @@ private function generateLeaseContent($lease,$request)
 
             $checkLeaseApproved = Lease::where('id',$request->id)->where('status','Approved')->first();
             if(!empty($checkLeaseApproved)){
-                if ($validator->fails()) {
-                    return response()->json([
-                        'errors' => "You can't' edit this lease"
-                    ], 422);
-                }
+                return response()->json([
+                    'errors' => "You can't' edit this lease"
+                ], 422);
             }
 
         } else{
@@ -284,15 +294,7 @@ private function generateLeaseContent($lease,$request)
         DB::beginTransaction();
         try{
 
-                $checkAlready = Lease::where('property_id',$request->property_id)->where('tenant_id',$request->tenant_id)->first();
-                if(!empty($checkAlready)){
-                    if ($validator->fails()) {
-                         return response()->json([
-                            'errors' => 'A lease already exists for this tenant or property'
-                        ], 422);
-                    }
-
-                }
+               
                 if(!empty($request->id))
                 {
                     $lease = Lease::find($request->id);
@@ -340,9 +342,9 @@ private function generateLeaseContent($lease,$request)
                         $messages = 'Lease successfully updated';
                     }
                     /*--------Unit---------------------*/
-                    if(is_array(@$request->utility) && count(@$request->utility) >0 ){
-                        for ($i = 0;$i <= count($request->utility);$i++) {
-                            if (!empty($request->utility[$i])) {
+                    if(is_array(@$request->deposit_amount) && count(@$request->deposit_amount) >0 ){
+                        for ($i = 0;$i <= count($request->deposit_amount);$i++) {
+                            if (!empty($request->deposit_amount[$i])) {
                                 $leaseDeposit = new LeaseUtilityDeposite;
                                 $leaseDeposit->lease_id  = $lease->id;
                                 $leaseDeposit->property_id  = $request->property_id ;
@@ -422,7 +424,7 @@ private function generateLeaseContent($lease,$request)
             $lease = Lease::findOrFail($id);
             $checkLeaseApproved = Lease::where('id',$id)->where('status','Approved')->first();
             if(!empty($checkLeaseApproved)){
-               return redirect()->back()->with('error', __("You can't  edit this lease."));
+               return redirect()->route('leases.index')->with('error', __("You can't  edit this lease."));
             }
             $unit_ids = explode(',', $lease->unit_ids);
 

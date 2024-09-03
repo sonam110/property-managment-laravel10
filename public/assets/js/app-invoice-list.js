@@ -11,7 +11,7 @@ $(function () {
   // Invoice datatable
   if (dt_invoice_table.length) {
     var dt_invoice = dt_invoice_table.DataTable({
-      ajax: assetsPath + 'json/invoice-list.json', // JSON file to add data
+      ajax: appurl + 'invoice-list', // JSON file to add data
       columns: [
         // columns according to JSON
         { data: '' },
@@ -82,7 +82,7 @@ $(function () {
           targets: 3,
           responsivePriority: 4,
           render: function (data, type, full, meta) {
-            var $name = full['client_name'],
+            var $name = full['tenant_id'],
               $service = full['service'],
               $image = full['avatar_image'],
               $rand_num = Math.floor(Math.random() * 11) + 1,

@@ -18,8 +18,8 @@ return new class extends Migration
             $table->foreign('tenant_id')->references('id')->on('tenants')->onDelete('cascade');
 
             $table->string('contact_type')->comment('All,Rental,Cam,Utility');
-            $table->string('full_name');
-            $table->string('email');
+            $table->string('full_name')->nullable();
+            $table->string('email')->nullable();
             $table->string('phone')->nullable();
             $table->string('position')->nullable();
             $table->timestamps();

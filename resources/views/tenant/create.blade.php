@@ -54,7 +54,7 @@
                             @enderror
                         </div>
                         <div class="col-sm-6">
-                            {{ Form::label('firm_name', __('Firm Name'), ['class' => 'form-label']) }}
+                            {{ Form::label('firm_name', __('Firm Name'), ['class' => 'form-label']) }}  <span class="requiredLabel">*</span>
                             {{ Form::text('firm_name', null, ['class' => 'form-control', 'placeholder' => __('Firm Name')]) }}
                             @error('firm_name')
                                 <small class="invalid-name" role="alert">

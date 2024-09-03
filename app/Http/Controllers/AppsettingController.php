@@ -78,6 +78,12 @@ class AppsettingController extends Controller
         $appsetting->description          = $request->description;
         $appsetting->Zipcode     = $request->Zipcode;
         $appsetting->gst_no     = $request->gst_no;
+        $appsetting->pan_no     = $request->pan_no;
+        $appsetting->bank_name     = $request->bank_name;
+        $appsetting->account_holder_name     = $request->account_holder_name;
+        $appsetting->account_no     = $request->account_no;
+        $appsetting->bank_ifsc_code     = $request->bank_ifsc_code;
+        $appsetting->bank_address     = $request->bank_address;
         $appsetting->website_url   = $request->website_url;
         $appsetting->document   = $request->document;
         $appsetting->app_logo         = $saveFile;

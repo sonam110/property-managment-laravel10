@@ -18,6 +18,16 @@ use Str;
 use App\Models\TenantType;
 class TenantController extends Controller
 {
+
+     public function __construct()
+    {
+        $this->middleware('permission:tenant-browse',['only' => ['index']]);
+        $this->middleware('permission:tenant-add', ['only' => ['store']]);
+        $this->middleware('permission:tenant-edit', ['only' => ['update']]);
+        $this->middleware('permission:tenant-read', ['only' => ['show']]);
+        $this->middleware('permission:tenant-delete', ['only' => ['destroy']]);
+    }
+    
     public function index()
     {
         $data = Tenant::get();
@@ -41,8 +51,10 @@ class TenantController extends Controller
 
                 $view =' <a class="btn btn-sm btn-info" href="'.route('tenants.show', $query->id) .'" data-toggle="tooltip" data-placement="top" title="" data-original-title="View"  title="View"><i class="fa fa-eye"></i></a>';
 
+                $lease =' <a class="btn btn-sm btn-secondary" href="'.route('tenant-leases', $query->id) .'" data-toggle="tooltip" data-placement="top" title="" data-original-title="View"  title="View"><i class="fa fa-home"></i></a>';
 
-                return '<div class="btn-group btn-group-xs">'.$edit.$view.$delete.'</div>';
+
+                return '<div class="btn-group btn-group-xs">'.$edit.$view.$delete.$lease.'</div>';
             })
         ->escapeColumns(['action'])
         ->addIndexColumn()

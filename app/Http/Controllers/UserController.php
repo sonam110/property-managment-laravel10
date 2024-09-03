@@ -17,11 +17,11 @@ class UserController extends Controller
     
     public function __construct()
     {
-        $this->middleware('permission:user-browse',['only' => ['users']]);
-        $this->middleware('permission:user-add', ['only' => ['store']]);
-        $this->middleware('permission:user-edit', ['only' => ['update','userAction']]);
-        $this->middleware('permission:user-read', ['only' => ['show']]);
-        $this->middleware('permission:user-delete', ['only' => ['destroy']]);
+        $this->middleware('permission:role-browse',['only' => ['index']]);
+        $this->middleware('permission:role-add', ['only' => ['store']]);
+        $this->middleware('permission:role-edit', ['only' => ['update']]);
+        $this->middleware('permission:role-read', ['only' => ['show']]);
+        $this->middleware('permission:role-delete', ['only' => ['destroy']]);
     }
     /**
      * Display a listing of the resource.
@@ -149,6 +149,8 @@ class UserController extends Controller
             $user->country = $request->country;
             $user->state = $request->state;
             $user->city = $request->city;
+            $user->pan_no = $request->pan_no;
+            $user->gst_no = $request->gst_no;
             $user->national_id_no = $request->national_id_no;
             $user->postal_address = $request->postal_address;
             $user->residential_address = $request->residential_address;
@@ -277,7 +279,8 @@ class UserController extends Controller
             $user->country = $request->country;
             $user->state = $request->state;
             $user->city = $request->city;
-            $user->national_id_no = $request->national_id_no;
+            $user->pan_no = $request->pan_no;
+            $user->gst_no = $request->gst_no;
             $user->postal_address = $request->postal_address;
             $user->residential_address = $request->residential_address;
             $user->save();

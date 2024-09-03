@@ -23,6 +23,8 @@ return new class extends Migration
             $table->text('address')->nullable();
             $table->string('Zipcode')->nullable();
             $table->string('gst_no')->nullable();
+            $table->string('pan_no')->nullable();
+            $table->decimal('tax_per',10,2)->default(9)->nullable();
             $table->string('website_url')->nullable();
             $table->string('lease_prefix')->nullable();
             $table->string('tenant_prefix')->nullable();
@@ -34,6 +36,11 @@ return new class extends Migration
             $table->integer('generate_invoice_day')->nullable();
             $table->text('invoice_conditions')->nullable();
             $table->longText('document')->nullable();
+            $table->string('bank_name')->nullable();
+            $table->string('account_holder_name')->nullable();
+            $table->string('account_no')->nullable();
+            $table->string('bank_ifsc_code')->nullable();
+            $table->string('bank_address')->nullable();
             $table->timestamps();
         });
     }

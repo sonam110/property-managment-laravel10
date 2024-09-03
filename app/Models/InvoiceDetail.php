@@ -5,11 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class LeaseUtility extends Model
+class InvoiceDetail extends Model
 {
     use HasFactory;
-    public function utilityInfo()
-    {
-        return $this->belongsTo(Utility::class, 'utility_id', 'id');
-    }
 }

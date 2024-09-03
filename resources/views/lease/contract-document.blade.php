@@ -203,6 +203,8 @@
                         $('#pdfPreviewModal').modal('show');
                     }
                 });
+            } else{
+              alert('Please select lease');
             }
         });
 

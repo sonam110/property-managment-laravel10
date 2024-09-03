@@ -22,6 +22,7 @@ use App\Http\Controllers\LateFeeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PropertyController;
 use App\Http\Controllers\LeaseController;
+use App\Http\Controllers\InvoiceController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -86,6 +87,7 @@ Route::group(['middleware' => ['auth']], function () {
 
         /* --------------leases --------------------*/
         Route::resource('leases', LeaseController::class);
+        Route::get('tenant-leases/{id?}', [LeaseController::class, 'index'])->name('tenant-leases');
         Route::post('leases-list', [LeaseController::class, 'leaseList'])->name('api.leases-list');
         Route::get('leases-destroy/{id}', [LeaseController::class, 'destroy'])->name('leases-destroy');
 
@@ -100,6 +102,18 @@ Route::group(['middleware' => ['auth']], function () {
 
         Route::post('lease-fetch', [LeaseController::class, 'fetchLeaseData'])->name('leases.fetch');
         Route::post('leases-preview/{id}', [LeaseController::class, 'previewPdf'])->name('leases.preview');
+
+         Route::get('invoice', [InvoiceController::class, 'invoice'])->name('invoice');
+         Route::post('invoice-list', [InvoiceController::class, 'invoiceList'])->name('invoice-list');
+         Route::get('invoice-view/{id}', [InvoiceController::class, 'invoiceView'])->name('invoice-view');
+         Route::get('cam-invoice/{id}', [InvoiceController::class, 'camInvoice'])->name('cam-invoice');
+         Route::get('invoice-edit/{id}', [InvoiceController::class, 'invoiceEdit'])->name('invoice-edit');
+
+          Route::get('invoice-template', [InvoiceController::class, 'invoiceTemplate'])->name('invoice-template');
+          Route::post('invoice-update', [InvoiceController::class, 'invoiceUpdate'])->name('invoice-update');
+
+
+
 
 
 
