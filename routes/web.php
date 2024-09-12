@@ -23,6 +23,8 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PropertyController;
 use App\Http\Controllers\LeaseController;
 use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\ExpenseController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -107,15 +109,31 @@ Route::group(['middleware' => ['auth']], function () {
          Route::post('invoice-list', [InvoiceController::class, 'invoiceList'])->name('invoice-list');
          Route::get('invoice-view/{id}', [InvoiceController::class, 'invoiceView'])->name('invoice-view');
          Route::get('cam-invoice/{id}', [InvoiceController::class, 'camInvoice'])->name('cam-invoice');
+         Route::get('utility-invoice/{id}', [InvoiceController::class, 'utilityInvoice'])->name('utility-invoice');
          Route::get('invoice-edit/{id}', [InvoiceController::class, 'invoiceEdit'])->name('invoice-edit');
 
           Route::get('invoice-template', [InvoiceController::class, 'invoiceTemplate'])->name('invoice-template');
           Route::post('invoice-update', [InvoiceController::class, 'invoiceUpdate'])->name('invoice-update');
 
 
+          Route::post('download-pdf', [InvoiceController::class, 'downloadPdf'])->name('pdf.download');
 
 
+          /* Payment------------------*/
+           Route::post('add-payment', [PaymentController::class, 'addPayment'])->name(' add-payment');
+           Route::get('payment-history', [PaymentController::class, 'index'])->name('payment-history');
+            Route::post('payment-history-list', [PaymentController::class, 'paymentHistoryList'])->name('payment-history-list');
+            Route::get('edit-payment/{id}', [PaymentController::class, 'edit'])->name('edit-payment');
+            Route::post('payment-update/{id}', [PaymentController::class, 'update'])->name('payment-update');
 
+              Route::get('payment-delete/{id}', [PaymentController::class, 'destroy'])->name('payment-delete');
+              Route::get('download-recipt/{id}', [PaymentController::class, 'download'])->name('download-recipt');
+
+            /*--------Expenses -------------------*/
+            Route::resource('expense', ExpenseController::class);
+          
+            Route::post('expense-list', [ExpenseController::class, 'expenseList'])->name('api.expense-list');
+            Route::get('expense-destroy/{id}', [ExpenseController::class, 'destroy'])->name('expense-destroy');
 
 
         /* --------------settings --------------------*/

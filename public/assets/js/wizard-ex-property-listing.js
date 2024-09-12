@@ -21,7 +21,7 @@
     const wizardPropertyListingForm = wizardPropertyListing.querySelector('#wizard-property-listing-form');
     // Wizard steps
     const wizardPropertyListingFormStep1 = wizardPropertyListingForm.querySelector('#property-detail');
-    const wizardPropertyListingFormStep2 = wizardPropertyListingForm.querySelector('#payment-setting');
+    //const wizardPropertyListingFormStep2 = wizardPropertyListingForm.querySelector('#payment-setting');
      // Wizard next prev button
     const wizardPropertyListingNext = [].slice.call(wizardPropertyListingForm.querySelectorAll('.btn-next'));
 
@@ -72,30 +72,6 @@
         });
       }
     }).on('core.form.valid', function () {
-      // Jump to the next step when all fields in the current step are valid
-      validationStepper.next();
-    });
-
-  
-
-   
-    // Price Details
-    const FormValidation2 = FormValidation.formValidation(wizardPropertyListingFormStep2, {
-      fields: {
-        // * Validate the fields here based on your requirements
-      },
-      plugins: {
-        trigger: new FormValidation.plugins.Trigger(),
-        bootstrap5: new FormValidation.plugins.Bootstrap5({
-          // Use this for enabling/changing valid/invalid class
-          // eleInvalidClass: '',
-          eleValidClass: '',
-          rowSelector: '.col-md-12'
-        }),
-        autoFocus: new FormValidation.plugins.AutoFocus(),
-        submitButton: new FormValidation.plugins.SubmitButton()
-      }
-    }).on('core.form.valid', function () {
       // You can submit the form
       // wizardPropertyListingForm.submit()
       // or send the form data to server via an Ajax request
@@ -108,6 +84,11 @@
       submitFormViaAjax(formData);
     });
 
+  
+
+   
+    // Price Details
+  
     wizardPropertyListingNext.forEach(item => {
       item.addEventListener('click', event => {
         //alert(1);
@@ -116,11 +97,6 @@
           case 0:
             FormValidation1.validate();
             break;
-
-          case 1:
-            FormValidation2.validate();
-            break;
-
           
           default:
             break;
@@ -133,10 +109,6 @@
 
         switch (validationStepper._currentIndex) {
           
-          case 1:
-            validationStepper.previous();
-            break;
-
           case 0:
 
           default:

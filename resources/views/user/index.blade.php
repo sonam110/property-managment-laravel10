@@ -259,7 +259,7 @@ $('#UserRole, #UserStatus').on('change', function(e) {
 
 // Initialize Select2
   $(document).ready(function() {
-    getState();
+    //getState();
       /*$('#multicol-country').select2();
 
       // Attach event handler to Select2 dropdown

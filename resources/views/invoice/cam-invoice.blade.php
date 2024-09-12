@@ -42,36 +42,7 @@ $partner_per = $data->partner_per;
 $partner_type = $data->partner_type;
 @endphp
 <div class="row invoice-preview">
- <div class="card">
-    <div class="card-body">
-      <button
-        class="btn btn-primary"
-        data-bs-toggle="offcanvas"
-        data-bs-target="#sendInvoiceOffcanvas">
-        <span class="d-flex align-items-center justify-content-center text-nowrap"
-          ><i class="ti ti-send ti-xs me-2"></i>Send Invoice</span
-        >
-      </button>
-      <button class="btn btn-label-secondary">Download</button>
-      <a
-        class="btn btn-label-secondary"
-        target="_blank"
-        href="{{ route('invoice-view',$data->id)}}">
-        Print
-      </a>
-      <a href="./app-invoice-edit.html" class="btn btn-label-secondary">
-        Edit Invoice
-      </a>
-      <button
-        class="btn btn-primary"
-        data-bs-toggle="offcanvas"
-        data-bs-target="#addPaymentOffcanvas">
-        <span class="d-flex align-items-center justify-content-center text-nowrap"
-          ><i class="ti ti-currency-rupee ti-xs me-2"></i>Add Payment</span
-        >
-      </button>
-    </div>
-  </div>
+ @include('invoice.invoice-head')
 <div>
 <div class="row invoice-preview">
             <!-- Invoice -->
@@ -345,8 +316,9 @@ $partner_type = $data->partner_type;
             </div>
           </div>
           <!-- /Send Invoice Sidebar -->
-
-          <!-- Add Payment Sidebar -->
+          
+         <!-- Add Payment Sidebar -->
+           @php  $invoiceBalance = (!empty($data->remaining_amount)) ? $data->remaining_amount : formatIndianCurrency($roundof)   @endphp
           <div class="offcanvas offcanvas-end" id="addPaymentOffcanvas" aria-hidden="true">
             <div class="offcanvas-header mb-3">
               <h5 class="offcanvas-title">Add Payment</h5>
@@ -359,24 +331,41 @@ $partner_type = $data->partner_type;
             <div class="offcanvas-body flex-grow-1">
               <div class="d-flex justify-content-between bg-lighter p-2 mb-3">
                 <p class="mb-0">Invoice Balance:</p>
-                <p class="fw-medium mb-0"><i class="ti ti-currency-rupee ti-xs me-2"></i> 5000.00</p>
+                <p class="fw-medium mb-0 invoice-balance" > {{ formatIndianCurrency($invoiceBalance) }}</p>
+              </div>
+
+               <div class="d-flex justify-content-between bg-lighter p-2 mb-3">
+                <p class="mb-0">Remaining Balance:</p>
+                <p class="fw-medium mb-0 remaining">{{ (!empty($data->remaining_amount)) ?  $data->remaining_amount : 0 }}</p>
               </div>
               <form>
+                
                 <div class="mb-3">
-                  <label class="form-label" for="invoiceAmount">Payment Amount</label>
+                  <label class="form-label" for="invoiceAmount">Payment Amount</label><span class="requiredLabel">*</span>
                   <div class="input-group">
-                    <span class="input-group-text"><i class="ti ti-currency-rupee ti-xs me-2"></i> </span>
+                    <span class="input-group-text"> </span>
                     <input
                       type="text"
                       id="invoiceAmount"
                       name="invoiceAmount"
                       class="form-control invoice-amount"
-                      placeholder="100" />
+                      placeholder=""  required/>
                   </div>
                 </div>
+                <span class="warning" style="color:red"></span>
                 <div class="mb-3">
-                  <label class="form-label" for="payment-date">Payment Date</label>
-                  <input id="payment-date" class="form-control invoice-date" type="text" />
+                  <label class="form-label" for="payment-date">Payment Date</label> <span class="requiredLabel">*</span>
+                  <input id="payment-date" class="form-control invoice-date" type="date"  required/>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label" for="payment-status">Payment Status</label> <span class="requiredLabel">*</span>
+                  <select class="form-select" id="payment-status" required>
+                    <option value="" selected disabled>Select paymet Status</option>
+                    <option value="Full">Full</option>
+                    <option value="Partial">Partial</option>
+                  
+
+                  </select>
                 </div>
                 <div class="mb-3">
                   <label class="form-label" for="payment-method">Payment Method</label>
@@ -389,12 +378,25 @@ $partner_type = $data->partner_type;
 
                   </select>
                 </div>
+
+                <div class="mb-3">
+                  <label class="form-label" for="reference_no">Transaction Id</label>
+                  <div class="input-group">
+                    <span class="input-group-text"> </span>
+                    <input
+                      type="text"
+                      id="reference_no"
+                      name="reference_no"
+                      class="form-control reference_no"
+                      placeholder=""  />
+                  </div>
+                </div>
                 <div class="mb-4">
                   <label class="form-label" for="payment-note">Internal Payment Note</label>
                   <textarea class="form-control" id="payment-note" rows="2"></textarea>
                 </div>
                 <div class="mb-3 d-flex flex-wrap">
-                  <button type="button" class="btn btn-primary me-3" data-bs-dismiss="offcanvas">Send</button>
+                  <button type="button" class="btn btn-primary me-3 submitForm" data-bs-dismiss="offcanvas">Send</button>
                   <button type="button" class="btn btn-label-secondary" data-bs-dismiss="offcanvas">Cancel</button>
                 </div>
               </form>
@@ -413,5 +415,126 @@ $partner_type = $data->partner_type;
         window.print();
       })();
     </script>  --> 
+ <script>
+     $(document).on('click','#downloadPdfButton',function() {
+      var id = '{{ $data->id }}'; 
+      var type =  'Cam'; 
+      var value = $(this).data('ttype');
+     // console.log(value);
 
+      $.ajax({
+          url: appurl + "download-pdf",
+          type: "post",
+          headers: {
+              'X-CSRF-TOKEN': '{{ csrf_token() }}'
+          },
+          data: { id: id,type:type },
+           success: function(response) {
+             var pdfUrl = response.pdfUrl; 
+            if(value=='print'){
+              var printWindow = window.open(pdfUrl, '_blank');
+              printWindow.onload = function() {
+              printWindow.print();
+              };
+            } else{
+                var link = document.createElement('a');
+                link.href = pdfUrl; // URL to the PDF file
+                console.log(pdfUrl);
+                // Append the link to the body and trigger the download
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link); // Remove the link after downloading
+
+            }
+          },
+          error: function(xhr, status, error) {
+              console.error('Error:', error);
+          }
+      });
+    });
+
+      $(document).ready(function() {
+        // Attach a submit event handler to the form
+       $('.submitForm').on('click', function(e) {
+            e.preventDefault(); // Prevent the default form submission
+
+            // Get form data
+            var formData = {
+                id: '{{ $data->id }}', 
+                type: '{{ $data->invoice_type }}' ,
+                grand_total: '{{ $roundof }}' ,
+                totalAmount: '{{ $invoiceBalance }}' ,
+                invoiceAmount: $('#invoiceAmount').val(),
+                paymentDate: $('#payment-date').val(),
+                paymentStatus: $('#payment-status').val(),
+                paymentMethod: $('#payment-method').val(),
+                paymentNote: $('#payment-note').val(),
+                reference_no: $('#reference_no').val()
+            };
+
+            $.ajax({
+                url: appurl+'add-payment', // Replace with your endpoint URL
+                type: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                data: formData,
+                success: function(response) {
+                    // Handle the response from the server
+                     toastr.success(response.message || "Payment Added successfully!");
+                    $('#addPaymentOffcanvas').offcanvas('hide'); // Hide the offcanvas
+                    // Optionally, you might want to clear the form or update other parts of the UI
+                    window.location.reload();
+                },
+                error: function(xhr) {
+                  const errors = xhr.responseJSON.errors;
+                  let errorMessage = '';
+
+                  if (errors) {
+                      $.each(errors, function(key, messages) {
+                          errorMessage += messages.join('<br>') + '<br>';
+                      });
+                  } else {
+                      errorMessage = "An unexpected error occurred.";
+                  }
+
+                  toastr.error(errorMessage);
+              }
+            });
+        });
+    });
+
+
+  $(document).ready(function() {
+        // Function to format the number as Indian currency
+        function formatIndianCurrency(amount) {
+            if (isNaN(amount)) return '0';
+            return amount.toLocaleString('en-IN', { style: 'currency', currency: 'INR' });
+        }
+
+        // Get the invoice balance from the text
+        var invoiceBalance = parseFloat($('.invoice-balance').text().replace(/[^0-9.-]+/g, '')) || 0;
+
+        // Event handler for keyup event on the invoiceAmount input field
+        $('#invoiceAmount').on('keyup', function() {
+            // Get the current payment amount
+            var paymentAmount = parseFloat($(this).val().replace(/[^0-9.-]+/g, '')) || 0;
+
+            // Calculate the remaining balance
+            var remainingBalance = invoiceBalance - paymentAmount;
+            if (paymentAmount > invoiceBalance) {
+            $('.invoiceAmount').val(formatIndianCurrency(0));
+            $('.remaining').text(formatIndianCurrency(0));
+            $('.warning').text('Payment amount exceeds invoice balance.').show();
+            } else {
+                $('.remaining').text(formatIndianCurrency(remainingBalance));
+                $('.warning').hide();
+            }
+
+            // Update the remaining balance
+            $('.remaining').text(formatIndianCurrency(remainingBalance));
+        });
+    });
+
+  </script>
 @endsection

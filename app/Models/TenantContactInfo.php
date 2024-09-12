@@ -8,4 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class TenantContactInfo extends Model
 {
     use HasFactory;
+    public function tenantInfo()
+    {
+        return $this->belongsTo(Tenant::class, 'tenant_id', 'id');
+    }
 }

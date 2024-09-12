@@ -137,10 +137,19 @@
                         </div>
                         
 
-                         <div class="col-sm-12">
+                        <div class="col-sm-12">
                            {{ Form::label('business_address', __('Business Address'), ['class' => 'form-label']) }}
                             {{ Form::textarea('business_address', null, ['class' => 'form-control','id'=>'business_address','rows'=>'2', 'placeholder' => __('Business Address')]) }}
                             @error('business_address')
+                                <small class="invalid-name" role="alert">
+                                    <strong class="text-danger">{{ $message }}</strong>
+                                </small>
+                              @enderror
+                        </div>
+                         <div class="col-sm-12">
+                           {{ Form::label('company_address', __('Company Address'), ['class' => 'form-label']) }}
+                            {{ Form::textarea('company_address', null, ['class' => 'form-control','id'=>'company_address','rows'=>'2', 'placeholder' => __('Company Address')]) }}
+                            @error('company_address')
                                 <small class="invalid-name" role="alert">
                                     <strong class="text-danger">{{ $message }}</strong>
                                 </small>

@@ -159,7 +159,7 @@
                                 
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <!-- <div class="col-md-6">
                             <div class="mb-3">
                                 {{ Form::label('bank_name', __('Bank Name'), ['class' => 'form-label']) }}
                                 {{ Form::text('bank_name', null, ['class' => 'form-control', 'placeholder' => __('Bank Name')]) }}
@@ -193,7 +193,7 @@
                                 {{ Form::textarea('bank_address', null, ['class' => 'form-control','rows'=>'2', 'placeholder' => __('Bank Address')]) }}
                                 
                             </div>
-                        </div>
+                        </div> -->
                         <div class="col-md-12">
                             <div class="mb-3">
                                 {{ Form::label('document', __('Contract format'), ['class' => 'form-label']) }}

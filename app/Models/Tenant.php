@@ -12,4 +12,10 @@ class Tenant extends Model
     {
         return $this->belongsTo(State::class, 'state', 'id');
     }
+     public function tenantContacts()
+    {
+        return $this->hasMany(TenantContactInfo::class, 'tenant_id', 'id');
+    }
+
+    
 }

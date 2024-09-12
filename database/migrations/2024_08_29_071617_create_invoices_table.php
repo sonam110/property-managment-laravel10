@@ -25,6 +25,7 @@ return new class extends Migration
             $table->unsignedBigInteger('tenant_id');
             $table->timestamp('invoice_generate_date')->nullable();
             $table->timestamp('invoice_date')->nullable();
+            $table->timestamp('due_date')->nullable();
             $table->string('hsn_sac')->nullable();
             $table->decimal('partner_per',10,2)->nullable();
             $table->integer('partner_type')->nullable();
@@ -43,9 +44,14 @@ return new class extends Migration
             $table->decimal('cam_total_amount',10,2)->nullable();
             $table->decimal('utility_total',10,2)->nullable();
             $table->decimal('grand_total',10,2)->nullable();
-            $table->decimal('grand_total',10,2)->nullable();
+
+            $table->decimal('total_amount',10,2)->default(0)->nullable();
+            $table->decimal('amount',10,2)->default(0)->nullable();
+            $table->decimal('remaining_amount',10,2)->default(0)->nullable();
+
             $table->string('invoice_type')->nullable()->comment('rent','gst','Cam','Utility');
             $table->string('status')->default('Pending')->nullable()->comment('Pending','Paid','UnPaid','Partial');
+            $table->string('payment_status')->nullable();
             $table->timestamps();
         });
     }

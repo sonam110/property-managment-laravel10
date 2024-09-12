@@ -78,13 +78,13 @@ class UserController extends Controller
 
                 $edit =' <a href="#!" data-size="lg"
                                 data-url="'.route('users.edit', $query->id) .'" 
-                                data-ajax-popup="true" class="dropdown-item"
+                                data-ajax-popup="true" class="btn btn-sm btn-primary"
                                 data-bs-original-title="User Edit">
                                 <i class="ti ti-pencil"></i>
                             </a>';
                 $delete = '<a 
                                 href="'.route('user-delete', $query->id) .'" 
-                                 class="dropdown-item"
+                                 class="btn btn-sm btn-danger"
                                 onClick="return confirm(\'Are you sure you want to delete this?\');" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete">
                                 <i class="ti ti-trash"></i>
                             </a>';
@@ -154,6 +154,11 @@ class UserController extends Controller
             $user->national_id_no = $request->national_id_no;
             $user->postal_address = $request->postal_address;
             $user->residential_address = $request->residential_address;
+            $user->bank_name     = $request->bank_name;
+            $user->account_holder_name     = $request->account_holder_name;
+            $user->account_no     = $request->account_no;
+            $user->bank_ifsc_code     = $request->bank_ifsc_code;
+            $user->bank_address     = $request->bank_address;
             $user->created_by = auth()->user()->id;
             $user->save();
            
@@ -191,7 +196,7 @@ class UserController extends Controller
         $user = User::findOrFail($id);
         $roles = Role::whereNotIn('id',['1','3'])->get()->pluck('name', 'id');
         $countries = DB::table('countries')->get();
-        $statsList = DB::table('states')->pluck('name', 'id');
+        $statsList = DB::table('states')->where('country_id','101')->pluck('name', 'id')->toArray();
         if (\Auth::user()->can('user-edit')) {
            
 
@@ -283,6 +288,11 @@ class UserController extends Controller
             $user->gst_no = $request->gst_no;
             $user->postal_address = $request->postal_address;
             $user->residential_address = $request->residential_address;
+            $user->bank_name     = $request->bank_name;
+            $user->account_holder_name     = $request->account_holder_name;
+            $user->account_no     = $request->account_no;
+            $user->bank_ifsc_code     = $request->bank_ifsc_code;
+            $user->bank_address     = $request->bank_address;
             $user->save();
 
             //delete old role and permissions

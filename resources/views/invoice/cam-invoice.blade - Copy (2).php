@@ -1,4 +1,31 @@
 @extends('layouts.master')
+@section('extracss')
+<style type="text/css">
+  .table-wrapper {
+    display: flex;
+    justify-content: center;
+    margin: 0 auto; /* Optional: centers the table horizontally */
+}
+
+.table {
+    width: 100%; /* Ensure the table takes the full width of its container */
+    text-align: center; /* Center-aligns the text inside table cells */
+    border-collapse: collapse; /* Ensures borders are collapsed properly */
+}
+
+.table th, .table td {
+    text-align: center; /* Center-aligns text in table headers and cells */
+    vertical-align: middle; /* Centers text vertically */
+    padding: 8px; /* Adds padding for better readability */
+    border: 1px solid #dee2e6; /* Adds border for cells */
+}
+
+.table th {
+    background-color: #f8f9fa; /* Adds a background color for table headers */
+}
+
+</style>
+@endsection
 @section('page-title')
 {{ __('Manage Invoice') }}
 @endsection
@@ -11,7 +38,8 @@
 $invoiceDate = $data->invoice_date;
 $invoiceDateObject = new \DateTime($invoiceDate);
 $due_on = $invoiceDateObject->modify('+' . $paymentDueTerms . ' days');
-
+$partner_per = $data->partner_per;
+$partner_type = $data->partner_type;
 @endphp
 <div class="row invoice-preview">
  <div class="card">
@@ -78,37 +106,26 @@ $due_on = $invoiceDateObject->modify('+' . $paymentDueTerms . ' days');
                 <div class="card-body">
                   <div class="row p-sm-3 p-0">
                     <div class="col-xl-6 col-md-12 col-sm-5 col-12 mb-xl-0 mb-md-4 mb-sm-0 mb-4">
+                      <h6 class="mb-3">Party Name:</h6>
+                      <p class="mb-1">{{ $data->partner->first_name }} {{ $data->partner->last_name }}</p>
+                      <p class="mb-1">{{ $data->partner->postal_address }}</p>
+                      <p class="mb-1">{{ $data->partner->mobile }}</p>
+                      <p class="mb-0">{{ $data->tenant->email }}</p>
+                      <p class="mb-0">GSTIN/UIN: {{ $data->partner->gst_no }}</p>
+                    </div>
+                    <div class="col-xl-6 col-md-12 col-sm-7 col-12">
                       <h6 class="mb-3">Invoice To:</h6>
-                      <p class="mb-1">{{ $data->tenant->full_name }}</p>
-                      <p class="mb-1">{{ $data->tenant->firm_name }}</p>
+                      <p class="mb-1">{{ $data->tenant->full_name }}({{ $data->tenant->firm_name }})</p>
                       <p class="mb-1">{{ $data->tenant->business_address }}</p>
                       <p class="mb-1">{{ $data->tenant->phone }}</p>
                       <p class="mb-0">{{ $data->tenant->email }}</p>
-                    </div>
-                    <div class="col-xl-6 col-md-12 col-sm-7 col-12">
-                      <h6 class="mb-4">Bill To:</h6>
-                      <table>
-                        <tbody>
-                          <tr>
-                            <td class="pe-4">Total Due:</td>
-                            <td class="fw-medium"><i class="ti ti-currency-rupee ti-xs me-2"></i> {{ $data->grand_total }}</td>
-                          </tr>
-                          <tr>
-                            <td class="pe-4">GST NO:</td>
-                            <td>{{ $data->tenant->gst_no }}</td>
-                          </tr>
-                          <tr>
-                            <td class="pe-4">PAN NO:</td>
-                            <td>{{ $data->tenant->pan_no }}</td>
-                          </tr>
-                          
-                        </tbody>
-                      </table>
+                      <p class="mb-0">GSTIN/UIN: {{ $data->tenant->gst_no }}</p>
                     </div>
                   </div>
+                  
                 </div>
                 <div class="table-responsive border-top">
-                  <table class="table m-0 datatables-basic table dataTable">
+                  <table class="table m-0 datatables-basic table-bordered dataTable">
                     <thead>
                       <tr>
                         <th>Description</th>
@@ -123,75 +140,72 @@ $due_on = $invoiceDateObject->modify('+' . $paymentDueTerms . ' days');
                         $camTotal =0;
                         $utilityTotal =0;
                       @endphp
-                      @foreach($rent_invoices as $key =>  $rent)
-                      @php $totalRent += $rent->amount; 
-                      $persign =  ($key+1==1) ? '' :'%' ;
-                      @endphp
+                      @foreach($cam_invoices as $key =>  $rent)
+                      <?php 
+                        $amount = $rent->amount;
+                        $totalRent += $amount; 
+
+                        $roundof = round($totalRent, $precision = 0, $mode = PHP_ROUND_HALF_UP);
+                        $difference = $totalRent - $roundof;
+
+
+                      ?>
                       <tr class="rent">
-                        @if($key+1==1)
+                       
                         <td class="text-nowrap"><b>{{ $rent->item_desc }}</b></td>
-                        @else
-                         <td class="text-nowrap">{{ $rent->item_desc }}</td>
-                        @endif
+                       
                         <td class="text-nowrap">{{ $rent->quantity }}</td>
-                        <td class="text-nowrap"> {{ $rent->rate }} {{$persign}}</td>
+                         @if($key+1==1)
+                        <td class="text-nowrap"> {{ $rent->rate }}</td>
+                         @else
+                         <td class="text-nowrap">{{ $rent->rate }} %</td>
+                        @endif
                         <td>{{($key+1==1) ? 'Month' :'' }}</td>
                       
-                        <td> {{ $rent->amount }}</td>
+                        <td> {{ formatIndianCurrency($amount) }}</td>
                       </tr>
+                     
+                     
                       @endforeach
+                       <tr class="rent">
+                        <td><b>{{ __('R/O') }}</b></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td><b>{{ formatIndianCurrency(abs($difference)) }}</b></td>
+                        
+                     </tr>
                        <tr class="rent">
                         <td></td>
                         <td></td>
                         <td></td>
                         <td><b>{{ __('Total') }}</b></td>
-                        <td><b><i class="ti ti-currency-rupee ti-xs me-2"></i>{{ $totalRent }}</b></td>
+                        <td><b>{{ formatIndianCurrency($roundof) }}</b></td>
                         
                      </tr>
-                      @foreach($cam_invoices as $key =>  $rent)
-                      @php $totalRent += $rent->amount; 
-                      $camTotal += $rent->amount; 
-                      $persign =  ($key+1==1) ? '' :'%' ;
-                      @endphp
-                      <tr class="cam">
-                        @if($key+1==1)
-                        <td class="text-nowrap"><b>{{ $rent->item_desc }}</b></td>
-                        @else
-                         <td class="text-nowrap">{{ $rent->item_desc }}</td>
-                        @endif
-                        <td class="text-nowrap">{{ $rent->quantity }}</td>
-                        <td class="text-nowrap"> {{ $rent->rate }} {{$persign}}</td>
-                        <td>{{($key+1==1) ? 'Month' :'' }}</td>
-                      
-                        <td> {{ $rent->amount }}</td>
-                      </tr>
-                      @endforeach
-                      <tr class="cam">
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td><b>{{ __('Total') }}</b></td>
-                        <td><b><i class="ti ti-currency-rupee ti-xs me-2"></i>{{ $camTotal }}</b></td>
-                        
-                     </tr>
+                     
+          
                     </tbody>
-                    @php  $TotalInwords = $numberTransformer->toWords($totalRent); @endphp
+                    @php  $TotalInwords = getIndianCurrency($roundof); @endphp
                   <tfoot>
-                      <tr>
-                       
-                        <td colspan="1"><b>{{ __(' Grand Total') }}</b></td>
-                        <td colspan="4"><b><i class="ti ti-currency-rupee ti-xs me-2"></i>{{ $totalRent }}</b></td>
-                        
-                    </tr>
+                    
                      <tr>
                        
                         <td colspan="1"><b>Amount Chargeable (in words):</b></td>
-                        <td colspan="5"><b>{{ ucfirst($TotalInwords) }}</b></td>
+                        <td colspan="5"><b>INR {{ ucfirst($TotalInwords) }}</b></td>
                         
                     </tr>
                     </tfoot>
                   </table>
                   <br>
+                  @if($data->is_gst=='1')
+                  <?php 
+                        $total_amount = $data->cam_total ;
+                        $cgst = ($total_amount*$data->cam_cgst_per)/100;
+                        $sgst = ($total_amount*$data->cam_sgst_per)/100;
+
+                        $gstTotal = $cgst+$sgst;
+                      ?>
                   <table class="dt-complex-header table table-bordered dataTable">
                     <thead>
                       <tr>
@@ -213,87 +227,46 @@ $due_on = $invoiceDateObject->modify('+' . $paymentDueTerms . ' days');
                       </tr>
                     </thead>
                     <tbody>
+
                       <tr class="rent">
                        <td>997212</td>
-                        <td>{{ $data->rent_total }}</td>
-                        <td>{{ $data->rent_cgst_per }} %</td>
-                         <td>{{ $data->rent_cgst_amount }}</td>
-                        <td>{{ $data->rent_sgst_per }} %</td>
-                        <td>{{ $data->rent_sgst_amount }}</td>
-                        <td>{{ $data->rent_cgst_amount +  $data->rent_sgst_amount }}</td>
-                     <tr class="cam">
-                      <tr>
-                       <td>CAM</td>
-                        <td>{{ $data->cam_total }}</td>
+                        <td>{{ formatIndianCurrency($total_amount) }}</td>
                         <td>{{ $data->cam_cgst_per }} %</td>
-                         <td>{{ $data->cam_cgst_amount }}</td>
+                         <td>{{ formatIndianCurrency($cgst) }}</td>
                         <td>{{ $data->cam_sgst_per }} %</td>
-                        <td>{{ $data->cam_sgst_amount }}</td>
-                        <td>{{ $data->rentcam_cgst_amount +  $data->cam_sgst_amount }}</td>
-                     <tr>
+                        <td>{{ formatIndianCurrency($sgst) }}</td>
+                         <td>{{ formatIndianCurrency($gstTotal) }}</td>
+                    
                     </tbody>
-                    @php  $TotalGstInwords = $numberTransformer->toWords($data->rent_cgst_amount +  $data->rent_sgst_amount+ $data->cam_cgst_amount +  $data->cam_sgst_amount); @endphp
+                    @php  $TotalGstInwords = getIndianCurrency(round($gstTotal,0)); @endphp
                     <tfoot>
-                      <tr>
-                        <td><b>Total</b></td>
-                        <td>{{ $data->rent_total+$data->cam_total }}</td>
-                        <td></td>
-                        <td><b>{{ $data->rent_cgst_amount+$data->cam_cgst_amount }}</b></td>
-                        <td></td>
-                        <td><b>{{ $data->rent_sgst_amount+$data->cam_sgst_amount }}</b></td>
-                        <td><b>{{ $data->rent_cgst_amount +  $data->rent_sgst_amount+ $data->cam_cgst_amount +  $data->cam_sgst_amount  }}</b></td>
-                        
-                    </tr>
                      <tr>
-                       
-                        <td colspan="2"><b>Tax Amount ( (in words):</b></td>
-                        <td colspan="4"><b>{{ ucfirst($TotalGstInwords) }}</b></td>
+                        <td><strong>{{ __('Total') }}</strong></td>
+                        <td><strong>{{ formatIndianCurrency($total_amount) }}</strong></td>
+                        <td></td>
+                        <td><strong>{{ formatIndianCurrency($cgst) }}</strong></td>
+                        <td></td>
+                        <td><strong>{{ formatIndianCurrency($sgst) }}</strong></td>
+                        <td><strong>{{ formatIndianCurrency($gstTotal) }}</strong></td>
                         
-                    </tr>
-                    </tfoot>
-                  
-                  </table>
-
-                   <table class="table table-bordered">
-                    <thead>
-                      <tr>
-                        <th>Service Description</th>
-                        <th>Quantity</th>
-                        <th>Amount</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      @foreach($utility_invoices as $utility)
-                      @php $utilityTotal += $utility->amount; @endphp
-                      <tr>
-                       <td>{{ $utility->item_desc}}</td>
-                       <td>1</td>
-                      <td>{{ $utility->amount}}</td>
                      </tr>
-                     @endforeach
-                    </tbody>
-                    @php  $TotalUtilityInwords = $numberTransformer->toWords($utilityTotal); @endphp
-                    <tfoot>
-                       <tr>
-                        <td></td>
-                        <td><b>{{ __('Total') }}</b></td>
-                        <td><b><i class="ti ti-currency-rupee ti-xs me-2"></i>{{ $utilityTotal }}</b></td>
-                        
-                    </tr>
                      <tr>
                        
-                        <td colspan="2"><b>Utility Chargeable ( (in words):</b></td>
-                        <td colspan="4"><b>{{ ucfirst($TotalUtilityInwords) }}</b></td>
+                        <td colspan="4"><b>Tax Amount ( (in words):</b></td>
+                        <td colspan="2"><b>{{ ucfirst($TotalGstInwords) }}</b></td>
                         
                     </tr>
                     </tfoot>
                   
                   </table>
+                  @endif
+                  
 
                 </div>
 
                 <div class="card-body mx-3">
                   <div class="row">
+                    
                     <div class="col-12">
                       <span class="fw-medium">Note:</span>
                       <span
@@ -354,7 +327,7 @@ $due_on = $invoiceDateObject->modify('+' . $paymentDueTerms . ' days');
                   <textarea class="form-control" name="invoice-message" id="invoice-message" cols="3" rows="8">
       Dear Queen Consolidated,
       Thank you for your business, always a pleasure to work with you!
-      We have generated a new invoice in the amount of <i class="ti ti-currency-rupee ti-xs me-2"></i> 95.59
+      We have generated a new invoice in the amount of  95.59
       We would appreciate payment of this invoice by 05/11/2021</textarea
                   >
                 </div>

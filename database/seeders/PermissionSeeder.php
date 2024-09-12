@@ -279,6 +279,27 @@ class PermissionSeeder extends Seeder
          
         ],
         [ 
+          'name' => 'invoice-rent',
+          'se_name' => 'invoice-rent',
+          'group_name' => 'invoice',
+          'guard_name' => 'web',
+         
+        ],
+        [ 
+          'name' => 'invoice-cam',
+          'se_name' => 'invoice-cam',
+          'group_name' => 'invoice',
+          'guard_name' => 'web',
+         
+        ],
+        [ 
+          'name' => 'invoice-utility',
+          'se_name' => 'invoice-utility',
+          'group_name' => 'invoice',
+          'guard_name' => 'web',
+         
+        ],
+        [ 
           'name' => 'lease-contract',
           'se_name' => 'lease-contract',
           'group_name' => 'setting',

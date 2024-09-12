@@ -221,24 +221,7 @@ class PropertyController extends Controller
                         }
                     }
 
-                    /*--------Commission---------------------*/
-                    if(is_array(@$request->partners) && count(@$request->partners) >0 ){
-                        for ($i = 0;$i <= count($request->partners);$i++) {
-                            if (!empty($request->partners[$i])) {
-                                $paymentSetting = new PropertyPaymentSetting;
-                                $paymentSetting->user_id = $request->partners[$i];
-                                $paymentSetting->property_id = $property->id;
-                                $paymentSetting->commission_value = $request->commission_value[$i];
-                                $paymentSetting->commission_type = $request->commission_type[$i];
-                                $paymentSetting->is_gst = $request->is_gst[$i];
-                                $paymentSetting->save();
-
-                            }
-                        }
-                    }
-
-                 
-
+                
              
                  DB::commit();
                 return response()->json([
@@ -331,14 +314,6 @@ class PropertyController extends Controller
                 $newUnit = $unit->replicate(); // Clone the unit record
                 $newUnit->property_id = $newPropertyId; // Set the new property ID
                 $newUnit->save(); // Save the new unit
-            }
-
-            // Copy Property Payment Settings
-            $paymentSettings = PropertyPaymentSetting::where('property_id', $id)->get();
-            foreach ($paymentSettings as $setting) {
-                $newSetting = $setting->replicate(); // Clone the setting record
-                $newSetting->property_id = $newPropertyId; // Set the new property ID
-                $newSetting->save(); // Save the new setting
             }
 
 

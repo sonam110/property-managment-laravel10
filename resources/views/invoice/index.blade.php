@@ -19,8 +19,8 @@
           <div
             class="d-flex justify-content-between align-items-start card-widget-1 border-end pb-3 pb-sm-0">
             <div>
-              <h3 class="mb-1">24</h3>
-              <p class="mb-0">Tenants</p>
+              <h3 class="mb-1">{{ $countData['totalInvoice'] }}</h3>
+              <p class="mb-0">Total Invoices</p>
             </div>
             <span class="avatar me-sm-4">
               <span class="avatar-initial bg-label-secondary rounded"
@@ -34,8 +34,8 @@
           <div
             class="d-flex justify-content-between align-items-start card-widget-2 border-end pb-3 pb-sm-0">
             <div>
-              <h3 class="mb-1">165</h3>
-              <p class="mb-0">Invoices</p>
+              <h3 class="mb-1">{{ formatIndianCurrency($countData['totalInVoiceAmount']) }}</h3>
+              <p class="mb-0">Total Amount</p>
             </div>
             <span class="avatar me-lg-4">
               <span class="avatar-initial bg-label-secondary rounded"
@@ -49,7 +49,7 @@
           <div
             class="d-flex justify-content-between align-items-start border-end pb-3 pb-sm-0 card-widget-3">
             <div>
-              <h3 class="mb-1">$2.46k</h3>
+              <h3 class="mb-1">{{ formatIndianCurrency($countData['totalPaid']) }}</h3>
               <p class="mb-0">Paid</p>
             </div>
             <span class="avatar me-sm-4">
@@ -62,7 +62,7 @@
         <div class="col-sm-6 col-lg-3">
           <div class="d-flex justify-content-between align-items-start">
             <div>
-              <h3 class="mb-1">$876</h3>
+              <h3 class="mb-1">{{ formatIndianCurrency($countData['totalUnPaid']) }}</h3>
               <p class="mb-0">Unpaid</p>
             </div>
             <span class="avatar">
@@ -85,12 +85,16 @@
         <tr>
           <th></th>
           <th>#Invoice No</th>
+          <th>Type</th>
           <th>Lease</th>
           <th>Partner</th>
           <th>Tenant</th>
           <th>Total</th>
+          <th>Total Paid</th>
+          <th>Total UnPaid</th>
           <th class="text-truncate">Issued Date</th>
           <th>Invoice Status</th>
+          <th>Payment Status</th>
           <th class="cell-fit">Actions</th>
         </tr>
       </thead>
@@ -123,12 +127,16 @@
     "columns": [
             { "data": 'DT_RowIndex', "name": 'DT_RowIndex' , orderable: false, searchable: false },
             { "data": "invoice_no"},
+            { "data": "invoice_type"},
             { "data": "lease_id"},
             { "data": "partner_id"},
             { "data": "tenant_id"},
             { "data": "grand_total"},
+            { "data": "total_paid"},
+            { "data": "total_unpaid"},
             { "data": "invoice_date"},
             { "data": "status"},
+            { "data": "payment_status"},
             { "data": "action"},
         ],
         order: [[1, 'desc']],
@@ -158,7 +166,7 @@
               text: '<i class="ti ti-printer me-2" ></i>Print',
               className: 'dropdown-item',
               exportOptions: {
-                columns: [1, 2, 3, 4, 5],
+                columns: [1, 2, 3, 4, 5,6,7,8,9,10],
                 // prevent avatar to be print
                 format: {
                   body: function (inner, coldex, rowdex) {
@@ -195,7 +203,7 @@
               text: '<i class="ti ti-file-text me-2" ></i>Csv',
               className: 'dropdown-item',
               exportOptions: {
-                columns: [1, 2, 3, 4, 5],
+                columns: [1, 2, 3, 4, 5,6,7,8,9,10],
                 // prevent avatar to be display
                 format: {
                   body: function (inner, coldex, rowdex) {
@@ -219,7 +227,7 @@
               text: '<i class="ti ti-file-spreadsheet me-2"></i>Excel',
               className: 'dropdown-item',
               exportOptions: {
-                columns: [1, 2, 3, 4, 5],
+                columns: [1, 2, 3, 4, 5,6,7,8,9,10],
                 // prevent avatar to be display
                 format: {
                   body: function (inner, coldex, rowdex) {
@@ -243,7 +251,7 @@
               text: '<i class="ti ti-file-code-2 me-2"></i>Pdf',
               className: 'dropdown-item',
               exportOptions: {
-                columns: [1, 2, 3, 4, 5],
+                columns: [1, 2, 3, 4, 5,6,7,8,9,10],
                 // prevent avatar to be display
                 format: {
                   body: function (inner, coldex, rowdex) {
@@ -267,7 +275,7 @@
               text: '<i class="ti ti-copy me-2" ></i>Copy',
               className: 'dropdown-item',
               exportOptions: {
-                columns: [1, 2, 3, 4, 5],
+                columns: [1, 2, 3, 4, 5,6,7,8,9,10],
                 // prevent avatar to be display
                 format: {
                   body: function (inner, coldex, rowdex) {

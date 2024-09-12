@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('unit_name_prefix')->nullable();
             $table->string('unit_floor')->nullable();
             $table->integer('total_shop')->nullable();
-            $table->boolean('is_rented ')->default(0)->comment('0:No,1:Yes');
+            $table->boolean('is_rented')->default(0)->comment('0:No,1:Yes');
             $table->timestamps();
         });
     }

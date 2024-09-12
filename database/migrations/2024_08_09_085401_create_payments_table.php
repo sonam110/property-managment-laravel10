@@ -13,14 +13,24 @@ return new class extends Migration
     {
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('tenant_id');
-            $table->foreign('tenant_id')->references('id')->on('users')->onDelete('cascade');
+            $table->unsignedBigInteger('invoice_id');
+            $table->foreign('invoice_id')->references('id')->on('invoices')->onDelete('cascade');
 
-            $table->unsignedBigInteger('lease_id');
-            $table->decimal('amount',10,2)->default(0);
+            $table->unsignedBigInteger('partner_id')->nullable();
+            $table->unsignedBigInteger('lease_id')->nullable();
+            $table->unsignedBigInteger('property_id')->nullable();
+            $table->unsignedBigInteger('tenant_id')->nullable();
+
+            $table->decimal('grand_total',10,2)->default(0)->nullable();
+            $table->decimal('total_amount',10,2)->default(0)->nullable();
+            $table->decimal('amount',10,2)->default(0)->nullable();
+            $table->decimal('remaining_amount',10,2)->default(0)->nullable();
             $table->string('payment_method')->nullable();
+            $table->timestamp('payment_date')->nullable();
             $table->string('paid_by')->nullable();
             $table->string('reference_no')->nullable();
+            $table->text('note')->nullable();
+            $table->string('status')->default('Pending')->nullable()->comment('Full','Partial','Pending');
             $table->timestamps();
         });
     }

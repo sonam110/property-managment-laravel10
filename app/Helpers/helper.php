@@ -58,5 +58,28 @@ function formatIndianCurrency($amount) {
     // Add decimal part and currency symbol
     return '₹ ' . $formattedIntegerPart . '.' . str_pad($decimalPart, 2, '0', STR_PAD_LEFT);
 }
+function formatIndianCurrencyPdf($amount) {
+    // Remove any existing formatting (e.g., commas) and convert to float
+    $amount = floatval($amount);
+    
+    // Convert the amount to string and split the integer and decimal parts
+    $integerPart = floor($amount);
+    $decimalPart = round(($amount - $integerPart) * 100);
+    
+    // Format the integer part
+    $formattedIntegerPart = number_format($integerPart, 0, '.', ',');
+    
+    // Split formatted integer part into parts for Indian numbering system
+    $parts = explode(',', $formattedIntegerPart);
+    $lastPart = array_pop($parts);
+    
+    // Combine parts for Indian format (with lakhs and crores)
+    if (count($parts) > 1) {
+        $formattedIntegerPart = implode(',', $parts) . ',' . $lastPart;
+    }
+    
+    // Add decimal part and currency symbol
+    return 'Rs.' . $formattedIntegerPart . '.' . str_pad($decimalPart, 2, '0', STR_PAD_LEFT);
+}
 
 

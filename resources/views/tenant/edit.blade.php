@@ -148,6 +148,16 @@
                         </div>
 
                         <div class="col-sm-12">
+                           {{ Form::label('company_address', __('Company Address'), ['class' => 'form-label']) }}
+                            {{ Form::textarea('company_address',  $tenant->company_address, ['class' => 'form-control','id'=>'company_address','rows'=>'2', 'placeholder' => __('Company Address')]) }}
+                            @error('company_address')
+                                <small class="invalid-name" role="alert">
+                                    <strong class="text-danger">{{ $message }}</strong>
+                                </small>
+                              @enderror
+                        </div>
+
+                        <div class="col-sm-12">
                            {{ Form::label('business_description', __('Business description'), ['class' => 'form-label']) }}
                             {{ Form::textarea('business_description',  $tenant->business_description, ['class' => 'form-control','id'=>'business_description','rows'=>'2', 'placeholder' => __('Business description')]) }}
                             @error('business_description')

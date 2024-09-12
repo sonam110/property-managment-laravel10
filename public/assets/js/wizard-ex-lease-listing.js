@@ -23,9 +23,11 @@
     const wizardPropertyListingFormStep1 = wizardPropertyListingForm.querySelector('#lease-info');
     const wizardPropertyListingFormStep2 = wizardPropertyListingForm.querySelector('#lease-rent');
     const wizardPropertyListingFormStep3 = wizardPropertyListingForm.querySelector('#cam');
-    const wizardPropertyListingFormStep4 = wizardPropertyListingForm.querySelector('#security-deposit');
-    const wizardPropertyListingFormStep5 = wizardPropertyListingForm.querySelector('#extra-charges');
-    const wizardPropertyListingFormStep6 = wizardPropertyListingForm.querySelector('#utilities');
+    const wizardPropertyListingFormStep4 = wizardPropertyListingForm.querySelector('#payment-setting');
+    const wizardPropertyListingFormStep5 = wizardPropertyListingForm.querySelector('#security-deposit');
+    const wizardPropertyListingFormStep6 = wizardPropertyListingForm.querySelector('#extra-charges');
+    const wizardPropertyListingFormStep7 = wizardPropertyListingForm.querySelector('#utilities');
+    const wizardPropertyListingFormStep8 = wizardPropertyListingForm.querySelector('#documents');
     // Wizard next prev button
     const wizardPropertyListingNext = [].slice.call(wizardPropertyListingForm.querySelectorAll('.btn-next'));
 
@@ -59,7 +61,28 @@
               message: 'Please select units'
             }
           }
-        }
+        },
+        start_date: {
+          validators: {
+            notEmpty: {
+              message: 'Please select Start Date'
+            }
+          }
+        },
+        end_month: {
+          validators: {
+            notEmpty: {
+              message: 'Please enter lease end month'
+            }
+          }
+        },
+        due_on: {
+          validators: {
+            notEmpty: {
+              message: 'Please enter due on'
+            }
+          }
+        },
         
       },
 
@@ -69,7 +92,7 @@
           // Use this for enabling/changing valid/invalid class
           // eleInvalidClass: '',
           eleValidClass: '',
-          rowSelector: '.col-sm-12'
+          rowSelector: '.col-sm-12,.col-sm-6'
         }),
         autoFocus: new FormValidation.plugins.AutoFocus(),
         submitButton: new FormValidation.plugins.SubmitButton()
@@ -158,7 +181,13 @@
     // Property Features
     const FormValidation3 = FormValidation.formValidation(wizardPropertyListingFormStep3, {
       fields: {
-        // * Validate the fields here based on your requirements
+         camp_price: {
+          validators: {
+            notEmpty: {
+              message: 'Please enter CAM price'
+            }
+          }
+        }
       },
       plugins: {
         trigger: new FormValidation.plugins.Trigger(),
@@ -178,7 +207,28 @@
     // Property Features
     const FormValidation4 = FormValidation.formValidation(wizardPropertyListingFormStep4, {
       fields: {
-        // * Validate the fields here based on your requirements
+         /*'partners[]': {
+          validators: {
+            notEmpty: {
+              message: 'Please select partner'
+            }
+          }
+        },
+        'commission_value[]': {
+          validators: {
+            notEmpty: {
+              message: 'Please enter partner share'
+            }
+          }
+        },
+        'commission_type[]': {
+          validators: {
+            notEmpty: {
+              message: 'Please select share type'
+            }
+          }
+        },*/
+
       },
       plugins: {
         trigger: new FormValidation.plugins.Trigger(),
@@ -186,7 +236,7 @@
           // Use this for enabling/changing valid/invalid class
           // eleInvalidClass: '',
           eleValidClass: '',
-          rowSelector: '.col-sm-6'
+          rowSelector: '.col-sm-3,.col-sm-2'
         }),
         autoFocus: new FormValidation.plugins.AutoFocus(),
         submitButton: new FormValidation.plugins.SubmitButton()
@@ -216,8 +266,7 @@
       validationStepper.next();
     });
 
-    
-    // Price Details
+
     const FormValidation6 = FormValidation.formValidation(wizardPropertyListingFormStep6, {
       fields: {
         // * Validate the fields here based on your requirements
@@ -228,7 +277,45 @@
           // Use this for enabling/changing valid/invalid class
           // eleInvalidClass: '',
           eleValidClass: '',
-          rowSelector: '.col-md-12'
+          rowSelector: '.col-sm-6'
+        }),
+        autoFocus: new FormValidation.plugins.AutoFocus(),
+        submitButton: new FormValidation.plugins.SubmitButton()
+      }
+    }).on('core.form.valid', function () {
+      validationStepper.next();
+    });
+    const FormValidation7 = FormValidation.formValidation(wizardPropertyListingFormStep7, {
+      fields: {
+        // * Validate the fields here based on your requirements
+      },
+      plugins: {
+        trigger: new FormValidation.plugins.Trigger(),
+        bootstrap5: new FormValidation.plugins.Bootstrap5({
+          // Use this for enabling/changing valid/invalid class
+          // eleInvalidClass: '',
+          eleValidClass: '',
+          rowSelector: '.col-sm-6'
+        }),
+        autoFocus: new FormValidation.plugins.AutoFocus(),
+        submitButton: new FormValidation.plugins.SubmitButton()
+      }
+    }).on('core.form.valid', function () {
+      validationStepper.next();
+    });
+    
+    // Price Details
+    const FormValidation8 = FormValidation.formValidation(wizardPropertyListingFormStep8, {
+      fields: {
+        // * Validate the fields here based on your requirements
+      },
+      plugins: {
+        trigger: new FormValidation.plugins.Trigger(),
+        bootstrap5: new FormValidation.plugins.Bootstrap5({
+          // Use this for enabling/changing valid/invalid class
+          // eleInvalidClass: '',
+          eleValidClass: '',
+          rowSelector: '.col-sm-6'
         }),
         autoFocus: new FormValidation.plugins.AutoFocus(),
         submitButton: new FormValidation.plugins.SubmitButton()
@@ -275,7 +362,12 @@
             FormValidation6.validate();
             break;
 
-          
+           case 6:
+            FormValidation7.validate();
+            break;
+            case 7:
+            FormValidation8.validate();
+            break;
 
           default:
             break;
@@ -287,7 +379,15 @@
       item.addEventListener('click', event => {
 
         switch (validationStepper._currentIndex) {
-         
+          
+          case 7:
+            validationStepper.previous();
+            break;
+
+           case 6:
+            validationStepper.previous();
+            break;
+
             case 5:
             validationStepper.previous();
             break;

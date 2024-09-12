@@ -32,6 +32,11 @@ return new class extends Migration
             $table->string('pan_no')->nullable();
             $table->string('national_id_no')->nullable();
             $table->string('profile_pic')->nullable();
+            $table->string('bank_name')->nullable();
+            $table->string('account_holder_name')->nullable();
+            $table->string('account_no')->nullable();
+            $table->string('bank_ifsc_code')->nullable();
+            $table->string('bank_address')->nullable();
             $table->string('locktimeout')->default('10')->comment('System auto logout if no activity found.');
             $table->boolean('status')->default('1')->comment('1:Active, 0:Inactive');
             $table->timestamp('last_login_at')->nullable();

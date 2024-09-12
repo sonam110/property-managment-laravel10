@@ -33,6 +33,7 @@ return new class extends Migration
             $table->string('pan_no')->nullable();
             $table->string('gst_no')->nullable();
             $table->text('business_address')->nullable();
+            $table->text('company_address')->nullable();
             $table->text('business_description')->nullable();
             $table->timestamps();
         });

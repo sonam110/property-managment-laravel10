@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('invoice_id');
             $table->foreign('invoice_id')->references('id')->on('invoices')->onDelete('cascade');
+            $table->string('random_id')->nullable();
             $table->string('item_desc')->nullable();
             $table->integer('quantity')->nullable();
             $table->integer('rate')->nullable();

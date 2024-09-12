@@ -1,66 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
-
-		<title>A simple, clean, and responsive HTML invoice template</title>
-
-		<!-- Favicon -->
-		<link rel="icon" href="./images/favicon.png" type="image/x-icon" />
-
-		<!-- Invoice styling -->
-		<style>
-			
 
 
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>A simple, clean, and responsive HTML invoice template</title>
+
+<!-- Favicon -->
+<link rel="icon" href="./images/favicon.png" type="image/x-icon" />
+
+<!-- Invoice styling -->
+<style>
+	
   
   body {
     position: relative;
-    width: 21cm;  
-    margin: 0 auto; 
+    margin: 0 auto;
     color: #555555;
-    background: #FFFFFF; 
-    font-family: Arial, sans-serif; 
-    font-size: 14px; 
-    font-family: Source Sans Pro;
-  }
-  
-  header {
+    background: #FFFFFF;
+    font-family: Arial, sans-serif;
+    font-size: 15px;
+}
+
+header {
     padding: 10px 0;
     margin-bottom: 20px;
     border-bottom: 1px solid #AAAAAA;
-  }
-  
- 
+}
+
 .d-flex {
     display: flex;
     justify-content: space-between;
+    align-items: flex-start; /* Align items to the start of the cross axis */
+}
+
+.party-name, .invoice-details {
+    flex: 1; /* Allow each section to take up equal space */
 }
 
 .party-name {
-    width: 50%; /* Adjust width as needed */
+    text-align: left;
 }
 
 .invoice-details {
-    width: 50%; /* Adjust width as needed */
     text-align: right;
 }
 
-  
- table {
+.text-right {
+    text-align: right;
+    padding-right: 15px;
+    margin-right: 10px;
+}
+
+table {
     width: 100%;
     border-collapse: collapse;
     border-spacing: 0;
     margin-bottom: 20px;
 }
 
-table th,
-table td {
+table th, table td {
     padding: 20px;
     text-align: center;
-    border: 1px solid #AAAAAA; /* Add border color */
-    background: transparent; /* Remove background color */
+    border: 1px solid #AAAAAA;
+    background: transparent;
 }
 
 table th {
@@ -72,7 +77,7 @@ table td {
     text-align: right;
 }
 
-table td h3{
+table td h3 {
     color: #ffad33;
     font-size: 1.2em;
     font-weight: normal;
@@ -82,7 +87,7 @@ table td h3{
 table .no {
     color: #FFFFFF;
     font-size: 1.6em;
-    background: transparent; /* Remove background color */
+    background: transparent;
 }
 
 table .desc {
@@ -90,31 +95,29 @@ table .desc {
 }
 
 table .unit {
-    background: transparent; /* Remove background color */
+    background: transparent;
 }
 
 table .total {
     color: #FFFFFF;
-    background: transparent; /* Remove background color */
+    background: transparent;
 }
 
-table td.unit,
-table td.qty,
-table td.total {
+table td.unit, table td.qty, table td.total {
     font-size: 1.2em;
 }
 
 table tbody tr:last-child td {
-    border: none; /* Remove bottom border for last row */
+    border: none;
 }
 
 table tfoot td {
     padding: 10px 20px;
-    background: transparent; /* Remove background color */
-    border-bottom: 1px solid #AAAAAA; /* Add border */
+    background: transparent;
+    border-bottom: 1px solid #AAAAAA;
     font-size: 1.2em;
     white-space: nowrap;
-    border-top: 1px solid #AAAAAA; /* Add border */
+    border-top: 1px solid #AAAAAA;
 }
 
 table tfoot tr:first-child td {
@@ -124,57 +127,42 @@ table tfoot tr:first-child td {
 table tfoot tr:last-child td {
     color: #ffad33;
     font-size: 1.4em;
-    border-top: 1px solid #ffad33; /* Add border */
+    border-top: 1px solid #ffad33;
 }
 
 table tfoot tr td:first-child {
     border: none;
 }
+
 .dt-complex-header {
     width: 100%;
-    border-collapse: collapse; /* Ensures that borders between cells are not doubled */
+    border-collapse: collapse;
     margin-bottom: 20px;
 }
 
-.dt-complex-header th,
-.dt-complex-header tbody td {
+.dt-complex-header th, .dt-complex-header tbody td {
     padding: 20px;
     text-align: center;
-    border: 1px solid #AAAAAA; /* Border color and style for cells */
+    border: 1px solid #AAAAAA;
 }
 
 .dt-complex-header th {
-    background-color: #f4f4f4; /* Light grey background for header cells */
+    background-color: #f4f4f4;
 }
 
 .dt-complex-header tfoot td {
     font-weight: bold;
-    border-top: 2px solid #AAAAAA; /* Border on top of footer cells */
+    border-top: 2px solid #AAAAAA;
     padding-top: 20px;
 }
 
-.dt-complex-header thead th,
-.dt-complex-header tfoot td {
-    border-bottom: 2px solid #AAAAAA; /* Border at the bottom of header and footer cells */
+.dt-complex-header thead th, .dt-complex-header tfoot td {
+    border-bottom: 2px solid #AAAAAA;
 }
 
 
-  
-  #thanks{
-    font-size: 2em;
-    margin-bottom: 50px;
-  }
-  
-  #notices{
-    padding-left: 6px;
-    border-left: 6px solid #0087C3;  
-  }
-  
-  #notices .notice {
-    font-size: 1.2em;
-  }
-  
-  footer {
+
+footer {
     color: #777777;
     width: 100%;
     height: 30px;
@@ -183,18 +171,44 @@ table tfoot tr td:first-child {
     border-top: 1px solid #AAAAAA;
     padding: 8px 0;
     text-align: center;
-  }
-  /* Styling for amount in words section */
+}
+
 .amount-in-words {
     font-size: 1.0em;
     font-weight: bold;
-    text-align: right; /* Align to right or center based on your preference */
+    text-align: right;
     padding: 10px;
-    background-color: #f4f4f4; /* Light background color for emphasis */
-    border-top: 2px solid #AAAAAA; /* Add a top border to separate from the table above */
+    background-color: #f4f4f4;
+    border-top: 2px solid #AAAAAA;
 }
 
-  
+.justify-content-between {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+}
+
+ .multi-line-address {
+    display: block;
+    white-space: pre-line; /* Allows line breaks in the content */
+}
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.invoice-number {
+    text-align: right;
+}
+@media print {
+    /* Print-specific styles */
+    .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+}
 		</style>
 	</head>
 	<body>
@@ -208,20 +222,18 @@ $partner_type = $data->partner_type;
 	<div class="row invoice-preview">
 	  <!-- Invoice -->
 
-	  <div class="col-xl-12 col-md-12 col-12 mb-md-0 mb-4">
+	  <div class="">
 	    <div class="card invoice-preview-card">
 	      <div class="card-body">
-	        <div
-	          class="d-flex justify-content-between flex-xl-row flex-md-column flex-sm-row flex-column m-sm-3 m-0">
-	          <div class="mb-xl-0 mb-4">
-	            <a class="header-brand" href="{{url('/')}}" class="app-brand-link">
-	              <img src="{{url('/')}}/{{ $appSetting->app_logo}}" class="" alt="{{$appSetting->app_name}}">
+	        <div class="header-content">
+	          <div class="header-brand">
+	            <a class="" href="{{url('/')}}" class="app-brand-link">
+	              <img src="{{url('/')}}/assets/uploads/property-management-1724824115.jpg" class="" alt="{{$appSetting->app_name}}">
 	            </a> 
-	            <p class="mb-2">{{ $appSetting->address}}</p>
-	            <p class="mb-2">MADHYA PRADESH,INDIA</p>
+	            <p class="mb-2 multi-line-address">{{ $appSetting->address}}</p>
 	            <p class="mb-0">(+91) {{ $appSetting->mobile_no}}</p>
 	          </div>
-	          <div>
+	          <div class="invoice-number">
 	            <h5 class="fw-medium mb-2">INVOICE #{{ $data->invoice_no}}</h5>
 	            <div class="mb-2 pt-1">
 	              <span>Issues Date:</span>
@@ -237,11 +249,11 @@ $partner_type = $data->partner_type;
 	      </div>
 	      <hr class="my-0" />
 	      <div class="card-body">
-	        <div class="d-flex justify-content-between">
+	        <div class="d-flex justify-content-between header-content">
 	          <div class=" party-name"  >
 	            <h6 class="mb-3">Party Name:</h6>
 	            <p class="mb-1">{{ $data->partner->first_name }} {{ $data->partner->last_name }}</p>
-	            <p class="mb-1">{{ $data->partner->postal_address }}</p>
+	            <p class="mb-1 multi-line-address">{{ $data->partner->postal_address }}</p>
 	            <p class="mb-1">{{ $data->partner->mobile }}</p>
 	            <p class="mb-0">{{ $data->tenant->email }}</p>
 	            <p class="mb-0">GSTIN/UIN: {{ $data->partner->gst_no }}</p>
@@ -249,7 +261,7 @@ $partner_type = $data->partner_type;
 	          <div class="invoice-details text-right" >
 	            <h6 class="mb-3">Invoice To:</h6>
 	            <p class="mb-1">{{ $data->tenant->full_name }}({{ $data->tenant->firm_name }})</p>
-	            <p class="mb-1">{{ $data->tenant->business_address }}</p>
+	            <p class="mb-1 multi-line-address">{{ $data->tenant->business_address }}</p>
 	            <p class="mb-1">{{ $data->tenant->phone }}</p>
 	            <p class="mb-0">{{ $data->tenant->email }}</p>
 	            <p class="mb-0">GSTIN/UIN: {{ $data->tenant->gst_no }}</p>

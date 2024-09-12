@@ -25,17 +25,7 @@
                       </span>
                     </button>
                   </div>
-                  <div class="line"></div>
-                  <div class="step" data-target="#payment-setting">
-                    <button type="button" class="step-trigger">
-                      <span class="bs-stepper-circle"><i class="ti ti-currency-dollar ti-sm"></i></span>
-                      <span class="bs-stepper-label">
-                        <span class="bs-stepper-title">Payment Setting </span>
-                       
-                      </span>
-                    </button>
-                  </div>
-
+                 
                 </div>
                 <div class="bs-stepper-content">
                   <form id="wizard-property-listing-form" onSubmit="return false">
@@ -112,68 +102,6 @@
                       </div>
                     </div>
 
-                    <!-- Property Details -->
-                    <div id="payment-setting" class="content">
-                      <div class="row g-3">
-                        <div class="col-sm-3">
-                            {{ Form::label('partners[]', __('Partners'), ['class' => 'form-label']) }}
-                            <div class="select2-primary">
-                                {!! Form::select('partners[]', $partners, null, [
-                                    'class' => 'form-control select2 form-select',
-                                    'id' => 'select2Primary',
-                                    'required' => 'required'
-                                ]) !!}
-                            </div>
-                        </div>
-                        <div class="col-sm-3">
-                           {{ Form::label('commission_value', __('Partner\'s share'), ['class' => 'form-label']) }}
-                            {{ Form::number('commission_value[]', null, ['class' => 'form-control','id'=>'commission_value','step'=>'any', 'placeholder' => __('Partner\'s share')]) }}
-                            @error('commission_value')
-                                <small class="invalid-name" role="alert">
-                                    <strong class="text-danger">{{ $message }}</strong>
-                                </small>
-                              @enderror
-                        </div>
-                        
-                        <div class="col-sm-3">
-                          <label class="form-label" for="commission_type"> Type</label>
-                          <select id="commission_type" name="commission_type[]" class="form-control select2 form-select" data-allow-clear="true">
-                            <option value="">Select</option>
-                            <option value="1">Fixed Value</option>
-                            <option value="2">% of Total Rent</option>
-                          </select>
-                        </div>
-                        <div class="col-sm-2">
-                            <label class="form-label" for="is_gst"> &nbsp;</label>
-                            <input class="form-check-input gst-checkbox" type="checkbox" id="is_gst"  name="is_gst[]"  value="1"/>
-                            <label class="form-check-label" for="is_gst">Gst Invoice </label>
-                        </div>
-                        
-                        <div class="col-sm-12">
-                        
-                            <div id="paymentContainer" class="">
-                                <!-- Unit rows will be added here dynamically -->
-                            </div>
-                             
-                            <div class="text-right mt-3">
-                                <button class="btn btn-primary" id="addPartnerButton">+ Add Payment</button>
-                            </div>
-                        
-                        </div>
-                        
-                        
-                        <div class="col-12 d-flex justify-content-between mt-4">
-                          <button class="btn btn-label-secondary btn-prev">
-                            <i class="ti ti-arrow-left ti-xs me-sm-1 me-0"></i>
-                            <span class="align-middle d-sm-inline-block d-none">Previous</span>
-                          </button>
-                          <button class="btn btn-primary btn-next">
-                            <span class="align-middle d-sm-inline-block d-none me-sm-1">Next</span>
-                            <i class="ti ti-arrow-right ti-xs"></i>
-                          </button>
-                        </div>
-                      </div>
-                    </div>
                
                   </form>
                 </div>

@@ -1,3 +1,7 @@
 .requiredLabel {
   color: #ff0000;
 }
+
+#template-customizer{
+  visibility: hidden !important;
+}

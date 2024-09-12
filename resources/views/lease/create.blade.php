@@ -88,6 +88,16 @@
                       </span>
                     </button>
                   </div>
+                   <div class="line"></div>
+                  <div class="step" data-target="#payment-setting">
+                    <button type="button" class="step-trigger">
+                      <span class="bs-stepper-circle"><i class="ti ti-currency-dollar ti-sm"></i></span>
+                      <span class="bs-stepper-label">
+                        <span class="bs-stepper-title">Payment Setting </span>
+                       
+                      </span>
+                    </button>
+                  </div>
                   <div class="line"></div>
                   <div class="step" data-target="#security-deposit">
                     <button type="button" class="step-trigger">
@@ -119,10 +129,20 @@
                       </span>
                     </button>
                   </div>
+                <div class="line"></div>
+                  <div class="step" data-target="#documents">
+                    <button type="button" class="step-trigger">
+                      <span class="bs-stepper-circle"><i class="ti ti-upload"></i></span>
+                      <span class="bs-stepper-label">
+                        <span class="bs-stepper-title">Documents</span>
+                        
+                      </span>
+                    </button>
+                  </div>
                  
                 </div>
                 <div class="bs-stepper-content">
-                  <form id="wizard-property-listing-form" onSubmit="return false">
+                  <form id="wizard-property-listing-form"  enctype="multipart/form-data"  files ="true" onSubmit="return false">
                      {!! Form::hidden('id',null,array('class'=>'form-control')) !!}
                     @csrf
                     <!-- lease Details -->
@@ -239,7 +259,7 @@
                                 </small>
                               @enderror
                         </div>
-                        <div class="col-sm-4">
+                       <!--  <div class="col-sm-4">
                            {{ Form::label('fixed_price', __('Fixed Price'), ['class' => 'form-label']) }}
                             {{ Form::number('fixed_price', null, ['class' => 'form-control','id'=>'fixed_price','min'=>'1','step'=>'1', 'placeholder' => __('Fixed Price')]) }}
                             @error('fixed_price')
@@ -247,30 +267,50 @@
                                     <strong class="text-danger">{{ $message }}</strong>
                                 </small>
                               @enderror
-                        </div>
+                        </div> -->
                         <hr class="my-5" />
                         <div class="col-sm-12">
                             <h6> Rent Incremental Term:</h6>
                         </div>
-                        <div class="col-sm-6">
-                           {{ Form::label('month', __('Every Month'), ['class' => 'form-label']) }}
-                            {{ Form::number('month', null, ['class' => 'form-control','id'=>'month','min'=>'1','step'=>'1', 'placeholder' => __('Every Month')]) }}
-                            @error('month')
+                        <div class="col-sm-3">
+                           {{ Form::label('from_month', __('From Month'), ['class' => 'form-label']) }}
+                            {{ Form::number('from_month[]', null, ['class' => 'form-control','id'=>'from_month','min'=>'1','step'=>'1', 'placeholder' => __('From Month')]) }}
+                            @error('from_month')
                                 <small class="invalid-name" role="alert">
                                     <strong class="text-danger">{{ $message }}</strong>
                                 </small>
                               @enderror
                         </div>
-                        <div class="col-sm-6">
-                           {{ Form::label('inc_percenatge', __('Increment %'), ['class' => 'form-label']) }}
-                            {{ Form::number('inc_percenatge', null, ['class' => 'form-control','id'=>'inc_percenatge', 'placeholder' => __('Increment %')]) }}
-                            @error('inc_percenatge')
+                        <div class="col-sm-3">
+                           {{ Form::label('to_month', __('To Month'), ['class' => 'form-label']) }}
+                            {{ Form::number('to_month[]', null, ['class' => 'form-control','id'=>'to_month','min'=>'1','step'=>'1','placeholder' => __('To Month')]) }}
+                            @error('to_month')
+                                <small class="invalid-name" role="alert">
+                                    <strong class="text-danger">{{ $message }}</strong>
+                                </small>
+                              @enderror
+                        </div>
+                         <div class="col-sm-3">
+                           {{ Form::label('set_price', __('Price'), ['class' => 'form-label']) }}
+                            {{ Form::number('set_price[]', null, ['class' => 'form-control','id'=>'set_price','step'=>'any', 'placeholder' => __('Price')]) }}
+                            @error('set_price')
                                 <small class="invalid-name" role="alert">
                                     <strong class="text-danger">{{ $message }}</strong>
                                 </small>
                               @enderror
                         </div>
                         
+                        <div class="col-sm-12">
+                        
+                            <div id="RentCalContainer" class="">
+                                <!-- Unit rows will be added here dynamically -->
+                            </div>
+                             
+                            <div class="text-right mt-3">
+                                <button class="btn btn-primary" id="addRentCalButton">+ Add More</button>
+                            </div>
+                        
+                        </div>
                         
                         <div class="col-12 d-flex justify-content-between mt-4">
                           <button class="btn btn-label-secondary btn-prev">
@@ -287,7 +327,7 @@
                     <!-- CAM -->
                     <div id="cam" class="content">
                        <div class="row g-3">
-                          <div class="col-sm-4">
+                          <div class="col-sm-6">
                            {{ Form::label('camp_price', __('Price/Square foot'), ['class' => 'form-label']) }}
                             {{ Form::number('camp_price', null, ['class' => 'form-control','id'=>'camp_price','min'=>'1', 'placeholder' => __('Price/Square')]) }}
                             @error('price')
@@ -297,7 +337,7 @@
                               @enderror
                         </div>
                         
-                        <div class="col-sm-4">
+                       <!--  <div class="col-sm-4">
                            {{ Form::label('camp_fixed_price', __('Fixed Price'), ['class' => 'form-label']) }}
                             {{ Form::number('camp_fixed_price', null, ['class' => 'form-control','id'=>'camp_fixed_price','min'=>'1','step'=>'1', 'placeholder' => __('Square Foot')]) }}
                             @error('camp_fixed_price')
@@ -305,8 +345,116 @@
                                     <strong class="text-danger">{{ $message }}</strong>
                                 </small>
                               @enderror
+                        </div> -->
+                         <hr class="my-5" />
+                        <div class="col-sm-12">
+                            <h6> CAM Incremental Term:</h6>
                         </div>
-                      
+                        <div class="col-sm-3">
+                           {{ Form::label('cam_from_month', __('From Month'), ['class' => 'form-label']) }}
+                            {{ Form::number('cam_from_month[]', null, ['class' => 'form-control','id'=>'cam_from_month','min'=>'1','step'=>'1', 'placeholder' => __('From Month')]) }}
+                            @error('from_month')
+                                <small class="invalid-name" role="alert">
+                                    <strong class="text-danger">{{ $message }}</strong>
+                                </small>
+                              @enderror
+                        </div>
+                        <div class="col-sm-3">
+                           {{ Form::label('cam_to_month', __('To Month'), ['class' => 'form-label']) }}
+                            {{ Form::number('cam_to_month[]', null, ['class' => 'form-control','id'=>'cam_to_month','min'=>'1','step'=>'1','placeholder' => __('To Month')]) }}
+                            @error('to_month')
+                                <small class="invalid-name" role="alert">
+                                    <strong class="text-danger">{{ $message }}</strong>
+                                </small>
+                              @enderror
+                        </div>
+                         <div class="col-sm-3">
+                           {{ Form::label('cam_set_price', __('Price'), ['class' => 'form-label']) }}
+                            {{ Form::number('cam_set_price[]', null, ['class' => 'form-control','id'=>'cam_set_price','step'=>'any', 'placeholder' => __('Price')]) }}
+                            @error('set_price')
+                                <small class="invalid-name" role="alert">
+                                    <strong class="text-danger">{{ $message }}</strong>
+                                </small>
+                              @enderror
+                        </div>
+                        
+                        <div class="col-sm-12">
+                        
+                            <div id="CamCalContainer" class="">
+                                <!-- Unit rows will be added here dynamically -->
+                            </div>
+                             
+                            <div class="text-right mt-3">
+                                <button class="btn btn-primary" id="addCamCalButton">+ Add More</button>
+                            </div>
+                        
+                        </div>
+                        
+                        <div class="col-12 d-flex justify-content-between mt-4">
+                          <button class="btn btn-label-secondary btn-prev">
+                            <i class="ti ti-arrow-left ti-xs me-sm-1 me-0"></i>
+                            <span class="align-middle d-sm-inline-block d-none">Previous</span>
+                          </button>
+                          <button class="btn btn-primary btn-next">
+                            <span class="align-middle d-sm-inline-block d-none me-sm-1">Next</span>
+                            <i class="ti ti-arrow-right ti-xs"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                     <!-- Property Details -->
+                    <div id="payment-setting" class="content">
+                      <div class="row g-3">
+                        <div class="col-sm-3">
+                            {{ Form::label('partners[]', __('Partners'), ['class' => 'form-label']) }}
+                            <div class="select2-primary">
+                                {!! Form::select('partners[]', $partners, null, [
+                                    'class' => 'form-control select2 form-select',
+                                    'id' => 'select2Primary',
+                                    'required' => 'required'
+                                ]) !!}
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                           {{ Form::label('commission_value', __('Partner\'s share'), ['class' => 'form-label']) }}
+                            {{ Form::number('commission_value[]', null, ['class' => 'form-control','id'=>'commission_value','step'=>'any', 'placeholder' => __('Partner\'s share')]) }}
+                            @error('commission_value')
+                                <small class="invalid-name" role="alert">
+                                    <strong class="text-danger">{{ $message }}</strong>
+                                </small>
+                              @enderror
+                        </div>
+                        
+                        <div class="col-sm-3">
+                          <label class="form-label" for="commission_type"> Type</label>
+                          <select id="commission_type" name="commission_type[]" class="form-control select2 form-select" data-allow-clear="true">
+                            <option value="">Select</option>
+                            <option value="1">Fixed Value</option>
+                            <option value="2">% of Total Rent</option>
+                          </select>
+                        </div>
+                        <div class="col-sm-2">
+                            <label class="form-label" for="is_gst"> &nbsp;</label>
+                            <input class="form-check-input gst-checkbox" type="checkbox" id="is_gst"  name="is_gst[]"  value="1"/>
+                            <label class="form-check-label" for="is_gst">Gst Invoice </label>
+                            <br>
+                            <input class="form-check-input default_partner-checkbox" type="radio" id="default_partner"  name="default_partner[]"  value="1"/ checked>
+                            <label class="form-check-label" for="default_partner"> Default Partner </label>
+                        </div>
+                        
+                        <div class="col-sm-12">
+                        
+                            <div id="paymentContainer" class="">
+                                <!-- Unit rows will be added here dynamically -->
+                            </div>
+                             
+                            <div class="text-right mt-3">
+                                <button class="btn btn-primary" id="addPartnerButton">+ Add Payment</button>
+                            </div>
+                        
+                        </div>
+                        
                         
                         <div class="col-12 d-flex justify-content-between mt-4">
                           <button class="btn btn-label-secondary btn-prev">
@@ -498,6 +646,47 @@
                         </div>
                       </div>
                     </div>
+
+                    <div id="documents" class="content">
+                       <div class="row g-3">
+                         <div class="card-body">
+                              <div class="d-flex align-items-start align-items-sm-center gap-4">
+                                
+                                <div class="button-wrapper">
+                                  <label for="upload" class="btn btn-primary me-2 mb-3" tabindex="0">
+                                    <span class="d-none d-sm-block">Upload new Documents</span>
+                                    <i class="ti ti-upload d-block d-sm-none"></i>
+                                    <input
+                                      type="file"
+                                      id="upload"
+                                      name="documents[]"
+                                      class="account-file-input"
+                                      hidden
+                                      multiple/>
+                                  </label>
+                                  <button type="button" class="btn btn-label-secondary account-image-reset mb-3">
+                                    <i class="ti ti-refresh-dot d-block d-sm-none"></i>
+                                    <span class="d-none d-sm-block">Reset</span>
+                                  </button>
+
+                                
+                                </div>
+                              </div>
+                        </div>
+                        </div>
+    
+                        <div class="col-12 d-flex justify-content-between mt-4">
+                          <button class="btn btn-label-secondary btn-prev">
+                            <i class="ti ti-arrow-left ti-xs me-sm-1 me-0"></i>
+                            <span class="align-middle d-sm-inline-block d-none">Previous</span>
+                          </button>
+                          <button class="btn btn-primary btn-next">
+                            <span class="align-middle d-sm-inline-block d-none me-sm-1">Next</span>
+                            <i class="ti ti-arrow-right ti-xs"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
                   </form>
                 </div>
               </div>
@@ -542,6 +731,39 @@
 
  // Add text box
   $(document).ready(function(){
+          /*--------------Rent--------------------------------*/
+        $("#addRentCalButton").click(function(){
+            var textBoxHtml = '<div class="row g-3 textBoxWrapper"><br><hr class="my-0" /><br>  <div class="col-sm-3"> <label for="from_month" class="form-label">From Month</label> <input class="form-control" id="from_month" placeholder="From Month" name="from_month[]" type="number" step="1" min="1"> </div><div class="col-sm-3"> <label for="to_month" class="form-label">To Month</label> <input class="form-control" id="to_month" placeholder="From Month" name="to_month[]" type="number" step="1" min="1"> </div><div class="col-sm-3"> <label for="set_price" class="form-label">Price</label> <input class="form-control" id="price" placeholder="From Month" name="set_price[]" type="number" step="any" > </div>  <div class="col-sm-3"> <label for="button" class="form-label">&nbsp;<label><button type="button" class="removeButton btn btn-sm btn-danger" ><i class="ti ti-trash text-white"></i></button>  </div></div> <br>';
+            $("#RentCalContainer").append(textBoxHtml);
+        });
+
+        // Remove text box
+        $("#RentCalContainer").on("click", ".removeButton", function(){
+            $(this).closest(".textBoxWrapper").remove();
+        });
+
+        $("#addCamCalButton").click(function(){
+            var textBoxHtml = '<div class="row g-3 textBoxWrapper"><br><hr class="my-0" /><br>  <div class="col-sm-3"> <label for="cam_from_month" class="form-label">From Month</label> <input class="form-control" id="cam_from_month" placeholder="From Month" name="cam_from_month[]" type="number" step="1" min="1"> </div><div class="col-sm-3"> <label for="cam_to_month" class="form-label">To Month</label> <input class="form-control" id="cam_to_month" placeholder="From Month" name="cam_to_month[]" type="number" step="1" min="1"> </div><div class="col-sm-3"> <label for="cam_set_price" class="form-label">Price</label> <input class="form-control" id="price" placeholder="From Month" name="cam_set_price[]" type="number" step="any" > </div>  <div class="col-sm-3"> <label for="button" class="form-label">&nbsp;<label><button type="button" class="removeButton btn btn-sm btn-danger" ><i class="ti ti-trash text-white"></i></button>  </div></div> <br>';
+            $("#CamCalContainer").append(textBoxHtml);
+        });
+
+        // Remove text box
+        $("#CamCalContainer").on("click", ".removeButton", function(){
+            $(this).closest(".textBoxWrapper").remove();
+        });
+
+
+
+          $("#addPartnerButton").click(function(){
+            var textBoxHtml = '<div class="row g-3 textBoxWrapper"><br><hr class="my-0" /><br> <div class="col-sm-3"> <label for="partners" class="form-label">Partners</label> <div class="select2-primary"> <select class="form-control select2 form-select"  required="required" name="partners[]"><?php foreach ($partners as $key =>  $row): ?><option value="<?php echo $key ?>"><?php echo $row ?></option><?php endforeach ?></select> </div> </div> <div class="col-sm-3"> <label for="commission_value" class="form-label">\Partner\'s share</label> <input class="form-control" id="commission_value" step="any" placeholder="\Partner\'s share" name="commission_value[]" type="text"> </div> <div class="col-sm-3"> <label class="form-label" for="commission_type">Type</label> <select id="commission_type" name="commission_type[]" class="form-control select2 form-select" > <option value="">Select</option> <option value="1">Fixed Value</option> <option value="2">% of Total Rent</option>  </select> </div><div class="col-sm-2"> <label class="form-label" for="is_gst"> &nbsp;</label> <input class="form-check-input gst-checkbox" type="checkbox" id="is_gst"  name="is_gst[]"  value="1"/> <label class="form-check-label" for="is_gst">Gst Invoice </label><br> <input class="form-check-input default_partner-checkbox" type="radio" id="default_partner"  name="default_partner[]"  value="1"/> <label class="form-check-label" for="default_partner"> Default Partner </label> </div>  <div class="col-sm-1"><label for="button" class="form-label">&nbsp;<label><button type="button" class="removeButton btn btn-sm btn-danger" ><i class="ti ti-trash text-white"></i></button>  </div></div> <br>';
+            $("#paymentContainer").append(textBoxHtml);
+        });
+
+        // Remove text box
+        $("#paymentContainer").on("click", ".removeButton", function(){
+            $(this).closest(".textBoxWrapper").remove();
+        });
+
         /*--------------utility--------------------------------*/
         $("#addsecurityDepositButton").click(function(){
             var textBoxHtml = '<div class="row g-3 textBoxWrapper"><br><hr class="my-0" /><br> <div class="col-sm-4"> <label for="utility" class="form-label">Utility Name</label> <div class="select2-primary"> <select class="form-control select2 form-select"  required="required" name="utility[]"><?php foreach ($utilities as $key =>  $row): ?><option value="<?php echo $key ?>"><?php echo $row ?></option><?php endforeach ?></select> </div> </div> <div class="col-sm-4"> <label for="deposit_amount" class="form-label">Deposit Amount</label> <input class="form-control" id="deposit_amount" placeholder="Deposit Amount" name="deposit_amount[]" type="text"> </div>  <div class="col-sm-4"> <label for="button" class="form-label">&nbsp;<label><button type="button" class="removeButton btn btn-sm btn-danger" ><i class="ti ti-trash text-white"></i></button>  </div></div> <br>';

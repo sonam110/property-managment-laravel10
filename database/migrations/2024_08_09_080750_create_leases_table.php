@@ -33,6 +33,8 @@ return new class extends Migration
             $table->integer('end_month')->default(11)->nullable();
             $table->integer('month')->nullable();
             $table->decimal('inc_percenatge',10,2)->nullable();
+            $table->integer('cam_month')->nullable();
+            $table->decimal('cam_inc_percenatge',10,2)->nullable();
             $table->unsignedBigInteger('created_by');
             $table->integer('generate_invoice_day')->nullable();
             $table->text('invoice_conditions')->nullable();

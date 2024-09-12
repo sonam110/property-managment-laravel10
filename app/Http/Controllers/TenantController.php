@@ -135,6 +135,7 @@ class TenantController extends Controller
             $tenant->business_name = $request->business_name;
             $tenant->business_industry = $request->business_industry;
             $tenant->business_address = $request->business_address;
+            $tenant->company_address = $request->company_address;
             $tenant->business_description = $request->business_description;
             $tenant->save();
 

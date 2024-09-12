@@ -96,12 +96,12 @@
             @endcan
             @can('lease-contract')
             
-            <li class="menu-item {{ (request()->is('contract-document*') ? 'active' : '')}}">
-              <a href="{{ route('contract-document') }}" class="menu-link">
-                 <i class="menu-icon tf-icons ti ti-files"></i>
-                <div data-i18n="Contract Document">Contract Document </div>
-              </a>
-            </li>
+             <!--  <li class="menu-item {{ (request()->is('contract-document*') ? 'active' : '')}}">
+                <a href="{{ route('contract-document') }}" class="menu-link">
+                   <i class="menu-icon tf-icons ti ti-files"></i>
+                  <div data-i18n="Contract Document">Contract Document </div>
+                </a>
+              </li> -->
               @endcan
               @can('invoice-browse')
              <li class="menu-header small text-uppercase">
@@ -113,7 +113,22 @@
                 <div data-i18n="Invoices">Invoices</div>
               </a>
             </li>
+            <li class="menu-item {{ (request()->is('payment-history') ? 'active' : '')}}">
+              <a href="{{ route('payment-history') }}" class="menu-link">
+                 <i class="menu-icon tf-icons ti ti-bookmarks"></i>
+                <div data-i18n="Payment History">Payment History</div>
+              </a>
+            </li>
              @endcan
+              <li class="menu-header small text-uppercase">
+              <span class="menu-header-text">ACCOUNT MANAGEMENT</span>
+            </li>
+            <li class="menu-item {{ (request()->is('expense*') ? 'active' : '')}}">
+              <a href="{{ route('expense.index') }}" class="menu-link">
+                 <i class="menu-icon tf-icons ti ti-file"></i>
+                <div data-i18n="Expenses">Expenses</div>
+              </a>
+            </li>
              @can('app-setting')
             <li class="menu-header small text-uppercase">
               <span class="menu-header-text">SETTINGS</span>

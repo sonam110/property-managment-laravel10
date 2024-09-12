@@ -15,13 +15,19 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id');
 
+            $table->unsignedBigInteger('lease_id');
+            $table->foreign('lease_id')->references('id')->on('leases')->onDelete('cascade');
+
             $table->unsignedBigInteger('property_id');
             $table->foreign('property_id')->references('id')->on('properties')->onDelete('cascade');
+
+            $table->unsignedBigInteger('tenant_id')->nullable();
 
             $table->decimal('commission_value',10,2)->default(0)->nullable();
             $table->integer('commission_type')->nullable()->comment('1:Fixed,2:% of Total Rent,3: % of Total collected Rent');
             $table->longText('payment_methods')->nullable();
             $table->boolean('is_gst')->default(0)->nullable()->comment('0:No,1:Yes');
+            $table->boolean('default_partner')->default(0)->nullable()->comment('0:No,1:Yes');
             $table->timestamps();
         });
     }
