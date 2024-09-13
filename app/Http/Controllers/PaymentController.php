@@ -11,7 +11,7 @@ use DB;
 use Str;
 use PDF;
 use App\Models\AppSetting;
-use App\Models\lease;
+use App\Models\Lease;
 use App\Models\Tenant;
 use App\Models\User;
 use App\Models\Invoice;
@@ -25,7 +25,7 @@ class PaymentController extends Controller
         if (\Auth::user()->can('lease-browse')) {
             $data = Payment::get();
             $propertyTypes = Property::get()->pluck('property_name', 'id');
-            $leases = lease::get()->pluck('unique_id ', 'id');
+            $leases = Lease::get()->pluck('unique_id ', 'id');
             $partners = User::get()->pluck('first_name', 'id');
             $tenants = Tenant::get()->pluck('firm_name', 'id');
             $id = $id;

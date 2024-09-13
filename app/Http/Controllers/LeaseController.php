@@ -526,8 +526,8 @@ private function generateLeaseContent($lease,$request)
             $extraCharges = ExtraCharge::get()->pluck('display_name', 'id');
             $paymentSetting = PropertyPaymentSetting::where('lease_id',$id)->with('partner')->get();
             $leaseDocuments = LeaseDocument::where('lease_id',$id)->get();
-            $rentCals = RentCal::where('lease_id',$id)->where('type','1')->get();
-            $camCals = RentCal::where('lease_id',$id)->where('type','2')->get();
+            $rentCals = RentCal::where('lease_id',$id)->where('type','1')->orderby('id','ASC')->get();
+            $camCals = RentCal::where('lease_id',$id)->where('type','2')->orderby('id','ASC')->get();
             $partners = User::where('role_id','2')->get()->pluck('first_name', 'id');
             return View('lease.edit',compact('lease','properties','tenants','leaseDeposits','leaseExtraCharges','leaseUtilities','utilities','extraCharges','propertyUnit','unit_ids','rented_units','paymentSetting','partners','leaseDocuments','rentCals','camCals'));
         } else {

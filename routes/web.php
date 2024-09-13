@@ -38,6 +38,13 @@ use App\Http\Controllers\ExpenseController;
 
 require __DIR__ . '/auth.php';
 
+
+Route::get('/optimize', function () {
+    \Artisan::call('optimize:clear');
+    \Artisan::call('cache:forget spatie.permission.cache');
+    return redirect('/');
+});
+
 Route::get('/', function () {
    return view('admin.login');
 });

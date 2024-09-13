@@ -94,18 +94,37 @@
         <h5 class="card-header pb-1">Property Units</h5>
         <div class="card-body containernew">
           @foreach($propertyUnit as $floor)
-          @php $allUnits = \App\Models\PropertyUnit::where('property_id',$floor->property_id)->where('unit_name_prefix',$floor->unit_name_prefix)->orderby('id','ASC')->get();     @endphp
+          @php $allUnits = \App\Models\PropertyUnit::where('property_id',$floor->property_id)->where('unit_name_prefix',$floor->unit_name_prefix)->orderby('id','ASC')->get();     
+
+          
+          @endphp
             <div class="floor">
                 <h6 style="grid-column: span 12;"><span class="badge bg-label-primary">Floor {{ $floor->unit_floor }} ({{ $floor->unit_name_prefix }})</span></h6>
                 @foreach($allUnits as $unit)
                 @php  
-                  $is_rented =  ($unit->is_rented =='1') ? 'red' :'' ;
-                  $is_rented_color =  ($unit->is_rented =='1') ? '#fff' :'' ;
+                   
+                    $is_rented =  ($unit->is_rented =='1') ? 'red' :'' ;
+                    $is_rented_color =  ($unit->is_rented =='1') ? '#fff' :'' ;
+                    $lease = \App\Models\Lease::WhereRaw("FIND_IN_SET(?, unit_ids) > 0", [$unit->id])->with('tenant')->first();
+
+                    $tenantId = $lease ? @$lease->tenant->id : ''; 
+                   
+
+
                 @endphp
+              
+                    @if(!empty($tenantId))
+                    <a href="{{ route('tenants.show', $tenantId) }}" target="_blank"><div class="unit" style="background:{{ $is_rented }};color:{{ $is_rented_color  }}">
+                        {{ $unit->unit_name }} 
+                         
+                    </div></a>
+                    @else
                     <div class="unit" style="background:{{ $is_rented }};color:{{ $is_rented_color  }}">
                         {{ $unit->unit_name }} 
                          
                     </div>
+
+                    @endif
                 @endforeach
             </div>
         @endforeach

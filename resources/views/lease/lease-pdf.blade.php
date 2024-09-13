@@ -62,11 +62,21 @@
                   $is_rented_color =  ($unit->is_rented =='1') ? '#fff' :'' ;
 
                   $is_color = (in_array($unit->id,$unit_ids)) ? 'green' :$is_rented; 
+                  $lease = \App\Models\Lease::WhereRaw("FIND_IN_SET(?, unit_ids) > 0", [$unit->id])->with('tenant')->first();
+
+                $tenantId = $lease ? @$lease->tenant->id : ''; 
                 @endphp
-                    <div class="unit" style="background:{{ $is_color }};color:{{ $is_rented_color  }}">
+                    @if(!empty($tenantId))
+                    <a href="{{ route('tenants.show', $tenantId) }}" target="_blank"><div class="unit" style="background:{{ $is_rented }};color:{{ $is_rented_color  }}">
+                        {{ $unit->unit_name }} 
+                         
+                    </div></a>
+                    @else
+                    <div class="unit" style="background:{{ $is_rented }};color:{{ $is_rented_color  }}">
                         {{ $unit->unit_name }} 
                          
                     </div>
+                    @endif
                 @endforeach
             </div>
         @endforeach
