@@ -314,7 +314,7 @@ class InvoiceController extends Controller
             $cam_invoices = InvoiceDetail::where('invoice_id',$id)->where('type','cam')->get();
             $utility_invoices = InvoiceDetail::where('invoice_id',$id)->where('type','utility')->get();
            
-            return View('invoice',compact('data','rent_invoices','cam_invoices','utility_invoices','numberTransformer','rent_gts'));
+            return View('invoice-new-1',compact('data','rent_invoices','cam_invoices','utility_invoices','numberTransformer','rent_gts'));
         } else {
             return redirect()->back();
         }
@@ -334,7 +334,7 @@ class InvoiceController extends Controller
                 }
                 
                 $FileName = 'Rent'.'-'.$data->invoice_no.'-'.time().'.pdf';
-                $pdf = PDF::loadView('invoice-new',compact('rent_invoices', 'data'));
+                $pdf = PDF::loadView('invoice-new-1',compact('rent_invoices', 'data'));
                 $FilePath = 'pdf/' . $FileName;
                 \Storage::disk('pdf_uploads')->put($FilePath, $pdf->output(), 'public');
 
@@ -349,14 +349,14 @@ class InvoiceController extends Controller
             if($data->invoice_type=='cam'){
        
                 if($data->is_gst=='1') {
-                    $rent_invoices = InvoiceDetail::where('invoice_id',$data->id)->whereIn('type',['cam','campview-gst'])->orderBy('id','ASC')->get();
+                    $rent_invoices = InvoiceDetail::where('invoice_id',$data->id)->whereIn('type',['cam','cam-gst'])->orderBy('id','ASC')->get();
                 }
                 else{
                     $rent_invoices = InvoiceDetail::where('invoice_id',$data->id)->where('type','cam')->orderBy('id','ASC')->get();
                 }
                 
                 $FileName = 'Cam'.'-'.$data->invoice_no.'-'.time().'.pdf';
-                $pdf = PDF::loadView('invoice-cam',compact('rent_invoices', 'data'));
+                $pdf = PDF::loadView('invoice-cam-1',compact('rent_invoices', 'data'));
                 $FilePath = 'pdf/' . $FileName;
                 \Storage::disk('pdf_uploads')->put($FilePath, $pdf->output(), 'public');
 
@@ -372,7 +372,7 @@ class InvoiceController extends Controller
                 $rent_invoices = InvoiceDetail::where('invoice_id',$data->id)->where('type','utility')->orderBy('id','ASC')->get();
                 
                 $FileName = 'Utility'.'-'.$data->invoice_no.'-'.time().'.pdf';
-                $pdf = PDF::loadView('invoice-utility',compact('rent_invoices', 'data'));
+                $pdf = PDF::loadView('invoice-utility-1',compact('rent_invoices', 'data'));
                 $FilePath = 'pdf/' . $FileName;
                 \Storage::disk('pdf_uploads')->put($FilePath, $pdf->output(), 'public');
 

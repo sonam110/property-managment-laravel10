@@ -167,6 +167,7 @@ $partner_type = $data->partner_type;
                         $cgst = ($data->is_gst=='1') ? ($total_amount*9)/100 :0;
                         $sgst = ($data->is_gst=='1') ?($total_amount*9)/100 :0;
 
+                      $gstTotal = $cgst+$sgst;
                        
                       ?>
                   @if($data->is_gst=='1')

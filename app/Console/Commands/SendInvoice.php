@@ -59,7 +59,7 @@ class SendInvoice extends Command
 
                                 $rent_gts = InvoiceDetail::where('invoice_id',$data->id)->where('type','rent-gst')->get();
                                 $FileName = $contact->contact_type.'-'.$data->invoice_no.'-'.time().'.pdf';
-                                $pdf = PDF::loadView('invoice-new',compact('rent_invoices', 'data','rent_gts'));
+                                $pdf = PDF::loadView('invoice-new-1',compact('rent_invoices', 'data','rent_gts'));
                                 $FilePath = 'pdf/' . $FileName;
                                 \Storage::disk('pdf_uploads')->put($FilePath, $pdf->output(), 'public');
 
@@ -101,7 +101,7 @@ class SendInvoice extends Command
 
                             $rent_gts = InvoiceDetail::where('invoice_id',$data->id)->where('type','cam-gst')->get();
                            $FileName = $contact->contact_type.'-'.$data->invoice_no.'-'.time().'.pdf';
-                            $pdf = PDF::loadView('invoice-cam',compact('rent_invoices', 'data','rent_gts'));
+                            $pdf = PDF::loadView('invoice-cam-1',compact('rent_invoices', 'data','rent_gts'));
                             $FilePath = 'pdf/' . $FileName;
                             \Storage::disk('pdf_uploads')->put($FilePath, $pdf->output(), 'public');
 
@@ -133,7 +133,7 @@ class SendInvoice extends Command
                             $rent_invoices = InvoiceDetail::where('invoice_id',$data->id)->where('type','utility')->orderBy('id','ASC')->get();
 
                             $FileName = $contact->contact_type.'-'.$data->invoice_no.'-'.time().'.pdf';
-                            $pdf = PDF::loadView('invoice-utility',compact('rent_invoices', 'data'));
+                            $pdf = PDF::loadView('invoice-utility-1',compact('rent_invoices', 'data'));
                             $FilePath = 'pdf/' . $FileName;
                             \Storage::disk('pdf_uploads')->put($FilePath, $pdf->output(), 'public');
 

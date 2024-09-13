@@ -340,14 +340,15 @@ $partner_type = $data->partner_type;
         
       </table>
       <br>
-          @if($data->is_gst=='1')
-          <?php 
+       <?php 
                 $total_amount = $totalRent;
                 $cgst = ($total_amount*9)/100;
                 $sgst = ($total_amount*9)/100;
 
                 $gstTotal = $cgst+$sgst;
               ?>
+          @if($data->is_gst=='1')
+         
           <table class="dt-complex-header table table-bordered dataTable">
             <thead>
               <tr>
