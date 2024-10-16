@@ -17,7 +17,7 @@
         Print
       </a>
       @if($data->status !='Paid')
-      <a href="./app-invoice-edit.html" class="btn btn-label-secondary">
+      <a href="{{ route('invoice-edit',$data->id) }}" class="btn btn-label-secondary">
         Edit Invoice
       </a>
          @endif

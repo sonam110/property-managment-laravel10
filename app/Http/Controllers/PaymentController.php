@@ -63,8 +63,9 @@ class PaymentController extends Controller
             })
             ->editColumn('invoice_id', function ($query)
             {
+                $invoice_id = ($query->invoice) ? $query->invoice->invoice_no.'('.$query->invoice->invoice_type.')' :'';
                 
-                return $query->invoice->invoice_no.'('.$query->invoice->invoice_type.')';
+                return $invoice_id;
             })
            
             ->editColumn('status', function ($query)
@@ -165,6 +166,7 @@ class PaymentController extends Controller
                 $addPayment->total_amount       = $totalAmount;
                 $addPayment->amount       = $invoiceAmount;
                 $addPayment->remaining_amount = $totalAmount - $invoiceAmount;
+                $addPayment->invoice_type = $invoice->invoice_type;
 
                 $addPayment->payment_method       = $request->paymentMethod;
                 $addPayment->note       = $request->paymentNote;

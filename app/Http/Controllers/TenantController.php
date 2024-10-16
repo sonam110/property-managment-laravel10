@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Tenant;
 use App\Models\TenantContactInfo;
 use App\Models\Lease;
+use App\Models\Invoice;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
@@ -221,7 +222,9 @@ class TenantController extends Controller
         $statsList = DB::table('states')->pluck('name', 'id');
         $tenantTypes = TenantType::get()->pluck('display_name', 'id');
         $tenantContactInfo = TenantContactInfo::where('tenant_id',$id)->get();
-        return view('tenant.show', compact('tenant','statsList','tenantContactInfo'));
+        $leases = Lease::where('tenant_id',$id)->with('property','tenant')->get();
+        $invoices = Invoice::where('tenant_id',$id)->orderBy('id','DESC')->with('property','tenant','partner');
+        return view('tenant.show', compact('tenant','statsList','tenantContactInfo','leases','invoices'));
         
 
     }

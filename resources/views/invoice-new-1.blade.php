@@ -286,6 +286,8 @@ $partner_type = $data->partner_type;
             @php $totalRent =0; 
                 $camTotal =0;
                 $utilityTotal =0;
+                $difference =0;
+                $roundof =0;
               @endphp
               @foreach($rent_invoices as $key =>  $rent)
               <?php 

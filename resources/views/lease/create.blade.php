@@ -14,10 +14,12 @@
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 .unit {
-    width: 48px;
+    border-radius: 6px;
+    font-size: 10px;
+    width: 32px;
     position: relative;
     background-color: #f9f9f9;
-    border: 1px solid grey;
+    border: 1px solid ;
     padding: 0px;
     aspect-ratio: 1 / 1; /* Keeps the box square */
     display: flex;
@@ -55,7 +57,15 @@
     <li class="breadcrumb-item"><a href="{{route('leases.index')}}">{{__('Lease Management')}}</a></li>
     <li class="breadcrumb-item">{{__('Lease')}}</li>
 @endsection
-
+@section('action-btn')
+    <div class="float-end">
+    
+          <a href="{{ url()->previous() }}"  data-title="{{__('Back')}}" data-bs-toggle="tooltip" data-size="lg" title="{{__('Go To Back')}}"  class="btn btn-sm btn-primary">
+              <i class="fa fa-mail-reply"></i>
+          </a>
+       
+    </div>
+@endsection
 @section('content')
     <div id="wizard-property-listing" class="bs-stepper vertical mt-2">
                 <div class="bs-stepper-header">
@@ -213,14 +223,14 @@
                                 </small>
                             @enderror
                         </div>
-                        <div class="col-sm-6">
+                        <!-- <div class="col-sm-6">
                             {{ Form::label('status', __('Status'), ['class' => 'form-label']) }}
                             <select name="status" class="form-control select2 form-select">
                                 <option  value="Pending" selected>Pending</option>
                                 <option  value="Processing" >Processing</option>
                                 <option  value="Approved" >Approved</option>
                             </select>
-                        </div>
+                        </div> -->
 
 
                         <div class="col-12 d-flex justify-content-between mt-4">
@@ -239,18 +249,18 @@
                     <!-- lease rent -->
                     <div id="lease-rent" class="content">
                       <div class="row g-3">
-                        
-                        <div class="col-sm-4">
+                        <div id="unit-rent-details"></div>
+                          <div class="col-sm-4">
                            {{ Form::label('total_square', __('Total Area of Square Foot'), ['class' => 'form-label']) }}
-                            {{ Form::number('total_square', null, ['class' => 'form-control','id'=>'total_square','min'=>'1', 'placeholder' => __('Total Square')]) }}
+                            {{ Form::number('total_square',null, ['class' => 'form-control','id'=>'total_square','min'=>'1', 'placeholder' => __('Total Square')]) }}
                             @error('total_square')
                                 <small class="invalid-name" role="alert">
                                     <strong class="text-danger">{{ $message }}</strong>
                                 </small>
                               @enderror
-                        </div>
+                          </div>
                         
-                        <div class="col-sm-4">
+                          <div class="col-sm-4">
                            {{ Form::label('price', __('Price/Square foot'), ['class' => 'form-label']) }}
                             {{ Form::number('price', null, ['class' => 'form-control','id'=>'price','min'=>'1', 'placeholder' => __('Price/Square')]) }}
                             @error('price')
@@ -258,16 +268,8 @@
                                     <strong class="text-danger">{{ $message }}</strong>
                                 </small>
                               @enderror
-                        </div>
-                       <!--  <div class="col-sm-4">
-                           {{ Form::label('fixed_price', __('Fixed Price'), ['class' => 'form-label']) }}
-                            {{ Form::number('fixed_price', null, ['class' => 'form-control','id'=>'fixed_price','min'=>'1','step'=>'1', 'placeholder' => __('Fixed Price')]) }}
-                            @error('fixed_price')
-                                <small class="invalid-name" role="alert">
-                                    <strong class="text-danger">{{ $message }}</strong>
-                                </small>
-                              @enderror
-                        </div> -->
+                          </div>
+                     
                         <hr class="my-5" />
                         <div class="col-sm-12">
                             <h6> Rent Incremental Term:</h6>
@@ -327,7 +329,8 @@
                     <!-- CAM -->
                     <div id="cam" class="content">
                        <div class="row g-3">
-                          <div class="col-sm-6">
+                        <div id="cam-details"></div>
+                         <div class="col-sm-6">
                            {{ Form::label('camp_price', __('Price/Square foot'), ['class' => 'form-label']) }}
                             {{ Form::number('camp_price', null, ['class' => 'form-control','id'=>'camp_price','min'=>'1', 'placeholder' => __('Price/Square')]) }}
                             @error('price')
@@ -336,16 +339,6 @@
                                 </small>
                               @enderror
                         </div>
-                        
-                       <!--  <div class="col-sm-4">
-                           {{ Form::label('camp_fixed_price', __('Fixed Price'), ['class' => 'form-label']) }}
-                            {{ Form::number('camp_fixed_price', null, ['class' => 'form-control','id'=>'camp_fixed_price','min'=>'1','step'=>'1', 'placeholder' => __('Square Foot')]) }}
-                            @error('camp_fixed_price')
-                                <small class="invalid-name" role="alert">
-                                    <strong class="text-danger">{{ $message }}</strong>
-                                </small>
-                              @enderror
-                        </div> -->
                          <hr class="my-5" />
                         <div class="col-sm-12">
                             <h6> CAM Incremental Term:</h6>
@@ -729,8 +722,109 @@
       });
     });
 
+
+ function unitCheckboxClicked(checkbox) {
+    const unitDetailsDiv = document.getElementById('unit-rent-details');
+    const unitDetailsCamDiv = document.getElementById('cam-details');
+    
+    const unitId = checkbox.dataset.name; // Get the unique unit ID
+    
+    if (checkbox.checked) {
+        // Create new divs for the unit and cam info
+        const newUnitDiv = document.createElement('div');
+        newUnitDiv.className = 'unit-info';
+        newUnitDiv.id = `unit-${unitId}`; // Set a unique ID for this unit's div
+
+        const newCamDiv = document.createElement('div');
+        newCamDiv.className = 'cam-info';
+        newCamDiv.id = `cam-${unitId}`; // Set a unique ID for this unit's cam div
+        
+        // Create the HTML for the new unit section
+        newUnitDiv.innerHTML = `
+            <div class="row g-3 textBoxWrapper"><br><br>
+                <div class="col-sm-4">
+                    <label for="from_month" class="form-label">Unit</label>
+                    <input type="text" name="unitn[]" value="${unitId}" placeholder="Selected Unit ID" class="form-control" readonly>
+                </div>
+                <div class="col-sm-4">
+                    <label for="from_month" class="form-label">Total Square</label>
+                    <input type="number" step="any" name="square_feet[]" placeholder="Square Feet" class="total-square-feet form-control" onkeyup="calculateSum()">
+                </div>
+                <div class="col-sm-4">
+                    <label for="from_month" class="form-label">Rate/Square</label>
+                    <input type="number" step="any" name="rate[]" placeholder="Unit Price" class="unit-price form-control" onkeyup="calculateSum()">
+                </div>
+            </div><br>
+        `;
+
+        // Create the HTML for the new CAM section
+        newCamDiv.innerHTML = `
+            <div class="row g-3 textBoxWrapper"><br><br>
+                <div class="col-sm-4">
+                    <label for="from_month" class="form-label">Unit</label>
+                    <input type="text" name="unitncam[]" value="${unitId}" placeholder="Selected Unit ID" class="form-control" readonly>
+                </div>
+                <div class="col-sm-4">
+                    <label for="from_month" class="form-label">Cam Rate</label>
+                    <input type="number" step="any" name="cam_rate[]" placeholder="Cam Price" class="cam-price form-control" onkeyup="calculateSum()">
+                </div>
+            </div><br>
+        `;
+
+        // Append the new divs to their respective parent containers
+        unitDetailsDiv.appendChild(newUnitDiv);
+        unitDetailsCamDiv.appendChild(newCamDiv);
+
+    } else {
+        // Remove the corresponding divs when the checkbox is unchecked
+        const unitDivToRemove = document.getElementById(`unit-${unitId}`);
+        const camDivToRemove = document.getElementById(`cam-${unitId}`);
+
+        // Check if these elements exist before attempting to remove them
+        if (unitDivToRemove) {
+            unitDetailsDiv.removeChild(unitDivToRemove);
+        }
+        if (camDivToRemove) {
+            unitDetailsCamDiv.removeChild(camDivToRemove);
+        }
+    }
+
+    calculateSum();
+}
+
+
+function calculateSum() {
+    const totalSquareInputs = document.querySelectorAll('.total-square-feet');
+    const priceInputs = document.querySelectorAll('.unit-price');
+    const camPriceInputs = document.querySelectorAll('.cam-price');
+
+    let totalSquareSum = 0;
+    let totalPriceSum = 0;
+    let totalPriceCamSum = 0;
+
+    totalSquareInputs.forEach(input => {
+        totalSquareSum += parseFloat(input.value) || 0; // Sum the square feet
+    });
+
+    priceInputs.forEach(input => {
+        totalPriceSum += parseFloat(input.value) || 0; // Sum the prices
+    });
+
+    camPriceInputs.forEach(input => {
+        totalPriceCamSum += parseFloat(input.value) || 0; // Sum the square feet
+    })
+
+    // Update the totals on the page
+    document.getElementById('total_square').value = totalSquareSum.toFixed(2);
+    document.getElementById('price').value = totalPriceSum.toFixed(2);
+    document.getElementById('camp_price').value = totalPriceCamSum.toFixed(2);
+}
+
+
+
  // Add text box
   $(document).ready(function(){
+
           /*--------------Rent--------------------------------*/
         $("#addRentCalButton").click(function(){
             var textBoxHtml = '<div class="row g-3 textBoxWrapper"><br><hr class="my-0" /><br>  <div class="col-sm-3"> <label for="from_month" class="form-label">From Month</label> <input class="form-control" id="from_month" placeholder="From Month" name="from_month[]" type="number" step="1" min="1"> </div><div class="col-sm-3"> <label for="to_month" class="form-label">To Month</label> <input class="form-control" id="to_month" placeholder="From Month" name="to_month[]" type="number" step="1" min="1"> </div><div class="col-sm-3"> <label for="set_price" class="form-label">Price</label> <input class="form-control" id="price" placeholder="From Month" name="set_price[]" type="number" step="any" > </div>  <div class="col-sm-3"> <label for="button" class="form-label">&nbsp;<label><button type="button" class="removeButton btn btn-sm btn-danger" ><i class="ti ti-trash text-white"></i></button>  </div></div> <br>';

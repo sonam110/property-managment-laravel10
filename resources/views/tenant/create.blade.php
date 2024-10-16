@@ -12,6 +12,13 @@
     <li class="breadcrumb-item"><a href="{{route('tenants.index')}}">{{__('Lease Management')}}</a></li>
     <li class="breadcrumb-item">{{__('Tenant')}}</li>
 @endsection
+ <div class="float-end">
+    
+          <a href="{{ url()->previous() }}"  data-title="{{__('Back')}}" data-bs-toggle="tooltip" data-size="lg" title="{{__('Go To Back')}}"  class="btn btn-sm btn-primary">
+              <i class="fa fa-mail-reply"></i>
+          </a>
+       
+    </div>
 
 @section('content')
     <div id="wizard-property-listing" class="bs-stepper vertical mt-2">

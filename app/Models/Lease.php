@@ -20,5 +20,9 @@ class Lease extends Model
     public function unit() {
         return $this->belongsTo(PropertyUnit::class, 'unit_ids');
     }
+     public function partnetShare()
+    {
+        return $this->hasMany(PropertyPaymentSetting::class, 'tenant_id', 'id');
+    }
     
 }

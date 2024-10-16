@@ -79,11 +79,11 @@ $partner_type = $data->partner_type;
         <div class="row p-sm-3 p-0">
           <div class="col-xl-6 col-md-12 col-sm-5 col-12 mb-xl-0 mb-md-4 mb-sm-0 mb-4">
             <h6 class="mb-3">Party Name:</h6>
-            <p class="mb-1">{{ $data->partner->first_name }} {{ $data->partner->last_name }}</p>
-            <p class="mb-1">{{ $data->partner->postal_address }}</p>
-            <p class="mb-1">{{ $data->partner->mobile }}</p>
+            <p class="mb-1">{{ @$data->partner->first_name }} {{ @$data->partner->last_name }}</p>
+            <p class="mb-1">{{ @$data->partner->postal_address }}</p>
+            <p class="mb-1">{{ @$data->partner->mobile }}</p>
             <p class="mb-0">{{ $data->tenant->email }}</p>
-            <p class="mb-0">GSTIN/UIN: {{ $data->partner->gst_no }}</p>
+            <p class="mb-0">GSTIN/UIN: {{ @$data->partner->gst_no }}</p>
           </div>
           <div class="col-xl-6 col-md-12 col-sm-7 col-12">
             <h6 class="mb-3">Invoice To:</h6>
@@ -111,6 +111,8 @@ $partner_type = $data->partner_type;
             @php $totalRent =0; 
               $camTotal =0;
               $utilityTotal =0;
+              $difference =0;
+              $roundof =0;
             @endphp
             @foreach($rent_invoices as $key =>  $rent)
             <?php 

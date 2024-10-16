@@ -13,6 +13,10 @@ use App\Models\Utility;
 use App\Models\ExtraCharge;
 use App\Models\LateFees;
 use App\Models\Lease;
+use App\Models\Tenant;
+use App\Models\Invoice;
+use App\Models\Payment;
+use App\Models\Expense;
 use Validator;
 use Auth;
 use Exception;
@@ -260,13 +264,24 @@ class PropertyController extends Controller
     public function propertyUnits($id)
     {
         if (\Auth::user()->can('property-edit')) {
-            $property = Property::findOrFail($id);
+            $property = Property::withCount('units')->findOrFail($id);
             $propertyUnit = PropertyUnit::where('property_id',$id)->groupby('unit_name_prefix')->orderby('id','ASC')->get();
             $paymentSetting = PropertyPaymentSetting::where('property_id',$id)->get();
             $unitTypes = UnitType::get()->pluck('display_name', 'id');
             $partners = User::where('role_id','2')->get()->pluck('first_name', 'id');
-           
-            return View('property.units',compact('partners','property','propertyUnit','paymentSetting','unitTypes'));
+            $allTenantIds = Lease::where('property_id',$id)->pluck('tenant_id')->toArray();
+            $allTenants = Tenant::whereIn('id',$allTenantIds)->get();
+            $totalOccupied = PropertyUnit::where('property_id',$id)->where('is_rented','1')->count();  
+            $totalFree = PropertyUnit::where('property_id',$id)->where('is_rented','0')->count(); 
+            $invoice = Payment::query();
+            $countData['totalRent']= $invoice->where('property_id',$id)->where('invoice_type','rent')->sum('grand_total');
+            $countData['totalCam']= $invoice->where('property_id',$id)->where('invoice_type','cam')->sum('grand_total');
+            $countData['totalUtility']= $invoice->where('property_id',$id)->where('invoice_type','utility')->sum('grand_total');
+            $expense = Expense::query();
+            $countData['camExpense']= $expense->where('property_id',$id)->where('type','CAM')->sum('price');
+            $countData['utilityExpense']= $expense->where('property_id',$id)->where('type','Utility')->sum('price');
+
+            return View('property.units',compact('partners','property','propertyUnit','paymentSetting','unitTypes','allTenants','totalOccupied','totalFree','countData'));
         } else {
             return redirect()->back();
         }

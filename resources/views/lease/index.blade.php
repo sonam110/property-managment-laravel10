@@ -73,8 +73,8 @@
     "columns": [
             { "data": 'DT_RowIndex', "name": 'DT_RowIndex' , orderable: false, searchable: false },
             { "data": "unique_id"},
-            { "data": "property_id"},
-            { "data": "tenant_id"},
+            { "data": "property_id", "name":'property.property_code'},
+            { "data": "tenant_id", "name":'tenant.firm_name'},
             { "data": "start_date"},
             { "data": "status"},
             { "data": "action"},

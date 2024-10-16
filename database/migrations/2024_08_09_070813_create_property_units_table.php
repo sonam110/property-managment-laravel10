@@ -19,6 +19,9 @@ return new class extends Migration
             $table->string('property_code')->nullable();
             $table->unsignedBigInteger('unit_type')->nullable();
             $table->string('unit_name')->nullable();
+            $table->decimal('total_square',10,2)->default(0))->nullable();
+            $table->decimal('price',10,2)->default(0)->nullable();
+            $table->decimal('cam_price',10,2)->default(0)->nullable();
             $table->string('unit_name_prefix')->nullable();
             $table->string('unit_floor')->nullable();
             $table->integer('total_shop')->nullable();

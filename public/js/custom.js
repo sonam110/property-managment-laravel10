@@ -611,6 +611,3 @@ $('.document').summernote({
        
      }
   });
-
-
-

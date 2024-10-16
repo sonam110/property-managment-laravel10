@@ -12,7 +12,15 @@
     <li class="breadcrumb-item"><a href="{{route('property.index')}}">{{__('Property Management')}}</a></li>
     <li class="breadcrumb-item">{{__('Property')}}</li>
 @endsection
-
+@section('action-btn')
+    <div class="float-end">
+    
+          <a href="{{ url()->previous() }}"  data-title="{{__('Back')}}" data-bs-toggle="tooltip" data-size="lg" title="{{__('Go To Back')}}"  class="btn btn-sm btn-primary">
+              <i class="fa fa-mail-reply"></i>
+          </a>
+       
+    </div>
+@endsection
 @section('content')
     <div id="wizard-property-listing" class="bs-stepper vertical mt-2">
                 <div class="bs-stepper-header">
@@ -52,10 +60,19 @@
                                 </small>
                               @enderror
                         </div>
-                        <div class="col-sm-6">
-                           {{ Form::label('property_location', __('Location'), ['class' => 'form-label']) }}
+                        <div class="col-sm-12">
+                           {{ Form::label('property_location', __('Location Map Iframe'), ['class' => 'form-label']) }}
                             {{ Form::text('property_location', null, ['class' => 'form-control','id'=>'property_location', 'placeholder' => __('Location')]) }}
                             @error('property_location')
+                                <small class="invalid-name" role="alert">
+                                    <strong class="text-danger">{{ $message }}</strong>
+                                </small>
+                              @enderror
+                        </div>
+                         <div class="col-sm-12">
+                           {{ Form::label('property_address', __('Address'), ['class' => 'form-label']) }}
+                            {{ Form::text('property_address', null, ['class' => 'form-control','id'=>'property_address', 'placeholder' => __('Address')]) }}
+                            @error('property_address')
                                 <small class="invalid-name" role="alert">
                                     <strong class="text-danger">{{ $message }}</strong>
                                 </small>

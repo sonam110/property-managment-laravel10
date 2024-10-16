@@ -92,7 +92,9 @@ class LeaseController extends Controller
 
     $propertyUnit = PropertyUnit::where('property_id',$lease->property_id)->groupby('unit_name_prefix')->orderby('id','ASC')->get();
     // Redirect to the PDF viewer
-    return view('lease.lease-pdf', compact('fullPath','propertyUnit','unit_ids'));
+    $propertyUnitsInfo =  PropertyUnit::whereIn('id',$unit_ids)->get();
+    $paymentSetting = PropertyPaymentSetting::where('lease_id',$id)->with('partner')->get();
+    return view('lease.lease-pdf', compact('fullPath','propertyUnit','unit_ids','id','lease','paymentSetting','propertyUnitsInfo'));
     }
 
 
@@ -226,6 +228,7 @@ private function generateLeaseContent($lease,$request)
 
      public function create()
     {
+
         if (\Auth::user()->can('lease-add')) {
 
             $properties = Property::pluck('property_name','id')->toArray();
@@ -238,7 +241,7 @@ private function generateLeaseContent($lease,$request)
             $extraCharges = ExtraCharge::get()->pluck('display_name', 'id');
             $lateFees = LateFees::get()->pluck('display_name', 'id');
 
-            return View('lease.create',compact('propertyTypes','partners','unitTypes','utilities','extraCharges','lateFees','leaseTypes','properties','tenants'));
+            return view('lease.create',compact('propertyTypes','partners','unitTypes','utilities','extraCharges','lateFees','leaseTypes','properties','tenants'));
         } else {
             return redirect()->back();
         }
@@ -327,7 +330,7 @@ private function generateLeaseContent($lease,$request)
                 $lease->inc_percenatge       = $request->inc_percenatge;
                 $lease->cam_month       = $request->cam_month;
                 $lease->cam_inc_percenatge       = $request->cam_inc_percenatge;
-                $lease->status       = $request->status;
+                $lease->status       = 'Approved';
                 $lease->created_by       = auth()->user()->id;
                 $lease->save();
 
@@ -343,6 +346,19 @@ private function generateLeaseContent($lease,$request)
                         LeaseExtraCharge::where('lease_id',$request->id)->delete();
                         LeaseUtility::where('lease_id',$request->id)->delete();
                         RentCal::where('lease_id',$request->id)->delete();
+
+                        $leaseUnits = explode(',',$lease->unit_ids);
+                        if(is_array(@$leaseUnits) && count(@$leaseUnits) >0 ){
+                            foreach ($leaseUnits as $key => $unit) {
+                                $updateOldLeaseData = PropertyUnit::where('id',$unit)->first();
+                                $updateOldLeaseData->is_rented = 0;
+                                $updateOldLeaseData->total_square = NULL;
+                                $updateOldLeaseData->price = NULL;
+                                $updateOldLeaseData->cam_price = NULL;
+                                $updateOldLeaseData->save();
+                            }
+
+                        }
         
                         $messages = 'Lease successfully updated';
                     }
@@ -480,12 +496,25 @@ private function generateLeaseContent($lease,$request)
                            
                         }
                     }
+                   
 
-                    if($request->status ='Approved'){
-                        PropertyUnit::whereIn('id',$request->unit_ids)->update(['is_rented'=>'1']);
+                    if(is_array(@$request->unitn) && count(@$request->unitn) >0 ){
+                        foreach ($request->unitn as $key => $unit) {
+                            $uData = PropertyUnit::where('unit_name',$unit)->where('property_id',$request->property_id)->first();
+                            $updateUnitData = PropertyUnit::find($uData->id);
+                            $updateUnitData->is_rented = 1;
+                            $updateUnitData->total_square = @$request->square_feet[$key];
+                            $updateUnitData->price = @$request->rate[$key];
+                            $updateUnitData->cam_price = @$request->cam_rate[$key];
+                            $updateUnitData->save();
+
+                        }
+
                     }
+                    
+                 
 
-             
+               
                  DB::commit();
                 return response()->json([
                     'message' => $messages
@@ -576,9 +605,9 @@ private function generateLeaseContent($lease,$request)
                     $is_rented_color =  ($unit->is_rented =='1') ? '#fff' :'' ;
 
                     $output .= '<div class="unit" style="background:'.$is_rented.';color:'.$is_rented_color.'">';
-                    $output .= '<input type="checkbox" name="unit_ids[]" value="'.$unit->id.'" id="unit-'.$unit->id.'" ';
+                    $output .= '<input type="checkbox" name="unit_ids[]" value="'.$unit->id.'" data-name="'.$unit->unit_name.'"   data-totalsquare="'.$unit->total_square.'" data-price="'.$unit->price.'"  data-camprice="'.$unit->cam_price.'"  class="unit-checkbox" id="unit-'.$unit->id.'" ';
                     $output .= ($unit->is_rented == "1") ? 'disabled' : '';
-                    $output .= '>';
+                    $output .= ' onclick="unitCheckboxClicked(this)">';  // Add the onclick attribute
                     $output .= '<label for="unit-'.$unit->id.'">'.$unit->unit_name.'</label>';
                     $output .= '</div>';
 

@@ -15,9 +15,9 @@
 
           <ul class="menu-inner py-1">
             <!-- Dashboards -->
-             <li class="menu-header small text-uppercase">
+             <!--<li class="menu-header small text-uppercase">
               <span class="menu-header-text">DASHBOARD</span>
-            </li>
+            </li>-->
             <li class="menu-item {{ (request()->is('dashboard*') ? 'active' : '')}}">
               <a href="{{ route('dashboard') }}" class="menu-link">
                  <i class="menu-icon tf-icons ti ti-smart-home"></i>
@@ -25,9 +25,9 @@
               </a>
             </li>
             @can('user-browse')
-            <li class="menu-header small text-uppercase">
+            <!--<li class="menu-header small text-uppercase">
               <span class="menu-header-text">USER MANAGEMENT</span>
-            </li>
+            </li>-->
             <li class="menu-item {{ (request()->is('users*') ? 'active' : '')}}">
               <a href="{{ route('users.index') }}" class="menu-link">
                  <i class="menu-icon tf-icons ti ti-user"></i>
@@ -62,9 +62,9 @@
 
              <!-- PROPERTY -->
              @can('property-browse')
-            <li class="menu-header small text-uppercase">
+            <!--<li class="menu-header small text-uppercase">
               <span class="menu-header-text">PROPERTY MANAGEMENT</span>
-            </li>
+            </li>-->
            
             <li class="menu-item {{ (request()->is('property*') ? 'active' : '')}}">
               <a href="{{ route('property.index') }}" class="menu-link">
@@ -73,11 +73,10 @@
               </a>
             </li>
             @endcan
-              </ul>
             <!-- TENANT -->
-            <li class="menu-header small text-uppercase">
+            <!--<li class="menu-header small text-uppercase">
               <span class="menu-header-text">LEASE MANAGEMENT</span>
-            </li>
+            </li>-->
              @can('tenant-browse')
             <li class="menu-item {{ (request()->is('tenants*') ? 'active' : '')}}">
               <a href="{{ route('tenants.index') }}" class="menu-link">
@@ -104,9 +103,9 @@
               </li> -->
               @endcan
               @can('invoice-browse')
-             <li class="menu-header small text-uppercase">
+             <!--<li class="menu-header small text-uppercase">
               <span class="menu-header-text">INVOICE MANAGEMENT</span>
-            </li>
+            </li>-->
             <li class="menu-item {{ (request()->is('invoice*') ? 'active' : '')}}">
               <a href="{{ route('invoice') }}" class="menu-link">
                  <i class="menu-icon tf-icons ti ti-file-invoice"></i>
@@ -120,9 +119,9 @@
               </a>
             </li>
              @endcan
-              <li class="menu-header small text-uppercase">
+              <!--<li class="menu-header small text-uppercase">
               <span class="menu-header-text">ACCOUNT MANAGEMENT</span>
-            </li>
+            </li>-->
             <li class="menu-item {{ (request()->is('expense*') ? 'active' : '')}}">
               <a href="{{ route('expense.index') }}" class="menu-link">
                  <i class="menu-icon tf-icons ti ti-file"></i>
@@ -130,9 +129,9 @@
               </a>
             </li>
              @can('app-setting')
-            <li class="menu-header small text-uppercase">
+            <!--<li class="menu-header small text-uppercase">
               <span class="menu-header-text">SETTINGS</span>
-            </li>
+            </li>-->
             <li class="menu-item {{ (request()->is('app-setting*')  || request()->is('app-setting*') || request()->is('tenant-setting*') || request()->is('user-profile*') || request()->is('property-type*') ? 'active' : '')}}">
               <a href="{{ route('app-setting.index') }}" class="menu-link">
                   <i class="menu-icon tf-icons ti ti-settings"></i>

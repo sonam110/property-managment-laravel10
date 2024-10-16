@@ -64,12 +64,21 @@ class InvoiceController extends Controller
     }
     public function invoiceList(Request $request)
     {
-        $query = Invoice::orderBy('id','DESC')->with('property','tenant','partner');
+        $query = Invoice::orderBy('id','DESC')->with('property','tenant','partner','lease');
        
         if(!empty($request->property_id))
         {
             $query->where('property_id', $request->property_id);
         }
+        if(!empty($request->tenant_id))
+        {
+            $query->where('tenant_id', $request->tenant_id);
+        }
+        if(!empty($request->lease_id))
+        {
+            $query->where('lease_id', $request->lease_id);
+        }
+
         if($request->status!='')
         {
             $query->where('status', $request->status);
@@ -98,7 +107,7 @@ class InvoiceController extends Controller
             ->editColumn('partner_id', function ($query)
             {
                 
-                return $query->partner->first_name.'  '.$query->partner->lastname;
+                return @$query->partner->first_name.'  '.@$query->partner->lastname;
             })
             ->editColumn('grand_total', function ($query)
             {

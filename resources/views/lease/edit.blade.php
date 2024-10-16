@@ -14,7 +14,9 @@
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 .unit {
-    width: 48px;
+    border-radius: 6px;
+    font-size: 10px;
+    width: 32px;
     position: relative;
     background-color: #f9f9f9;
     border: 1px solid grey;
@@ -55,7 +57,15 @@
     <li class="breadcrumb-item"><a href="{{route('leases.index')}}">{{__('Lease Management')}}</a></li>
     <li class="breadcrumb-item">{{__('Lease')}}</li>
 @endsection
-
+@section('action-btn')
+    <div class="float-end">
+    
+          <a href="{{ url()->previous() }}"  data-title="{{__('Back')}}" data-bs-toggle="tooltip" data-size="lg" title="{{__('Go To Back')}}"  class="btn btn-sm btn-primary">
+              <i class="fa fa-mail-reply"></i>
+          </a>
+       
+    </div>
+@endsection
 @section('content')
     <div id="wizard-property-listing" class="bs-stepper vertical mt-2">
                 <div class="bs-stepper-header">
@@ -187,7 +197,7 @@
                                       $is_color = (in_array($unit->id,$unit_ids)) ? '' :$is_rented; 
                                     @endphp
                                         <div class="unit" style="background:{{ $is_color }};color:{{ $is_rented_color }}"> 
-                                            <input type="checkbox" name="unit_ids[]" value="{{ $unit->id }}" id="unit-{{ $unit->id }}" {{ (in_array($unit->id,$unit_ids)) ? 'checked' :'' }} {{ ($unit->is_rented== '1' && (!in_array($unit->id,$unit_ids))) ? 'disabled' :'' }} >
+                                            <input type="checkbox" name="unit_ids[]" value="{{ $unit->id }}" data-name="{{ $unit->unit_name }}" id="unit-{{ $unit->id }}" data-totalsquare ="{{ $unit->total_square }}" data-price="{{ $unit->price }}"  data-camprice="{{ $unit->cam_price }}" class="unit-checkbox"  onclick="unitCheckboxClicked(this)"; {{ (in_array($unit->id,$unit_ids)) ? 'checked' :'' }} {{ ($unit->is_rented== '1' && (!in_array($unit->id,$unit_ids))) ? 'disabled' :'' }} >
                                             <label for="unit-{{ $unit->id }}" >{{ $unit->unit_name }}</label>
                                         </div>
                                     @endforeach
@@ -227,14 +237,14 @@
                                 </small>
                             @enderror
                         </div>
-                        <div class="col-sm-6">
+                       <!--  <div class="col-sm-6">
                             {{ Form::label('status', __('Status'), ['class' => 'form-label']) }}
                             <select name="status" class="form-control select2 form-select">
                                 <option  value="Pending" {{ ($lease->status=='Pending') ?'selected' :'' }}>Pending</option>
                                 <option  value="Processing"  {{ ($lease->status=='Processing') ?'selected' :'' }}>Processing</option>
                                 <option  value="Approved"  {{ ($lease->status=='Approved') ?'selected' :'' }}>Approved</option>
                             </select>
-                        </div>
+                        </div> -->
 
 
                         <div class="col-12 d-flex justify-content-between mt-4">
@@ -253,7 +263,7 @@
                     <!-- lease rent -->
                     <div id="lease-rent" class="content">
                       <div class="row g-3">
-                        
+                        <div id="unit-rent-details"></div>
                         <div class="col-sm-4">
                            {{ Form::label('total_square', __('Total Area of Square Foot'), ['class' => 'form-label']) }}
                             {{ Form::number('total_square',$lease->total_square, ['class' => 'form-control','id'=>'total_square','min'=>'1', 'placeholder' => __('Total Square')]) }}
@@ -338,6 +348,7 @@
                     <!-- CAM -->
                     <div id="cam" class="content">
                        <div class="row g-3">
+                        <div id="cam-details"></div>
                           <div class="col-sm-6">
                            {{ Form::label('camp_price', __('Price/Square foot'), ['class' => 'form-label']) }}
                             {{ Form::number('camp_price', $lease->camp_price, ['class' => 'form-control','id'=>'camp_price','min'=>'1', 'placeholder' => __('Price/Square')]) }}
@@ -778,9 +789,130 @@
           // Use the id or other identifier to remove the document from the server
         }
       }
-     
+    // Function to initialize pre-checked checkboxes
+function initializePreCheckedUnits() {
+
+    // Get all the checkboxes (assuming they have the class 'unit-checkbox')
+    const checkboxes = document.querySelectorAll('.unit-checkbox');
+    // Loop through all checkboxes and invoke unitCheckboxClicked for checked ones
+    checkboxes.forEach(checkbox => {
+        if (checkbox.checked) {
+        
+            unitCheckboxClicked(checkbox); // Trigger the function for pre-selected checkboxes
+        }
+
+        // Add event listener for changes on click
+       
+    });
+}
+
+// Call the function on page load to initialize pre-selected checkboxes
+
+  function unitCheckboxClicked(checkbox) {
+    const unitDetailsDiv = document.getElementById('unit-rent-details');
+    const unitDetailsCamDiv = document.getElementById('cam-details');
+    
+    const unitId = checkbox.dataset.name; 
+    const square_feet = checkbox.dataset.totalsquare; 
+    const price = checkbox.dataset.price; 
+    const camprice = checkbox.dataset.camprice; 
+
+
+    if (checkbox.checked) {
+        // Create new divs for the unit and cam info
+        const newUnitDiv = document.createElement('div');
+        newUnitDiv.className = 'unit-info';
+        newUnitDiv.id = `unit-${unitId}`; // Set a unique ID for this unit's div
+
+        const newCamDiv = document.createElement('div');
+        newCamDiv.className = 'cam-info';
+        newCamDiv.id = `cam-${unitId}`; // Set a unique ID for this unit's cam div
+        
+        // Create the HTML for the new unit section
+        newUnitDiv.innerHTML = `
+            <div class="row g-3 textBoxWrapper"><br><br>
+                <div class="col-sm-4">
+                    <label for="from_month" class="form-label">Unit</label>
+                    <input type="text" name="unitn[]" value="${unitId}" placeholder="Selected Unit ID" class="form-control" readonly>
+                </div>
+                <div class="col-sm-4">
+                    <label for="from_month" class="form-label">Total Square</label>
+                    <input type="number" step="any" name="square_feet[]" value="${square_feet}" placeholder="Square Feet" class="total-square-feet form-control" onkeyup="calculateSum()">
+                </div>
+                <div class="col-sm-4">
+                    <label for="from_month" class="form-label">Rate/Square</label>
+                    <input type="number" step="any" name="rate[]"  value="${price}" placeholder="Unit Price" class="unit-price form-control" onkeyup="calculateSum()">
+                </div>
+            </div><br>
+        `;
+
+        // Create the HTML for the new CAM section
+        newCamDiv.innerHTML = `
+            <div class="row g-3 textBoxWrapper"><br><br>
+                <div class="col-sm-4">
+                    <label for="from_month" class="form-label">Unit</label>
+                    <input type="text" name="unitncam[]" value="${unitId}"  placeholder="Selected Unit ID" class="form-control" readonly>
+                </div>
+                <div class="col-sm-4">
+                    <label for="from_month" class="form-label">Cam Rate</label>
+                    <input type="number" step="any" name="cam_rate[]"  value="${camprice}"  placeholder="Cam Price" class="cam-price form-control" onkeyup="calculateSum()">
+                </div>
+            </div><br>
+        `;
+
+        // Append the new divs to their respective parent containers
+        unitDetailsDiv.appendChild(newUnitDiv);
+        unitDetailsCamDiv.appendChild(newCamDiv);
+
+    } else {
+        // Remove the corresponding divs when the checkbox is unchecked
+        const unitDivToRemove = document.getElementById(`unit-${unitId}`);
+        const camDivToRemove = document.getElementById(`cam-${unitId}`);
+
+        // Check if these elements exist before attempting to remove them
+        if (unitDivToRemove) {
+            unitDetailsDiv.removeChild(unitDivToRemove);
+        }
+        if (camDivToRemove) {
+            unitDetailsCamDiv.removeChild(camDivToRemove);
+        }
+    }
+
+     calculateSum();
+}
+
+function calculateSum() {
+    const totalSquareInputs = document.querySelectorAll('.total-square-feet');
+    const priceInputs = document.querySelectorAll('.unit-price');
+    const camPriceInputs = document.querySelectorAll('.cam-price');
+
+    let totalSquareSum = 0;
+    let totalPriceSum = 0;
+    let totalPriceCamSum = 0;
+
+    totalSquareInputs.forEach(input => {
+        totalSquareSum += parseFloat(input.value) || 0; // Sum the square feet
+    });
+
+    priceInputs.forEach(input => {
+        totalPriceSum += parseFloat(input.value) || 0; // Sum the prices
+    });
+
+    camPriceInputs.forEach(input => {
+        totalPriceCamSum += parseFloat(input.value) || 0; // Sum the square feet
+    })
+
+    // Update the totals on the page
+    document.getElementById('total_square').value = totalSquareSum.toFixed(2);
+    document.getElementById('price').value = totalPriceSum.toFixed(2);
+    document.getElementById('camp_price').value = totalPriceCamSum.toFixed(2);
+}
+
    
     $(document).ready(function() {
+      initializePreCheckedUnits();
+
+
         // Function to handle the "Select All" button click
          $(document).on('click','.select-all',function() { 
             // Get the floor value from the button's data attribute
