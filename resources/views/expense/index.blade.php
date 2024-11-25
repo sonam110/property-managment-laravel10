@@ -3,7 +3,7 @@
     {{ __('Expenses') }}
 @endsection
 @section('breadcrumb')
-    <li class="breadcrumb-item"><a href="{{route('users.index')}}">{{__('Account Management')}}</a></li>
+    <li class="breadcrumb-item"><a href="{{route('expense.index')}}">{{__('Expense Management')}}</a></li>
     <li class="breadcrumb-item">{{__('Expenses')}}</li>
 @endsection
 @section('content')
@@ -20,7 +20,16 @@
       </option> 
       @endforeach</select></div>
     
-      <div class="col-md-3 user_status">{{ Form::label('UserStatus', __('Select Status'), ['class' => 'form-label']) }}<select id="type" class="select2 form-selec text-capitalize"><option value=""> Select Type </option><option value="1">CAM</option><option value="2">Utility</option></select></div>
+      <div class="col-md-3 user_status">{{ Form::label('UserStatus', __('Select Type'), ['class' => 'form-label']) }}<select id="type" class="select2 form-selec text-capitalize"><option value=""> Select Type </option><option value="1">CAM</option><option value="2">Utility</option></select></div>
+       <div class="col-md-3">
+        <label for="start_date" class="form-label">Start Date</label>
+        <input type="date" id="start_date" class="form-control">
+      </div>
+      <div class="col-md-3">
+        <label for="end_date" class="form-label">End Date</label>
+        <input type="date" id="end_date" class="form-control">
+      </div>
+
     </div>
   </div>
   <div class="card-datatable table-responsive">
@@ -56,6 +65,8 @@
             "data": function(d) {
             d.property_id   = $('#property_id').val();
             d.type   = $('#type').val();
+            d.start_date = $('#start_date').val();
+            d.end_date = $('#end_date').val();
             },
            'headers': {
             'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -64,7 +75,7 @@
     "order": [["1", "desc" ]],
     "columns": [
             { "data": 'DT_RowIndex', "name": 'DT_RowIndex' , orderable: false, searchable: false },
-            { "data": "property_id"},
+            { "data": "property_id", "name":'property.property_name'},
             { "data": "type"},
             { "data": "price"},
             { "data": "ex_date"},
@@ -254,7 +265,7 @@
         }
   });
 
-$('#property_id, #status').on('change', function(e) {
+$('#property_id, #type,#start_date, #end_date').on('change', function(e) {
        table.draw();
    });
 });

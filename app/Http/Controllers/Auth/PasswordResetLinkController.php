@@ -6,7 +6,8 @@ use App\Events\VerifyReCaptchaToken;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
-use App\Models\Utility;
+use App\Models\AppSetting;
+use App\Models\User;
 
 class PasswordResetLinkController extends Controller
 {
@@ -31,30 +32,10 @@ class PasswordResetLinkController extends Controller
      */
     public function store(Request $request)
     {
-        $settings = Utility::settings();
         //ReCpatcha
         $validation = [];
 
-        if(isset($settings['recaptcha_module']) && $settings['recaptcha_module'] == 'on')
-        {
-            if($settings['google_recaptcha_version'] == 'v2-checkbox'){
-                $validation['g-recaptcha-response'] = 'required|captcha';
-            }
-            elseif($settings['google_recaptcha_version'] == 'v3'){
-                $result = event(new VerifyReCaptchaToken($request));
-
-                if (!isset($result[0]['status']) || $result[0]['status'] != true) {
-                    $key = 'g-recaptcha-response';
-                    $request->merge([$key => null]); // Set the key to null
-                    
-                    $validation['g-recaptcha-response'] = 'required';
-                }
-            }else{
-                $validation = [];
-            }
-        }else{
-            $validation = [];
-        }
+        
         $this->validate($request, $validation);
         $request->validate([
                                'email' => 'required|email',
@@ -67,7 +48,11 @@ class PasswordResetLinkController extends Controller
 
         try
         {
-            Utility::smtpDetail(1);
+            $user = User::where('email',$request->email)->first();
+            if (!$user) {
+                return redirect()->back()->with('error','User not found');
+            }
+            AppSetting::smtpDetail();
 
             $status = Password::sendResetLink(
                 $request->only('email')

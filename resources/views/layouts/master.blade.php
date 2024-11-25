@@ -12,6 +12,7 @@
     var appurl = '{{url("/")}}/';
    
   </script>
+   
   @yield('extracss')
   <body>
     <!-- Layout wrapper -->
@@ -104,6 +105,7 @@
         </div>
     </div>
     @include('includes.admin_footerjs')
+
     @yield('extrajs')
 
   </body>

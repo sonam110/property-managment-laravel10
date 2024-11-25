@@ -1,11 +1,11 @@
-{{Form::model($user,array('route' => array('users.update', $user->id), 'method' => 'PUT')) }}
+{{Form::model($user,array('route' => array('users.update', $user->id), 'method' => 'PUT','id'=>'addNewUserForm')) }}
 
 <div class="modal-body">
     <div class="row">
         <div class="col-md-4">
             <div class="mb-3">
                 {{ Form::label('first_name', __('First Name'), ['class' => 'form-label']) }} <span class="requiredLabel">*</span>
-                {{ Form::text('first_name', null, ['class' => 'form-control', 'placeholder' => __('First Name'), 'required' => 'required']) }}
+                {{ Form::text('first_name', null, ['class' => 'form-control', 'placeholder' => __('First Name')]) }}
                 @error('first_name')
                     <small class="invalid-name" role="alert">
                         <strong class="text-danger">{{ $message }}</strong>
@@ -39,7 +39,7 @@
         <div class="col-md-4">
             <div class="mb-3">
                 {{ Form::label('email', __('Email'), ['class' => 'form-label']) }} <span class="requiredLabel">*</span>
-                {{ Form::text('email', null, ['class' => 'form-control', 'placeholder' => __('User Email'), 'required' => 'required']) }}
+                {{ Form::text('email', null, ['class' => 'form-control', 'placeholder' => __('User Email')]) }}
                 @error('email')
                     <small class="invalid-email" role="alert">
                         <strong class="text-danger">{{ $message }}</strong>
@@ -52,7 +52,7 @@
         <div class="col-md-4">
             <div class="mb-3">
                 {{ Form::label('mobile', __('Phone'), ['class' => 'form-label']) }} <span class="requiredLabel">*</span>
-                {{ Form::text('mobile', null, ['class' => 'form-control', 'placeholder' => __('User Phone'), 'required' => 'required']) }}
+                {{ Form::text('mobile', null, ['class' => 'form-control', 'placeholder' => __('User Phone')]) }}
                 @error('mobile')
                     <small class="invalid-email" role="alert">
                         <strong class="text-danger">{{ $message }}</strong>
@@ -97,7 +97,7 @@
         <div class="col-md-3 ">
             <div class="mb-3">
                 {{ Form::label('role_id', __('User Role'), ['class' => 'form-label']) }} <span class="requiredLabel">*</span>
-                {!! Form::select('role_id', $roles, $user->role_id, ['class' => 'form-control select', 'required' => 'required']) !!}
+                {!! Form::select('role_id', $roles, $user->role_id, ['class' => 'form-control select']) !!}
                 @error('role_id')
                     <small class="invalid-role" role="alert">
                         <strong class="text-danger">{{ $message }}</strong>
@@ -180,7 +180,101 @@
 
 {{Form::close()}}
 
-<script type="text/javascript">
+<script type="text/javascript"> var appurl = '{{url("/")}}/';
+(function () {
+  const phoneMaskList = document.querySelectorAll('.phone-mask'),
+    addNewUserForm = document.getElementById('addNewUserForm');
+
+  // Phone Number
+  if (phoneMaskList) {
+    phoneMaskList.forEach(function (phoneMask) {
+      new Cleave(phoneMask, {
+        phone: true,
+        phoneRegionCode: 'IN'
+      });
+    });
+  }
+  // Add New User Form Validation
+  const fv = FormValidation.formValidation(addNewUserForm, {
+    fields: {
+      first_name: {
+        validators: {
+          notEmpty: {
+            message: 'Please enter first name '
+          }
+        }
+      },
+      email: {
+                validators: {
+                    notEmpty: {
+                        message: 'Please enter your email'
+                    },
+                    emailAddress: {
+                        message: 'The value is not a valid email address'
+                    },
+                    remote: {
+                        url: appurl+'check-email', // Adjust your URL as needed
+                        type: 'GET', // Ensure this is set to POST
+                        data: {
+                            email: function() {
+                                return $('#email').val(); // Ensure to get the email field value
+                            },
+                             id: '{{ $user->id }}',
+                            _token: '{{ csrf_token() }}'
+                        },
+                       message: 'This email is already taken',
+                        // Custom response handling
+                        dataType: 'json', // Expecting a JSON response
+                        success: function(response) {
+                            return response.valid; // Directly use the response valid state
+                        }
+                    }
+                }
+            },
+     
+      
+      mobile: {
+        validators: {
+          notEmpty: {
+            message: 'Please enter phone number '
+          },
+           regexp: {
+                    // Regex to check for exactly 10 digits
+                    message: 'The phone number must be exactly 10 digits',
+                    regexp: /^[0-9]{10}$/
+                }
+        }
+      },
+      role_id: {
+        validators: {
+          notEmpty: {
+            message: 'Please select user role '
+          }
+        }
+    }
+    },
+    plugins: {
+      trigger: new FormValidation.plugins.Trigger(),
+      bootstrap5: new FormValidation.plugins.Bootstrap5({
+        // Use this for enabling/changing valid/invalid class
+        eleValidClass: '',
+        rowSelector: function (field, ele) {
+          // field is the field name & ele is the field element
+          return '.mb-3';
+        }
+      }),
+      submitButton: new FormValidation.plugins.SubmitButton(),
+      // Submit the form when all fields are valid
+      // defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
+      autoFocus: new FormValidation.plugins.AutoFocus()
+    }
+
+  }).on('core.form.valid', function () {
+    addNewUserForm.submit()
+    
+    });
+
+})();
       $(document).ready(function() {
         //getState();
       

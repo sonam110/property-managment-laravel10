@@ -56,14 +56,17 @@ return [
             'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
             'throw' => false,
         ],
-        'pdf_uploads' => [
-            'driver' => 'local',
-            'root' =>  storage_path('app/public'),
-        ],
+        
         'customer_uploads' => [
             'driver' => 'local',
             'root' => public_path(),
             ],
+
+        'pdf_uploads' => [
+            'driver' => 'local',
+            'root' =>  storage_path('app/public'),
+          
+        ],
 
     ],
 

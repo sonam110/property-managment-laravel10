@@ -1,29 +1,172 @@
 @extends('layouts.master')
 @section('extracss')
 <style type="text/css">
-  
- .table-wrapper {
-    display: flex;
-    justify-content: center;
-    margin: 0 auto; /* Optional: centers the table horizontally */
-}
+ .top_rw {
+            background-color: #f4f4f4;
+        }
 
-.table {
-    width: 100%; /* Ensure the table takes the full width of its container */
-    text-align: center; /* Center-aligns the text inside table cells */
-    border-collapse: collapse; /* Ensures borders are collapsed properly */
-}
+        .td_w {}
 
-.table th, .table td {
-    text-align: center; /* Center-aligns text in table headers and cells */
-    vertical-align: middle; /* Centers text vertically */
-    padding: 8px; /* Adds padding for better readability */
-    border: 1px solid #dee2e6; /* Adds border for cells */
-}
+        button {
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+        h4 {
+            font-size: 12px;
+        }
+        .invoice-box {
+            max-width: 890px;
+            margin: auto;
+            padding: 0px;
+            border: 1px solid #eee;
+            font-size: 11px !important;
+            line-height: 18px  !important;
+            color: #555;
+        }
 
-.table th {
-    background-color: #f8f9fa; /* Adds a background color for table headers */
-}
+        .invoice-box td {
+            border: none;
+            vertical-align: top;
+        }
+
+        .invoice-box-border {
+            border: 1px solid;
+            vertical-align: top;
+        }
+
+
+        .invoice-box table {
+           /* border: 1px solid black;*/
+            width: 100%;
+            line-height: inherit;
+            text-align: left;
+            border-bottom: solid 1px black;
+        }
+
+        .invoice-box table td {
+            padding-left: 5px;
+            vertical-align: middle;
+        }
+
+        .info-border {
+            border-collapse: collapse;
+        }
+
+        .info-border tr:first-child td {
+            border-top: 1px solid black;
+            border-right: 1px solid black;
+            border-left: 1px solid black;
+            border-bottom: 1px solid black;
+            /* Added bottom border */
+        }
+
+        .info-border tr:first-child td {
+            border-top: 1px solid black;
+            border-right: 1px solid black;
+            border-left: 1px solid black;
+        }
+
+        .info-border td {
+            padding: 4px;
+            text-align: center;
+            border-right: 1px solid black;
+            border-left: 1px solid black;
+        }
+
+
+        .info-border td {
+            padding: 4px;
+            text-align: center;
+            border-right: 1px solid black;
+            border-left: 1px solid black;
+        }
+
+
+
+        .invoice-box table tr.top table td {
+            padding-bottom: 1px;
+        }
+
+        .invoice-box table tr.top table td.title {
+            font-size: 45px;
+            line-height: 45px;
+            color: #333;
+        }
+
+        .invoice-box table tr.information table td {
+            padding-bottom: 40px;
+        }
+
+        .invoice-box table tr.heading td {
+            background: #eee;
+            border-bottom: 1px solid #ddd;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+
+        .invoice-box table tr.item td {
+            border-bottom: 1px solid #eee;
+        }
+
+        .invoice-box table tr.item.last td {
+            border-bottom: none;
+        }
+
+        .invoice-box table tr.total td:nth-child(2) {
+            border-top: 2px solid #eee;
+            font-weight: bold;
+        }
+
+        @media only screen and (max-width: 600px) {
+            .invoice-box table tr.top table td {
+                width: 100%;
+                display: block;
+                text-align: center;
+            }
+
+            .invoice-box table tr.information table td {
+                width: 100%;
+                display: block;
+                text-align: center;
+            }
+        }
+
+        /** RTL **/
+        .rtl {
+            direction: rtl;
+            font-family: Tahoma, 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
+        }
+
+        .rtl table {
+            text-align: right;
+        }
+
+        .rtl table tr td:nth-child(2) {
+            text-align: left;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid black;
+            border-collapse: collapse;
+            padding-right: 5px;
+        }
+
+        .td_td{
+          border: 1px solid black !important;
+            padding: 11px !important;
+            vertical-align: top !important;
+        }
+        .text-left {
+            text-align: left!important;
+        }
+
+        .text-right {
+            text-align: right!important;
+        }
+
 
 </style>
 @endsection
@@ -31,8 +174,17 @@
 {{ __('Manage Invoice') }}
 @endsection
 @section('breadcrumb')
-<li class="breadcrumb-item"><a href="{{route('users.index')}}">{{__('Invoice Management')}}</a></li>
+<li class="breadcrumb-item"><a href="{{route('invoice')}}">{{__('Invoice Management')}}</a></li>
 <li class="breadcrumb-item">{{__('Invoices')}}</li>
+@endsection
+@section('action-btn')
+    <div class="float-end">
+    
+          <a href="{{ url()->previous() }}"  data-title="{{__('Back')}}" data-bs-toggle="tooltip" data-size="lg" title="{{__('Go To Back')}}"  class="btn btn-sm btn-primary">
+              <i class="ti ti-arrow-left"></i>
+          </a>
+       
+    </div>
 @endsection
 @section('content')
 @php $paymentDueTerms = $data->lease->due_on ;   
@@ -42,229 +194,364 @@ $due_on = $invoiceDateObject->modify('+' . $paymentDueTerms . ' days');
 $partner_per = $data->partner_per;
 $partner_type = $data->partner_type;
 @endphp
-<div class="row invoice-preview">
+
  @include('invoice.invoice-head')
-<div>
+
 <div class="row invoice-preview">
   <!-- Invoice -->
   <div class="col-xl-12 col-md-12 col-12 mb-md-0 mb-4">
-    <div class="card invoice-preview-card">
-      <div class="card-body">
-        <div
-          class="d-flex justify-content-between flex-xl-row flex-md-column flex-sm-row flex-column m-sm-3 m-0">
-          <div class="mb-xl-0 mb-4">
-            <a class="header-brand" href="{{url('/')}}" class="app-brand-link">
-              <img src="{{url('/')}}/{{ $appSetting->app_logo}}" class="" alt="{{$appSetting->app_name}}">
-            </a> 
-            <p class="mb-2">{{ $appSetting->address}}</p>
-            <p class="mb-2">MADHYA PRADESH,INDIA</p>
-            <p class="mb-0">(+91) {{ $appSetting->mobile_no}}</p>
-          </div>
-          <div>
-            <h5 class="fw-medium mb-2">INVOICE #{{ $data->invoice_no}}</h5>
-            <div class="mb-2 pt-1">
-              <span>Issues Date:</span>
-              <span class="fw-medium">{{ date('M d,Y',strtotime($data->invoice_date)) }}</span>
-            </div>
-
-            <div class="pt-1">
-              <span>Due Date:</span>
-              <span class="fw-medium">{{ $due_on->format('M d,Y') }}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <hr class="my-0" />
-      <div class="card-body">
-        <div class="row p-sm-3 p-0">
-          <div class="col-xl-6 col-md-12 col-sm-5 col-12 mb-xl-0 mb-md-4 mb-sm-0 mb-4">
-            <h6 class="mb-3">Party Name:</h6>
-            <p class="mb-1">{{ @$data->partner->first_name }} {{ @$data->partner->last_name }}</p>
-            <p class="mb-1">{{ @$data->partner->postal_address }}</p>
-            <p class="mb-1">{{ @$data->partner->mobile }}</p>
-            <p class="mb-0">{{ $data->tenant->email }}</p>
-            <p class="mb-0">GSTIN/UIN: {{ @$data->partner->gst_no }}</p>
-          </div>
-          <div class="col-xl-6 col-md-12 col-sm-7 col-12">
-            <h6 class="mb-3">Invoice To:</h6>
-            <p class="mb-1">{{ $data->tenant->full_name }}({{ $data->tenant->firm_name }})</p>
-            <p class="mb-1">{{ $data->tenant->business_address }}</p>
-            <p class="mb-1">{{ $data->tenant->phone }}</p>
-            <p class="mb-0">{{ $data->tenant->email }}</p>
-            <p class="mb-0">GSTIN/UIN: {{ $data->tenant->gst_no }}</p>
-          </div>
-        </div>
-        
-      </div>
-      <div class="table-responsive border-top">
-        <table class="table m-0 datatables-basic table-bordered dataTable">
-          <thead>
+  
+ <div class="card invoice-preview-card">
+        <div class="invoice-box">
+        <table style="width: 100%; border-collapse: collapse; border: 1px solid black;vertical-align: top;;">
             <tr>
-              <th>Description</th>
-              <th>Quantity</th>
-              <th>Rate</th>
-              <th>PER</th>
-              <th>Amount</th>
-            </tr>
-          </thead>
-          <tbody>
-            @php $totalRent =0; 
-              $camTotal =0;
-              $utilityTotal =0;
-              $difference =0;
-              $roundof =0;
-            @endphp
-            @foreach($rent_invoices as $key =>  $rent)
-            <?php 
-              if($partner_type=='1')
-              {
-                $amount = $partner_per;
-                $rate = '';
-                $persign = '';
-              } else{
-                $amount = ($rent->amount * $partner_per)/100;
-                $rate = $rent->rate.'*'.$partner_per;
-                $persign = '%';
-              }
-              $totalRent += $amount; 
-
-              $roundof = round($totalRent, $precision = 0, $mode = PHP_ROUND_HALF_UP);
-              $difference = $totalRent - $roundof;
-
-
-            ?>
-            <tr class="rent">
-             
-              <td class="text-nowrap"><b>{{ $rent->item_desc }}</b></td>
-             
-              <td class="text-nowrap">{{ $rent->quantity }}</td>
-               @if($key+1==1)
-              <td class="text-nowrap"> {{ $rate }} {{ $persign }}</td>
-               @else
-               <td class="text-nowrap">{{ $rent->rate }} %</td>
-              @endif
-              <td>{{($key+1==1) ? 'Month' :'' }}</td>
-            
-              <td> {{ formatIndianCurrency($amount) }}</td>
-            </tr>
-           
-           
-            @endforeach
-             <tr class="rent">
-              <td><b>{{ __('R/O') }}</b></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td><b>{{ formatIndianCurrency(abs($difference)) }}</b></td>
-              
-           </tr>
-             <tr class="rent">
-              <td></td>
-              <td></td>
-              <td></td>
-              <td><b>{{ __('Total') }}</b></td>
-              <td><b>{{ formatIndianCurrency($roundof) }}</b></td>
-              
-           </tr>
-           
-
-          </tbody>
-          @php  $TotalInwords = getIndianCurrency($roundof); @endphp
-        <tfoot>
-          
-           <tr>
-             
-              <td colspan="1"><b>Amount Chargeable (in words):</b></td>
-              <td colspan="5"><b>INR {{ ucfirst($TotalInwords) }}</b></td>
-              
-          </tr>
-          </tfoot>
-        </table>
-        <br>
-        @if($data->is_gst=='1')
-        <?php 
-              if($partner_type=='1')
-              {
-                $total_amount = $partner_per;
-                $persign = '';
-              } else{
-                $total_amount = ($data->rent_total * $partner_per)/100;
                
-              }
-              $cgst = ($total_amount*$data->rent_cgst_per)/100;
-              $sgst = ($total_amount*$data->rent_sgst_per)/100;
-
-              $gstTotal = $cgst+$sgst;
-            ?>
-        <table class="dt-complex-header table table-bordered dataTable">
-          <thead>
-            <tr>
-              <th rowspan="2">HSN/SAC</th>
-              <th rowspan="1">Taxable</th>
-              <th colspan="2">Central Tax</th>
-              <th colspan="2">State Tax</th>
-              <th rowspan="1">Total</th>
+                <td style="text-align: center; color: darkblue;line-height: 18px !important">
+                    {{ ($data->is_gst=='1') ?'TAX' :''}} INVOICE 
+                </td>
+                
             </tr>
-            <tr>
 
-              <th>Value</th>
-              <th>Rate</th>
-              <th>Amount</th>
-              <th>Rate</th>
-              <th>Amount</th>
-              <th>Tax Amount</th>
-            
-            </tr>
-          </thead>
-          <tbody>
-            <tr class="rent">
-             <td>997212</td>
-              <td>{{ formatIndianCurrency($total_amount) }}</td>
-              <td>{{ $data->rent_cgst_per }} %</td>
-               <td>{{ formatIndianCurrency($cgst) }}</td>
-              <td>{{ $data->rent_sgst_per }} %</td>
-              <td>{{ formatIndianCurrency($sgst) }}</td>
-               <td>{{ formatIndianCurrency($gstTotal) }}</td>
-          
-          </tbody>
-          @php  $TotalGstInwords = getIndianCurrency(round($gstTotal,0)); @endphp
-          <tfoot>
-             <tr class="rent">
-              <td><b>{{ __('Total') }}</b></td>
-              <td><b>{{ formatIndianCurrency($total_amount) }}</b></td>
-              <td></td>
-              <td><b>{{ formatIndianCurrency($cgst) }}</b></td>
-              <td></td>
-              <td><b>{{ formatIndianCurrency($sgst) }}</b></td>
-              <td><b>{{ formatIndianCurrency($gstTotal) }}</b></td>
-              
-           </tr>
-           <tr>
-             
-              <td colspan="4"><b>Tax Amount ( (in words):</b></td>
-              <td colspan="2"><b>{{ ucfirst($TotalGstInwords) }}</b></td>
-              
-          </tr>
-          </tfoot>
-        
         </table>
-        @endif
+
+       <table style="width: 100%; border-collapse: collapse; border: 1px solid black; vertical-align: top; line-height: 25px;">
+            <tr>
+                <!-- Party Details on the Left -->
+                <td colspan="2" rowspan="7" style="width: 60%; border: 1px solid black; vertical-align: top;">
+                    <h4>PARTY NAME: {{ $data->partner->first_name }} {{ $data->partner->last_name }}</h4>
+                    <p>Address: {{ $data->partner->postal_address }}</p>
+                    <p>GSTIN/UIN: {{ $data->partner->gst_no }}</p>
+                    <p>State Name: MADHYA PRADESH</p>
+                </td>
+                
+                <!-- Invoice Details on the Right -->
+                <td style="width: 20%; border: 1px solid black; vertical-align: top;">
+                    <p>Invoice No: #{{ $data->invoice_no }}</p>
+                </td>
+                <td style="width: 20%; border: 1px solid black; vertical-align: top;">
+                    <p>Dated: {{ date('M d, Y', strtotime($data->invoice_date)) }}</p>
+                </td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid black; vertical-align: top;">
+                    <p>Delivery Note:</p>
+                </td>
+                <td style="border: 1px solid black; vertical-align: top;">
+                    <p>Mode/Terms of Payment:</p>
+                </td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid black; vertical-align: top;">
+                    <p>Reference No. & Date:</p>
+                </td>
+                <td style="border: 1px solid black; vertical-align: top;">
+                    <p>Due Date: {{ $due_on->format('M d, Y') }}</p>
+                </td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid black; vertical-align: top;">
+                    <p>Buyer's Order No.:</p>
+                </td>
+                <td style="border: 1px solid black; vertical-align: top;">
+                    <p>Dated:</p>
+                </td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid black; vertical-align: top;">
+                    <p>Dispatch Doc No.:</p>
+                </td>
+                <td style="border: 1px solid black; vertical-align: top;">
+                    <p>Delivery Note Date:</p>
+                </td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid black; vertical-align: top;">
+                    <p>Dispatched Through:</p>
+                </td>
+                <td style="border: 1px solid black; vertical-align: top;">
+                    <p>Destination:</p>
+                </td>
+            </tr>
+           
+          <tr>
+         <tr>
+            <!-- Consignee (Ship to) and Buyer (Bill to) on the Left -->
+            <td colspan="2" style="width: 60%; text-align: left; border: 1px solid black; vertical-align: top;">
+                <p><strong>Consignee (Ship to):</strong></p>
+                <h4>{{ $data->tenant->full_name }} ({{ $data->tenant->firm_name }})</h4>
+                <p>Address: {{ $data->tenant->business_address }}</p>
+                <p>GSTIN/UIN: {{ $data->tenant->gst_no }}</p>
+                <p>State Name: MADHYA PRADESH</p>
+                <hr>
+                <p><strong>Buyer (Bill to):</strong></p>
+                <h4>{{ $data->tenant->full_name }} ({{ $data->tenant->firm_name }})</h4>
+                <p>Address: {{ $data->tenant->company_address ?? $data->tenant->business_address }}</p>
+                <p>GSTIN/UIN: {{ $data->tenant->gst_no }}</p>
+                <p>State Name: MADHYA PRADESH</p>
+            </td>
+            
+            <!-- Terms of Delivery on the Right -->
+            <td colspan="2" style="width: 40%; text-align: left; border: 1px solid black; vertical-align: top;">
+                Terms of Delivery
+               
+            </td>
+        </tr>
+
+
+
+        </table>
+       
+        <table class="info-border ">
+            <tr>
+               
+                <th>Name of Product / Service </th>
+                <th>Quantity</th>
+                <th>Rate</th>
+                <th>PER</th>
+                <th>Amount</th>
+                
+            </tr>
+            @php $totalRent =0; 
+                $camTotal =0;
+                $utilityTotal =0;
+                $difference =0;
+                $roundof =0;
+              @endphp
+              @foreach($rent_invoices as $key =>  $rent)
+              <?php 
+                if($partner_type=='1')
+                {
+                  $amount = $rent->amount;
+                  $rate = 'Fixed';
+                  $persign = '';
+                } else{
+                  $amount = $rent->amount;
+                  $rate = $rent->rate.'*'.$partner_per;
+                  $persign = '%';
+                }
+                if($rent->item_type=='extra'){
+                    $persign = '';
+                }
+                $totalRent += $amount; 
+
+                $roundof = round($totalRent, $precision = 0, $mode = PHP_ROUND_HALF_UP);
+                $difference = $totalRent - $roundof;
+
+
+              ?>
+              <tr class="rent">
+              
+                <td class="text-left"><b>{{ $rent->item_desc }}</b></td>
+               
+                <td class="text-right">{{ $rent->quantity }}</td>
+                 @if($key+1==1)
+                <td class="text-right"> {{ $rate }} {{ $persign }}</td>
+                 @else
+                 <td class="text-right">{{ $rent->rate }} {{ $persign }}</td>
+                @endif
+                <td >{{($key+1==1) ? 'Month' :'' }}</td>
+              
+                <td class="text-right"> {{ formatIndianCurrencyPdf($amount) }}</td>
+              </tr>
+             
+             
+              @endforeach
+               <tr class="rent">
+                <td class="text-left"><b>{{ __('R/O') }}</b></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td class="text-right"><b>{{ formatIndianCurrencyPdf(abs($difference)) }}</b></td>
+                
+             </tr>
+               
+
+            <tr style="border-top: 1px solid;">
+                <td colspan="4" style="text-align: right; border-top: 1px solid;"> <b>Total</b> </td>
+                <td colspan="1"   style="text-align: right; border-top: 1px solid;" class="text-right"><b>{{ formatIndianCurrencyPdf($roundof) }}</b></td>
+                
+               
+                
+            </tr>
+
+           
+
+        </table>
+         @php  $TotalInwords = getIndianCurrency($roundof); @endphp
+         <table style="border-collapse: collapse;">
+             <tr>
+                <td colspan="5" rowspan="1"  style="text-align: center; border-right: 1px solid;"> <b>Amount Chargeable (in words) :INR {{ ucfirst($TotalInwords) }}</b>
+                </td>
+               
+            </tr>
+            <tr colspan="2" style="text-align: center; border-right: 1px solid;">
+                
+                <td style="text-align: center;"><b></b></td>
+            </tr>
+
+        </table>
         
+          @if($data->is_gst=='1')
+          <?php 
+                if($partner_type=='1')
+                {
+                  $total_amount = $partner_per;
+                  $persign = '';
+                } else{
+                  $total_amount = ($data->rent_total * $partner_per)/100;
+                 
+                }
+                $cgst = ($total_amount*$data->rent_cgst_per)/100;
+                $sgst = ($total_amount*$data->rent_sgst_per)/100;
 
-      </div>
+                $gstTotal = $cgst+$sgst;
+              ?>
+          <table class="info-border">
+            <thead>
+              <tr>
+                <th rowspan="2">HSN/SAC</th>
+                <th rowspan="1">Taxable</th>
+                <th colspan="2">Central Tax</th>
+                <th colspan="2">State Tax</th>
+                <th rowspan="1">Total</th>
+              </tr>
+              <tr>
 
-      <div class="card-body mx-3">
-        <div class="row">
+                <th>Value</th>
+                <th>Rate</th>
+                <th>Amount</th>
+                <th>Rate</th>
+                <th>Amount</th>
+                <th>Tax Amount</th>
+              
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="rent">
+               <td class="text-left">997212</td>
+                <td class="text-right">{{ formatIndianCurrencyPdf($total_amount) }}</td>
+                <td class="text-right">{{ $data->rent_cgst_per }} %</td>
+                 <td class="text-right">{{ formatIndianCurrencyPdf($cgst) }}</td>
+                <td class="text-right">{{ $data->rent_sgst_per }} %</td>
+                <td class="text-right">{{ formatIndianCurrencyPdf($sgst) }}</td>
+                 <td class="text-right">{{ formatIndianCurrencyPdf($gstTotal) }}</td>
+            
+           
+            @php  $TotalGstInwords = getIndianCurrency(round($gstTotal,0)); @endphp
+            
+               <tr class="rent">
+                <td class="text-left"><b>Total</b></td>
+                <td class="text-right"><b>{{ formatIndianCurrencyPdf($total_amount) }}</b></td>
+                <td></td>
+                <td class="text-right"><b>{{ formatIndianCurrencyPdf($cgst) }}</b></td>
+                <td></td>
+                <td class="text-right"><b>{{ formatIndianCurrencyPdf($sgst) }}</b></td>
+                <td class="text-right"><b>{{ formatIndianCurrencyPdf($gstTotal) }}</b></td>
+                
+             </tr>
 
-          <div class="col-12">
-            <span class="fw-medium">Note:</span>
-            <span
-              >{{ $appSetting->invoice_disclaimer }}. Thank You!</span
-            >
-          </div>
-        </div>
-      </div>
+           </tbody>
+          </table>
+           <table style="border: 1px solid black; ">
+            <tr>
+                <td>
+                    &nbsp;
+                </td>
+            </tr>
+        </table>
+           <table style="border-collapse: collapse;">
+            
+            <tr>
+                <td colspan="5" rowspan="2" style="text-align: center; "><b>Tax Amount (in words): INR {{ ucfirst($TotalGstInwords) }}</b>
+                </td>
+                
+            </tr>
+            <tr colspan="2" style="text-align: center; border-right: 1px solid;">
+                
+                <td style="text-align: center;"><b></b></td>
+            </tr>
+        </table>
+          @endif
+          
+        <table style="border-collapse: collapse;">
+           
+
+            <tr style="border-bottom: 1px solid;">
+                <td colspan="2" style="text-align: center; border-right: 1px solid;">  Company's Bank Details </td>
+                <td colspan="2"> Remarks: </td>
+
+            </tr>
+
+            <tr>
+                <td>A/c Holder's Name:</td>
+                <td>{{ $data->partner->account_holder_name  }}</td>
+                <td style="text-align: right;border-left: 1px solid;"></td>
+                <td style="text-align: right;">(E & O.E.)</td>
+            </tr>
+
+            <tr>
+                <td>Bank Name:</td>
+                <td>{{ $data->partner->bank_name  }}</td>    
+                <td rowspan="3" style=" border-left: 1px solid;"><b>Company's PAN : {{ $data->partner->pan_no  }}</b></td>
+                <td rowspan="3" style="text-align: right;"></td>
+            </tr>
+
+            <tr>
+                <td>A/c No.:</td>
+                <td> {{ $data->partner->account_no  }}</td>
+            </tr>
+
+            <tr>
+                <td>Branch & IFS Code:</td>
+                <td>   {{ $data->partner->bank_address  }},{{ $data->partner->bank_ifsc_code  }}</td>
+
+
+            </tr>
+        </table>
+
+        <table>
+            <tr>
+                <td style="text-align: center; border-bottom: 1px solid;">
+                    <h4> Declaration: </h4>
+                </td>
+                <td  style="text-align: center; font-size: 10px;  border-left: 1px solid;">
+                    Certified that the particulars given above are true and correct.
+                </td>
+
+
+            </tr>
+
+
+            <tr>
+                <td>{{ $appSetting->invoice_disclaimer }} </td>
+                <td style="font-size: 12px; text-align: center;  border-left: 1px solid;"><b> {{ $data->partner->first_name }} {{ $data->partner->last_name }}</b></td>
+
+            </tr>
+
+            <tr>
+                <td>&nbsp;</td>
+                <td  rowspan="3" style="border: 1px solid;"></td>
+            </tr>
+            <tr>
+                <td >&nbsp;</td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td style="text-align: center; border-left: 1px solid;"><b> Authorised Signatory</b>
+                </td>
+            </tr>
+
+        </table>
+        <footer style="text-align: center;">
+          <small> SUBJECT TO BHOPAL JURISDICTION</small><br>
+          <small>Invoice was created on a computer and is valid without the signature and seal</small>
+        </footer>
+
     </div>
+  </div>
   </div>
   <!-- /Invoice -->
 
@@ -273,160 +560,19 @@ $partner_type = $data->partner_type;
 
           <!-- Offcanvas -->
           <!-- Send Invoice Sidebar -->
-          <div class="offcanvas offcanvas-end" id="sendInvoiceOffcanvas" aria-hidden="true">
-            <div class="offcanvas-header my-1">
-              <h5 class="offcanvas-title">Send Invoice</h5>
-              <button
-                type="button"
-                class="btn-close text-reset"
-                data-bs-dismiss="offcanvas"
-                aria-label="Close"></button>
-            </div>
-            <div class="offcanvas-body pt-0 flex-grow-1">
-              <form>
-                <div class="mb-3">
-                  <label for="invoice-from" class="form-label">From</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="invoice-from"
-                    value="shelbyComapny@email.com"
-                    placeholder="company@email.com" />
-                </div>
-                <div class="mb-3">
-                  <label for="invoice-to" class="form-label">To</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="invoice-to"
-                    value="qConsolidated@email.com"
-                    placeholder="company@email.com" />
-                </div>
-                <div class="mb-3">
-                  <label for="invoice-subject" class="form-label">Subject</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="invoice-subject"
-                    value="Invoice of purchased Admin Templates"
-                    placeholder="Invoice regarding goods" />
-                </div>
-                <div class="mb-3">
-                  <label for="invoice-message" class="form-label">Message</label>
-                  <textarea class="form-control" name="invoice-message" id="invoice-message" cols="3" rows="8">
-      Dear Queen Consolidated,
-      Thank you for your business, always a pleasure to work with you!
-      We have generated a new invoice in the amount of  95.59
-      We would appreciate payment of this invoice by 05/11/2021</textarea
-                  >
-                </div>
-                <div class="mb-4">
-                  <span class="badge bg-label-primary">
-                    <i class="ti ti-link ti-xs"></i>
-                    <span class="align-middle">Invoice Attached</span>
-                  </span>
-                </div>
-                <div class="mb-3 d-flex flex-wrap">
-                  <button type="button" class="btn btn-primary me-3" data-bs-dismiss="offcanvas">Send</button>
-                  <button type="button" class="btn btn-label-secondary" data-bs-dismiss="offcanvas">Cancel</button>
-                </div>
-              </form>
-            </div>
-          </div>
+         
           <!-- /Send Invoice Sidebar -->
 
           <!-- Add Payment Sidebar -->
            @php  $invoiceBalance = (!empty($data->remaining_amount)) ? $data->remaining_amount : formatIndianCurrency($roundof)   @endphp
-          <div class="offcanvas offcanvas-end" id="addPaymentOffcanvas" aria-hidden="true">
-            <div class="offcanvas-header mb-3">
-              <h5 class="offcanvas-title">Add Payment</h5>
-              <button
-                type="button"
-                class="btn-close text-reset"
-                data-bs-dismiss="offcanvas"
-                aria-label="Close"></button>
-            </div>
-            <div class="offcanvas-body flex-grow-1">
-              <div class="d-flex justify-content-between bg-lighter p-2 mb-3">
-                <p class="mb-0">Invoice Balance:</p>
-                <p class="fw-medium mb-0 invoice-balance" > {{ formatIndianCurrency($invoiceBalance) }}</p>
-              </div>
+             @include('invoice.payment-sidebar')
 
-               <div class="d-flex justify-content-between bg-lighter p-2 mb-3">
-                <p class="mb-0">Remaining Balance:</p>
-                <p class="fw-medium mb-0 remaining">{{ (!empty($data->remaining_amount)) ?  $data->remaining_amount : 0 }}</p>
-              </div>
-              <form>
-                
-                <div class="mb-3">
-                  <label class="form-label" for="invoiceAmount">Payment Amount</label><span class="requiredLabel">*</span>
-                  <div class="input-group">
-                    <span class="input-group-text"> </span>
-                    <input
-                      type="text"
-                      id="invoiceAmount"
-                      name="invoiceAmount"
-                      class="form-control invoice-amount"
-                      placeholder=""  required/>
-                  </div>
-                </div>
-                <span class="warning" style="color:red"></span>
-                <div class="mb-3">
-                  <label class="form-label" for="payment-date">Payment Date</label> <span class="requiredLabel">*</span>
-                  <input id="payment-date" class="form-control invoice-date" type="date"  required/>
-                </div>
-                <div class="mb-3">
-                  <label class="form-label" for="payment-status">Payment Status</label> <span class="requiredLabel">*</span>
-                  <select class="form-select" id="payment-status" required>
-                    <option value="" selected disabled>Select paymet Status</option>
-                    <option value="Full">Full</option>
-                    <option value="Partial">Partial</option>
-                  
-
-                  </select>
-                </div>
-                <div class="mb-3">
-                  <label class="form-label" for="payment-method">Payment Method</label>
-                  <select class="form-select" id="payment-method">
-                    <option value="" selected disabled>Select payment method</option>
-                    <option value="Cash">Cash</option>
-                    <option value="Bank Transfer">Bank Transfer</option>
-                    <option value="Debit Card">Debit Card</option>
-                    <option value="Credit Card">Credit Card</option>
-
-                  </select>
-                </div>
-
-                <div class="mb-3">
-                  <label class="form-label" for="reference_no">Transaction Id</label>
-                  <div class="input-group">
-                    <span class="input-group-text"> </span>
-                    <input
-                      type="text"
-                      id="reference_no"
-                      name="reference_no"
-                      class="form-control reference_no"
-                      placeholder=""  />
-                  </div>
-                </div>
-                <div class="mb-4">
-                  <label class="form-label" for="payment-note">Internal Payment Note</label>
-                  <textarea class="form-control" id="payment-note" rows="2"></textarea>
-                </div>
-                <div class="mb-3 d-flex flex-wrap">
-                  <button type="button" class="btn btn-primary me-3 submitForm" data-bs-dismiss="offcanvas">Send</button>
-                  <button type="button" class="btn btn-label-secondary" data-bs-dismiss="offcanvas">Cancel</button>
-                </div>
-              </form>
-            </div>
-          </div>
           <!-- /Add Payment Sidebar -->
 
           <!-- /Offcanvas -->
 @endsection
 @section('extrajs')     
 <script src="{{ asset('assets/js/offcanvas-add-payment.js') }}"></script>
-  <script src="{{ asset('assets/js/offcanvas-send-invoice.js') }}"></script>
   <script>
    
     $(document).on('click','#downloadPdfButton',function() {
@@ -443,23 +589,22 @@ $partner_type = $data->partner_type;
           },
           data: { id: id,type:type },
            success: function(response) {
-             var pdfUrl = response.pdfUrl; 
-            if(value=='print'){
-              var printWindow = window.open(pdfUrl, '_blank');
-              printWindow.onload = function() {
-              printWindow.print();
-              };
-            } else{
+            var pdfUrl = response.pdfUrl; 
+            if (value == 'print') {
+                var printWindow = window.open(pdfUrl, '_blank');
+                printWindow.onload = function() {
+                    printWindow.print();
+                };
+            } else {
                 var link = document.createElement('a');
-                link.href = pdfUrl; // URL to the PDF file
-                console.log(pdfUrl);
-                // Append the link to the body and trigger the download
+                link.href = pdfUrl;
+                link.download = pdfUrl.split('/').pop();
                 document.body.appendChild(link);
                 link.click();
-                document.body.removeChild(link); // Remove the link after downloading
-
+                document.body.removeChild(link);
             }
           },
+          
           error: function(xhr, status, error) {
               console.error('Error:', error);
           }
@@ -470,20 +615,25 @@ $partner_type = $data->partner_type;
         // Attach a submit event handler to the form
        $('.submitForm').on('click', function(e) {
             e.preventDefault(); // Prevent the default form submission
+            var formData = new FormData();
+            formData.append('id', '{{ $data->id }}'); 
+            formData.append('type', '{{ $data->invoice_type }}');
+            formData.append('grand_total', '{{ $roundof }}');
+            formData.append('totalAmount', '{{ $invoiceBalance }}');
+            formData.append('invoiceAmount', $('#invoiceAmount').val());
+            formData.append('paymentDate', $('#payment-date').val());
+            formData.append('paymentStatus', $('#payment-status').val());
+            formData.append('paymentMethod', $('#payment-method').val());
+            formData.append('paymentNote', $('#payment-note').val());
+            formData.append('reference_no', $('#reference_no').val());
+            formData.append('type', $(this).data('type'));
 
-            // Get form data
-            var formData = {
-                id: '{{ $data->id }}', 
-                type: '{{ $data->invoice_type }}' ,
-                grand_total: '{{ $roundof }}' ,
-                totalAmount: '{{ $invoiceBalance }}' ,
-                invoiceAmount: $('#invoiceAmount').val(),
-                paymentDate: $('#payment-date').val(),
-                paymentStatus: $('#payment-status').val(),
-                paymentMethod: $('#payment-method').val(),
-                paymentNote: $('#payment-note').val(),
-                reference_no: $('#reference_no').val()
-            };
+            // Append the file input (if any)
+            var fileInput = $('#payment_image')[0].files[0];  // Get the selected file
+            if (fileInput) {
+                formData.append('payment_image', fileInput);
+            }
+            
 
             $.ajax({
                 url: appurl+'add-payment', // Replace with your endpoint URL
@@ -492,6 +642,8 @@ $partner_type = $data->partner_type;
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 },
                 data: formData,
+                processData: false,
+                contentType: false, 
                 success: function(response) {
                     // Handle the response from the server
                      toastr.success(response.message || "Payment Added successfully!");
@@ -507,10 +659,11 @@ $partner_type = $data->partner_type;
                       $.each(errors, function(key, messages) {
                           errorMessage += messages.join('<br>') + '<br>';
                       });
+
                   } else {
                       errorMessage = "An unexpected error occurred.";
                   }
-
+                  
                   toastr.error(errorMessage);
               }
             });
@@ -536,7 +689,7 @@ $partner_type = $data->partner_type;
             // Calculate the remaining balance
             var remainingBalance = invoiceBalance - paymentAmount;
             if (paymentAmount > invoiceBalance) {
-            $('.invoiceAmount').val(formatIndianCurrency(0));
+            $('#invoiceAmount').val(formatIndianCurrency(0));
             $('.remaining').text(formatIndianCurrency(0));
             $('.warning').text('Payment amount exceeds invoice balance.').show();
             } else {

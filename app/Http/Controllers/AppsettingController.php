@@ -60,9 +60,9 @@ class AppsettingController extends Controller
 
             // read image from file system
             $image = $manager->read($destinationPath.$fileName);
-            $image->resize(80, null, function ($constraint) {
+            /*$image->resize(150, 125, function ($constraint) {
                 $constraint->aspectRatio();
-            });
+            });*/
             $image->save($destinationPath.$fileName);
             $saveFile = $destinationPath.$fileName;
            /* if(file_exists($destinationPath.$fileName)){ 

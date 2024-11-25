@@ -4,7 +4,7 @@
     <div class="row">
         <div class="col-sm-6">
             {{ Form::label('property_id', __('Properties'), ['class' => 'form-label']) }} <span class="requiredLabel">*</span>
-            {!! Form::select('property_id', ['' => __('Select Property')] + $properties, null, ['class' => 'form-control select property_id select2 form-select', 'id' => 'property_id','required'=>'required']) !!}
+            {!! Form::select('property_id', ['' => __('Select Property')] + $properties, $property_id, ['class' => 'form-control select property_id select2 form-select', 'id' => 'property_id','required'=>'required']) !!}
             @error('property_id')
                 <small class="invalid-email" role="alert">
                     <strong class="text-danger">{{ $message }}</strong>
@@ -25,7 +25,7 @@
         </div>
         <div class="col-md-6">
             <div class="mb-3">
-                {{ Form::label('price', __('Price'), ['class' => 'form-label']) }}
+                {{ Form::label('price', __('Price'), ['class' => 'form-label']) }}<span class="requiredLabel">*</span>
                 {{ Form::number('price', null, ['class' => 'form-control', 'required' => 'required', 'placeholder' => __('Price')]) }}
                 @error('price')
                     <small class="invalid-name" role="alert">
@@ -38,7 +38,7 @@
        
         <div class="col-md-6">
             <div class="mb-3">
-                {{ Form::label('ex_date', __('Date'), ['class' => 'form-label']) }}
+                {{ Form::label('ex_date', __('Date'), ['class' => 'form-label']) }}<span class="requiredLabel">*</span>
                 {{ Form::date('ex_date',null, ['class' => 'form-control','required'=>'required', 'placeholder' => __('Date')]) }}
                 @error('ex_date')
                     <small class="invalid-name" role="alert">

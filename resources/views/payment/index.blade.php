@@ -3,7 +3,7 @@
     {{ __('Payment History') }}
 @endsection
 @section('breadcrumb')
-    <li class="breadcrumb-item"><a href="{{route('users.index')}}">{{__('Payment Management')}}</a></li>
+    <li class="breadcrumb-item"><a href="{{route('payment-history')}}">{{__('Payment Management')}}</a></li>
     <li class="breadcrumb-item">{{__('Payment')}}</li>
 @endsection
 @section('content')
@@ -27,8 +27,25 @@
         {{ $pp }}
       </option> 
       @endforeach</select></div>
+       <div class="col-md-3 user_role">{{ Form::label('UserRole', __('Select Tenant'), ['class' => 'form-label']) }}<select id="tenant_id" class="select2 form-selec text-capitalize"><option value="" > Select Tenant
+       </option>
+       @foreach($tenants as $key1 => $tenant)
+        <option  value="{{ $key1 }}">
+        {{ $tenant }}
+      </option> 
+      @endforeach</select></div>
     
       <div class="col-md-3 user_status">{{ Form::label('UserStatus', __('Select Status'), ['class' => 'form-label']) }}<select id="status" class="select2 form-selec text-capitalize"><option value=""> Select Status </option><option value="Full">Full</option><option value="Processing">Processing</option><option value="Partial">Partial</option></select></div>
+       <div class="col-md-3 type">{{ Form::label('type', __('Select Type'), ['class' => 'form-label']) }}<select id="type" class="select2 form-selec text-capitalize"><option value=""> Select Type </option><option value="rent">Rent</option><option value="cam">CAM</option><option value="utility">Utility</option></select></div>
+         <div class="col-md-3">
+        <label for="start_date" class="form-label">Start Date</label>
+        <input type="date" id="start_date" class="form-control">
+      </div>
+      <div class="col-md-3">
+        <label for="end_date" class="form-label">End Date</label>
+        <input type="date" id="end_date" class="form-control">
+      </div>
+
     </div> 
   </div>
   <div class="card-datatable table-responsive">
@@ -36,10 +53,11 @@
       <thead class="border-top">
         <tr>
           <th></th>
-          <th>Lease Number</th>
+          <th>Tenant</th>
+          <th>Property Name</th>
           <th>Invoice No</th>
           <th>Total Amount</th>
-          <th>Paid Amountr</th>
+          <th>Paid Amount</th>
           <th>Remaining Amount</th>
           <th>Payment Date</th>
           <th>Status</th>
@@ -66,6 +84,9 @@
             d.property_id   = $('#property_id').val();
             d.status   = $('#status').val();
             d.lease_id   = $('#lease_id').val();
+            d.tenant_id   = $('#tenant_id').val();
+            d.start_date = $('#start_date').val();
+            d.end_date = $('#end_date').val();
             },
            'headers': {
             'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -74,7 +95,8 @@
     "order": [["1", "desc" ]],
     "columns": [
             { "data": 'DT_RowIndex', "name": 'DT_RowIndex' , orderable: false, searchable: false },
-            { "data": "lease_id"},
+            { "data": "tenant_id", "name":'tenant.firm_name'},
+            { "data": "property_id", "name":'property.property_name'},
             { "data": "invoice_id"},
             { "data": "total_amount"},
             { "data": "amount"},
@@ -253,7 +275,7 @@
         }
   });
 
-$('#property_id, #status,#lease_id').on('change', function(e) {
+$('#property_id, #status,#lease_id,#tenant_id,#start_date, #end_date').on('change', function(e) {
        table.draw();
    });
 });

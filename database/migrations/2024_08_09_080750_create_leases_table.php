@@ -30,6 +30,8 @@ return new class extends Migration
             $table->decimal('cam_square_foot',10,2)->default(0)->nullable();
             $table->decimal('camp_price',10,2)->default(0)->nullable();
             $table->decimal('camp_fixed_price',10,2)->default(0)->nullable();
+            $table->decimal('total_rent',10,2)->default(0)->nullable();
+            $table->decimal('total_cam',10,2)->default(0)->nullable();
             $table->integer('end_month')->default(11)->nullable();
             $table->integer('month')->nullable();
             $table->decimal('inc_percenatge',10,2)->nullable();
@@ -38,6 +40,8 @@ return new class extends Migration
             $table->unsignedBigInteger('created_by');
             $table->integer('generate_invoice_day')->nullable();
             $table->text('invoice_conditions')->nullable();
+            $table->string('load_taken')->nullable();
+            $table->boolean('lease_invoice_type')->default(2)->nullable()->comment('1:PreInvoice','2:PostInvoice');
             $table->string('status')->default('Pending');
             $table->timestamps();
         });

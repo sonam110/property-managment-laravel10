@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            color: #000;
+            margin: 0;
+            padding: 0;
+            background-color: #fff;
+        }
+
+        .invoice-container {
+            width: 100%;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #000;
+        }
+
+        h4, p {
+            margin: 5px 0;
+        }
+
+        .header {
+            text-align: center;
+            font-weight: bold;
+            font-size: 16px;
+            color: #00338d;
+        }
+
+        .section {
+            margin-bottom: 15px;
+        }
+
+        .section table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .section td, .section th {
+            border: 1px solid #000;
+            padding: 8px;
+            vertical-align: top;
+        }
+
+        .header-table th {
+            text-align: left;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .bold {
+            font-weight: bold;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 10px;
+            margin-top: 20px;
+        }
+
+        .invoice-details, .bank-details, .declaration {
+            border: 1px solid #000;
+            margin-top: 15px;
+        }
+
+        .bank-details td {
+            padding: 10px;
+        }
+
+        .bank-details .remarks {
+            border-left: 1px solid #000;
+        }
+    </style>
+</head>
+<body>
+    <div class="invoice-container">
+        <div class="header">TAX INVOICE</div>
+
+        <div class="section">
+            <table>
+                <tr>
+                    <td rowspan="2" colspan="2">
+                        <h4>Party Name: SIGNATURE INFRATECH</h4>
+                        <p>Address: Signature Group Corporate, 36-A, Vidhya Nagar Phase 2, Hoshangabad Road, Bhopal (M.P.)</p>
+                        <p>GSTIN/UIN: 23AGNPK2589F1Z8</p>
+                        <p>State Name: MADHYA PRADESH</p>
+                    </td>
+                    <td>Invoice No: NOVEMBER\24-25\20</td>
+                    <td>Dated: 05/11/2024</td>
+                </tr>
+                <tr>
+                    <td>Due Date: 10/11/2024</td>
+                    <td></td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="section">
+            <table>
+                <tr>
+                    <th>Description of Services</th>
+                    <th>HSN/SAC</th>
+                    <th>Quantity</th>
+                    <th>Rate</th>
+                    <th>Per</th>
+                    <th>Amount (₹)</th>
+                </tr>
+                <tr>
+                    <td>RENT INCOME - November 1, 2024 - November 30, 2024</td>
+                    <td class="text-center">997212</td>
+                    <td class="text-center">9930</td>
+                    <td class="text-right">47 x 67.12%</td>
+                    <td class="text-center">Month</td>
+                    <td class="text-right">₹ 3,13,255.75</td>
+                </tr>
+                <tr>
+                    <td colspan="5" class="text-right bold">Total</td>
+                    <td class="text-right bold">₹ 3,69,642.00</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="section">
+            <table>
+                <tr>
+                    <th>HSN/SAC</th>
+                    <th>Taxable Value</th>
+                    <th>Central Tax Rate</th>
+                    <th>Central Tax Amount</th>
+                    <th>State Tax Rate</th>
+                    <th>State Tax Amount</th>
+                    <th>Total Tax Amount</th>
+                </tr>
+                <tr>
+                    <td class="text-center">997212</td>
+                    <td class="text-right">₹ 3,13,255.75</td>
+                    <td class="text-right">9%</td>
+                    <td class="text-right">₹ 28,193.02</td>
+                    <td class="text-right">9%</td>
+                    <td class="text-right">₹ 28,193.02</td>
+                    <td class="text-right">₹ 56,386.04</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="bank-details section">
+            <table>
+                <tr>
+                    <td colspan="2">Company's Bank Details</td>
+                    <td class="remarks" rowspan="3">Company's PAN: AGNPK2589F</td>
+                </tr>
+                <tr>
+                    <td>A/c Holder's Name:</td>
+                    <td>Signature Infratech</td>
+                </tr>
+                <tr>
+                    <td>Bank Name:</td>
+                    <td>AU Small Finance Bank</td>
+                </tr>
+                <tr>
+                    <td>A/c No.:</td>
+                    <td>2221257240622418</td>
+                </tr>
+                <tr>
+                    <td>Branch & IFS Code:</td>
+                    <td>Arera Colony, Bhopal & AUBL0002572</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="declaration section">
+            <p>Declaration: We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.</p>
+            <p class="text-center">Authorised Signatory</p>
+        </div>
+
+        <div class="footer">
+            <p>SUBJECT TO BHOPAL JURISDICTION</p>
+            <p>This is a computer-generated invoice and does not require a signature.</p>
+        </div>
+    </div>
+</body>
+</html>

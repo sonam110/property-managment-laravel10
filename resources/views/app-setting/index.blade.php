@@ -194,13 +194,7 @@
                                 
                             </div>
                         </div> -->
-                        <div class="col-md-12">
-                            <div class="mb-3">
-                                {{ Form::label('document', __('Contract format'), ['class' => 'form-label']) }}
-                                 <textarea id="content" name="document" class="form-control">{!! $appSetting->document !!}</textarea>
-                                
-                            </div>
-                        </div>
+                        
                         
                         <div class="pt-4">
                             <button type="submit" class="btn btn-primary me-sm-3 me-1 waves-effect waves-light">Update</button>

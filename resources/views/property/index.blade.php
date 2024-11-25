@@ -3,7 +3,7 @@
     {{ __('Manage Property') }}
 @endsection
 @section('breadcrumb')
-    <li class="breadcrumb-item"><a href="{{route('users.index')}}">{{__('Property Management')}}</a></li>
+    <li class="breadcrumb-item"><a href="{{route('property.index')}}">{{__('Property Management')}}</a></li>
     <li class="breadcrumb-item">{{__('Properties')}}</li>
 @endsection
 @section('content')

@@ -27,7 +27,7 @@ class AuthenticatedSessionController extends Controller
 
     public function __construct()
     {
-       ;
+       
     }
 
     public function create()
@@ -101,15 +101,11 @@ class AuthenticatedSessionController extends Controller
             $ip = $_SERVER['REMOTE_ADDR']; // your ip address here
             $query = @unserialize(file_get_contents('http://ip-api.com/php/' . $ip));
 
-            $whichbrowser = new \WhichBrowser\Parser($_SERVER['HTTP_USER_AGENT']);
-            if ($whichbrowser->device->type == 'bot') {
-                return;
-            }
+           
             $referrer = isset($_SERVER['HTTP_REFERER']) ? parse_url($_SERVER['HTTP_REFERER']) : null;
 
             /* Detect extra details about the user */
-            $query['browser_name'] = $whichbrowser->browser->name ?? null;
-            $query['os_name'] = $whichbrowser->os->name ?? null;
+            
             $query['browser_language'] = isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ? mb_substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2) : null;
             $query['device_type'] = get_device_type($_SERVER['HTTP_USER_AGENT']);
             $query['referrer_host'] = !empty($referrer['host']);
@@ -161,12 +157,9 @@ class AuthenticatedSessionController extends Controller
         return redirect('/');
     }
 
-    public function showCustomerLoginForm($lang = '')
+    public function showCustomerLoginForm($lang = 'en')
     {
-        if($lang == '')
-        {
-            $lang = Utility::getValByName('default_language');
-        }
+        
 
         \App::setLocale($lang);
 
@@ -207,12 +200,9 @@ class AuthenticatedSessionController extends Controller
         return $this->sendFailedLoginResponse(0);
     }
 
-    public function showVenderLoginForm($lang = '')
+    public function showVenderLoginForm($lang = 'en')
     {
-        if($lang == '')
-        {
-            $lang = Utility::getValByName('default_language');
-        }
+       
 
         \App::setLocale($lang);
 
@@ -251,58 +241,43 @@ class AuthenticatedSessionController extends Controller
         return $this->sendFailedLoginResponse($request);
     }
 
-    public function showLoginForm($lang = '')
+    public function showLoginForm($lang = 'en')
     {
 
-        $langList = Utility::languages()->toArray();
-        $lang = array_key_exists($lang, $langList) ? $lang : 'en';
+       
+        $lang = 'en';
 
-        if($lang == '')
-        {
-            $lang = Utility::getValByName('default_language');
-        }
+      
 
         \App::setLocale($lang);
 
-        $settings = Utility::settings();
+       
 
-        return view('auth.login', compact('lang','settings'));
+        return view('auth.login', compact('lang'));
     }
 
-    public function showLinkRequestForm($lang = '')
+    public function showLinkRequestForm($lang = 'en')
     {
-        $langList = Utility::languages()->toArray();
-        $lang = array_key_exists($lang, $langList) ? $lang : 'en';
+      
+        $lang =  'en';
         
-        if($lang == '')
-        {
-            $lang = Utility::getValByName('default_language');
-        }
-
 
         \App::setLocale($lang);
 
-        return view('auth.forgot-password', compact('lang'));
+        return view('admin.forgot-password', compact('lang'));
     }
 
-    public function showCustomerLoginLang($lang = '')
+    public function showCustomerLoginLang($lang = 'en')
     {
-        if($lang == '')
-        {
-            $lang = Utility::getValByName('default_language');
-        }
-
+        
         \App::setLocale($lang);
 
         return view('auth.customer_login', compact('lang'));
     }
 
-    public function showVenderLoginLang($lang = '')
+    public function showVenderLoginLang($lang = 'en')
     {
-        if($lang == '')
-        {
-            $lang = Utility::getValByName('default_language');
-        }
+       
 
         \App::setLocale($lang);
 
@@ -310,12 +285,9 @@ class AuthenticatedSessionController extends Controller
     }
 
     //    ---------------------------------Customer ----------------------------------_
-    public function showCustomerLinkRequestForm($lang = '')
+    public function showCustomerLinkRequestForm($lang = 'en')
     {
-        if($lang == '')
-        {
-            $lang = Utility::getValByName('default_language');
-        }
+       
 
         \App::setLocale($lang);
 
@@ -355,7 +327,7 @@ class AuthenticatedSessionController extends Controller
     public function showResetForm(Request $request, $token = null)
     {
 
-        return view('auth.passwords.reset')->with(
+        return view('admin.password-reset')->with(
             [
                 'token' => $token,
                 'email' => $request->email,
@@ -401,12 +373,9 @@ class AuthenticatedSessionController extends Controller
     }
 
     //    ----------------------------Vendor----------------------------------------------------
-    public function showVendorLinkRequestForm($lang = '')
+    public function showVendorLinkRequestForm($lang = 'en')
     {
-        if($lang == '')
-        {
-            $lang = Utility::getValByName('default_language');
-        }
+       
 
         \App::setLocale($lang);
 
@@ -443,11 +412,7 @@ class AuthenticatedSessionController extends Controller
         return back()->with('status', 'We have e-mailed your password reset link!');
     }
 
-    public function getVendorPassword($token)
-    {
-
-        return view('auth.passwords.vendorReset', ['token' => $token]);
-    }
+    
 
     public function updateVendorPassword(Request $request)
     {

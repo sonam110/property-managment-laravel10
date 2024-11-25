@@ -37,22 +37,26 @@ class TenantController extends Controller
     public function tenantList(Request $request)
     {
         $query = Tenant::orderBy('id','DESC');
+        if(!empty($request->property_id))
+        {
+            $query->where('property_id', $request->property_id);
+        }
        
         return datatables($query)
     
             ->addColumn('action', function ($query)
             {
 
-                $edit =' <a class="btn btn-sm btn-primary" href="'.route('tenants.edit', $query->id) .'" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit" title="Edit"><i class="fa fa-edit"></i></a>';
+                $edit =' <a class="btn btn-sm btn-primary" href="'.route('tenants.edit', $query->id) .'" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit" title="Edit"><i class="ti ti-pencil"></i></a>';
                 $delete = '<a href="'.route('tenants-destroy', $query->id) .'" 
                                  class="btn btn-sm btn-danger"
                                 onClick="return confirm(\'Are you sure you want to delete this?\');" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete" title="Delete">
-                                <i class="fa fa-trash"></i>
+                                <i class="ti ti-trash"></i>
                             </a>';
 
-                $view =' <a class="btn btn-sm btn-info" href="'.route('tenants.show', $query->id) .'" data-toggle="tooltip" data-placement="top" title="" data-original-title="View"  title="View"><i class="fa fa-eye"></i></a>';
+                $view =' <a class="btn btn-sm btn-info" href="'.route('tenants.show', $query->id) .'" data-toggle="tooltip" data-placement="top" title="" data-original-title="View"  title="View"><i class="ti ti-eye"></i></a>';
 
-                $lease =' <a class="btn btn-sm btn-secondary" href="'.route('tenant-leases', $query->id) .'" data-toggle="tooltip" data-placement="top" title="" data-original-title="View"  title="View"><i class="fa fa-home"></i></a>';
+                $lease =' <a class="btn btn-sm btn-secondary" href="'.route('tenant-leases', $query->id) .'" data-toggle="tooltip" data-placement="top" title="" data-original-title="View"  title="View"><i class="ti ti-home"></i></a>';
 
 
                 return '<div class="btn-group btn-group-xs">'.$edit.$view.$delete.$lease.'</div>';
@@ -61,10 +65,12 @@ class TenantController extends Controller
         ->addIndexColumn()
         ->make(true);
     }
-    public function create()
+    public function create(Request $request)
     {
         if (\Auth::user()->can('tenant-add')) {
-            return view('tenant.create');
+            $property_id = (!empty($request->property_id)) ? $request->property_id: NULL;
+           
+            return view('tenant.create',compact('property_id'));
         } else {
             return redirect()->back();
         }
@@ -81,7 +87,8 @@ class TenantController extends Controller
     public function store(Request $request)
     {
 
-
+       
+        
         if(!empty($request->id))
         {
 
@@ -123,6 +130,8 @@ class TenantController extends Controller
                 $tenant = new Tenant;
             }
             $tenant->user_id = auth()->user()->id;
+            $tenant->unique_id = $request->tenant_code;
+            $tenant->property_id = $request->property_id;
             $tenant->full_name = $request->full_name;
             $tenant->firm_name = $request->firm_name;
             $tenant->email = $request->email;
@@ -247,22 +256,18 @@ class TenantController extends Controller
     {
         if (\Auth::user()->can('tenant-delete')) {
 
-            if ($id == 1) {
-                return redirect()->back()->with('error', __('You can not delete By default Admin'));
-            }
+             
             $leaseExist = Lease::where('tenant_id',$id)->where('status','Approved')->count();
             if($leaseExist > 0){
                 return redirect()->back()->with('error', __("You can't  delete this tenant."));
             }
 
-            $user = User::find($id);
-            if ($user) {
-                
-                $user->delete();
-                $tenant = Tenant::where('user_id',$id)->delete();
+            $tenant = Tenant::find($id);
+            if ($tenant) {
+                $tenant = Tenant::where('id',$id)->delete();
                 return redirect()->route('tenants.index')->with('success', __('Tenant successfully deleted .'));
             } else {
-                return redirect()->back()->with('error', __('User not found.'));
+                return redirect()->back()->with('error', __('Tenant not found.'));
             }
         } else {
             return redirect()->back();

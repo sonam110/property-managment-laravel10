@@ -17,15 +17,17 @@ return new class extends Migration
             $table->foreign('invoice_id')->references('id')->on('invoices')->onDelete('cascade');
             $table->string('random_id')->nullable();
             $table->string('item_desc')->nullable();
-            $table->integer('quantity')->nullable();
+            $table->integer('quantity')->default(1)->nullable();
             $table->integer('rate')->nullable();
             $table->decimal('amount',10,2)->nullable();
             $table->string('tax_name')->nullable()->comment('CGST,SGST');
             $table->decimal('tax_per',10,2)->nullable();
             $table->decimal('tax_amount',10,2)->nullable();
             $table->decimal('sub_total',10,2)->nullable();
+            $table->decimal('partner_share',10,2)->nullable();
             $table->string('term')->default('Monthy')->nullable()->comment('Monthy,Yearly');
             $table->string('type')->nullable()->comment('rent,cam,utility');
+            $table->string('item_type')->nullable()->comment('rent,cgst,sgst');
             $table->timestamps();
         });
     }

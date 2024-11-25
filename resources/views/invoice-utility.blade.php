@@ -301,28 +301,28 @@ $partner_type = $data->partner_type;
               ?>
               <tr class="rent">
                
-                <td class="text-nowrap"><b>{{ $rent->item_desc }}</b></td>
+                <td class="text-nowrap text-left"><b>{{ $rent->item_desc }}</b></td>
                
-                <td class="text-nowrap">{{ $rent->quantity }}</td>
+                <td class="text-nowrap text-right">{{ $rent->quantity }}</td>
                 <td>{{($key+1==1) ? 'Month' :'' }}</td>
               
-                <td> {{ formatIndianCurrencyPdf($amount) }}</td>
+                <td class="text-right"> {{ formatIndianCurrencyPdf($amount) }}</td>
               </tr>
              
              
               @endforeach
                <tr class="rent">
-                <td><b>{{ __('R/O') }}</b></td>
+                <td class="text-left"><b>{{ __('R/O') }}</b></td>
                 <td></td>
                 <td></td>
-                <td><b>{{ formatIndianCurrencyPdf(abs($difference)) }}</b></td>
+                <td class="text-left"><b>{{ formatIndianCurrencyPdf(abs($difference)) }}</b></td>
                 
              </tr>
                <tr class="rent">
                 <td></td>
                 <td></td>
                 <td><b>{{ __('Total') }}</b></td>
-                <td><b>{{ formatIndianCurrencyPdf($roundof) }}</b></td>
+                <td class="text-right"><b>{{ formatIndianCurrencyPdf($roundof) }}</b></td>
                 
              </tr>
              
@@ -371,25 +371,25 @@ $partner_type = $data->partner_type;
             </thead>
             <tbody>
               <tr class="rent">
-               <td>997212</td>
-                <td>{{ formatIndianCurrencyPdf($total_amount) }}</td>
-                <td>9 %</td>
-                 <td>{{ formatIndianCurrencyPdf($cgst) }}</td>
-                <td>9 %</td>
-                <td>{{ formatIndianCurrencyPdf($sgst) }}</td>
-                 <td>{{ formatIndianCurrencyPdf($gstTotal) }}</td>
+               <td class="text-left">997212</td>
+                <td class="text-right">{{ formatIndianCurrencyPdf($total_amount) }}</td>
+               <td class="text-right">9 %</td>
+                <td class="text-right">{{ formatIndianCurrencyPdf($cgst) }}</td>
+               <td class="text-right">9 %</td>
+               <td class="text-right">{{ formatIndianCurrencyPdf($sgst) }}</td>
+                <td class="text-right">{{ formatIndianCurrencyPdf($gstTotal) }}</td>
             
            
             @php  $TotalGstInwords = getIndianCurrency(round($gstTotal,0)); @endphp
             
                <tr class="rent">
-                <td><b>{{ __('Total') }}</b></td>
-                <td><b>{{ formatIndianCurrencyPdf($total_amount) }}</b></td>
+               <td class="text-left"><b>{{ __('Total') }}</b></td>
+                <td class="text-right"><b>{{ formatIndianCurrencyPdf($total_amount) }}</b></td>
                 <td></td>
-                <td><b>{{ formatIndianCurrencyPdf($cgst) }}</b></td>
+                <td class="text-right"><b>{{ formatIndianCurrencyPdf($cgst) }}</b></td>
                 <td></td>
-                <td><b>{{ formatIndianCurrencyPdf($sgst) }}</b></td>
-                <td><b>{{ formatIndianCurrencyPdf($gstTotal) }}</b></td>
+                <td class="text-right"><b>{{ formatIndianCurrencyPdf($sgst) }}</b></td>
+                <td class="text-right"><b>{{ formatIndianCurrencyPdf($gstTotal) }}</b></td>
                 
              </tr>
               <tr>

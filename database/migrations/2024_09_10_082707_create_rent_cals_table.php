@@ -18,7 +18,8 @@ return new class extends Migration
             $table->foreign('lease_id')->references('id')->on('leases')->onDelete('cascade');
             $table->integer('from_month')->nullable();
             $table->integer('to_month')->nullable();
-            $table->decimal('price',10,2)->nullable();
+            $table->decimal('inc_percentage',10,2)->nullable();
+            $table->decimal('inc_amount',10,2)->nullable();
             $table->boolean('type')->default(1)->comment('1:Rent,2:Cam');
             $table->timestamps();
         });

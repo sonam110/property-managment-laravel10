@@ -3,9 +3,10 @@
     {{ __('Manage Lease') }}
 @endsection
 @section('breadcrumb')
-    <li class="breadcrumb-item"><a href="{{route('users.index')}}">{{__('Lease Management')}}</a></li>
+    <li class="breadcrumb-item"><a href="{{route('leases.index')}}">{{__('Lease Management')}}</a></li>
     <li class="breadcrumb-item">{{__('Leases')}}</li>
 @endsection
+
 @section('content')
 
 <!-- Users List Table -->
@@ -28,7 +29,16 @@
       </option> 
       @endforeach</select></div>
     
-      <div class="col-md-3 user_status">{{ Form::label('UserStatus', __('Select Status'), ['class' => 'form-label']) }}<select id="status" class="select2 form-selec text-capitalize"><option value=""> Select Status </option><option value="Pending">Pending</option><option value="Processing">Processing</option><option value="Approved">Approved</option></select></div>
+      <div class="col-md-2 user_status">{{ Form::label('UserStatus', __('Select Status'), ['class' => 'form-label']) }}<select id="status" class="select2 form-selec text-capitalize"><option value=""> Select Status </option><option value="Expired">Expired</option><option value="Approved">Approved</option></select></div>
+     <div class="col-md-2">
+        <label for="start_date" class="form-label">Start Date</label>
+        <input type="date" id="start_date" class="form-control">
+      </div>
+      <div class="col-md-2">
+        <label for="end_date" class="form-label">End Date</label>
+        <input type="date" id="end_date" class="form-control">
+      </div>
+
     </div> 
   </div>
   <div class="card-datatable table-responsive">
@@ -36,8 +46,7 @@
       <thead class="border-top">
         <tr>
           <th></th>
-          <th>Lease Number</th>
-          <th>Property Code</th>
+          <th>Property Name</th>
           <th>Tenant Info</th>
           <th>Start date</th>
           <th>Status</th>
@@ -64,6 +73,8 @@
             d.property_id   = $('#property_id').val();
             d.status   = $('#status').val();
             d.tenant_id   = $('#tenant_id').val();
+            d.start_date = $('#start_date').val();
+            d.end_date = $('#end_date').val();
             },
            'headers': {
             'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -72,8 +83,7 @@
     "order": [["1", "desc" ]],
     "columns": [
             { "data": 'DT_RowIndex', "name": 'DT_RowIndex' , orderable: false, searchable: false },
-            { "data": "unique_id"},
-            { "data": "property_id", "name":'property.property_code'},
+            { "data": "property_id", "name":'property.property_name'},
             { "data": "tenant_id", "name":'tenant.firm_name'},
             { "data": "start_date"},
             { "data": "status"},
@@ -260,7 +270,7 @@
         }
   });
 
-$('#property_id, #status,#tenant_id').on('change', function(e) {
+$('#property_id, #status,#tenant_id,#start_date, #end_date').on('change', function(e) {
        table.draw();
    });
 });

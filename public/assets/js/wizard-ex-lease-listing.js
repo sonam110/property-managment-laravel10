@@ -83,6 +83,13 @@
             }
           }
         },
+        load_taken: {
+          validators: {
+            notEmpty: {
+              message: 'Please enter load taken'
+            }
+          }
+        }
         
       },
 
@@ -195,7 +202,7 @@
           // Use this for enabling/changing valid/invalid class
           // eleInvalidClass: '',
           eleValidClass: '',
-          rowSelector: '.col-sm-6'
+          rowSelector: '.col-sm-6,.col-sm-4'
         }),
         autoFocus: new FormValidation.plugins.AutoFocus(),
         submitButton: new FormValidation.plugins.SubmitButton()
@@ -432,12 +439,15 @@ function submitFormViaAjax(formData) {
         },
         error: function(xhr) {
             const errors = xhr.responseJSON.errors;
+            const error = xhr.responseJSON.error;
             let errorMessage = '';
-
+            //console.log(error);
             if (errors) {
                 $.each(errors, function(key, messages) {
                     errorMessage += messages.join('<br>') + '<br>';
                 });
+            }  else if(error) {
+                errorMessage = error;
             } else {
                 errorMessage = "An unexpected error occurred.";
             }

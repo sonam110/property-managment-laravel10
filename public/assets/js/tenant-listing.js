@@ -35,6 +35,13 @@
     const FormValidation1 = FormValidation.formValidation(wizardPropertyListingFormStep1, {
       fields: {
         // * Validate the fields here based on your requirements
+        tenant_code: {
+          validators: {
+            notEmpty: {
+              message: 'Please enter tenant code'
+            }
+          }
+        },
         full_name: {
           validators: {
             notEmpty: {
@@ -56,7 +63,21 @@
               message: 'Please enter email'
             }
           }
+        },
+        
+      phone: {
+        validators: {
+          notEmpty: {
+            message: 'Please enter phone number '
+          },
+           regexp: {
+                    // Regex to check for exactly 10 digits
+                    message: 'The phone number must be exactly 10 digits',
+                    regexp: /^[0-9]{10}$/
+                }
         }
+      }
+
       },
 
       plugins: {

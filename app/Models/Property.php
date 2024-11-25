@@ -13,4 +13,12 @@ class Property extends Model
     {
         return $this->hasMany(PropertyUnit::class,'property_id', 'id');
     }
+    public function invoice()
+    {
+        return $this->hasMany(Invoice::class,'property_id', 'id');
+    }
+    public function lease()
+    {
+        return $this->hasMany(Lease::class,'property_id', 'id');
+    }
 }

@@ -17,6 +17,7 @@ use App\Models\Tenant;
 use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\Expense;
+use App\Models\InvoiceDetail;
 use Validator;
 use Auth;
 use Exception;
@@ -89,16 +90,16 @@ class PropertyController extends Controller
 
                 $checkLeaseExist = Lease::where('property_id',$query->id)->count();
                 
-                    $edit =' <a class="btn btn-sm btn-primary" href="'.route('property.edit', $query->id) .'" data-toggle="tooltip" data-placement="top" title="Edit" data-original-title="Edit"><i class="fa fa-edit"></i></a>';
+                    $edit =' <a class="btn btn-sm btn-primary" href="'.route('property.edit', $query->id) .'" data-toggle="tooltip" data-placement="top" title="Edit" data-original-title="Edit"><i class="ti ti-pencil"></i></a>';
                
                 $delete = '<a href="'.route('property-destroy', $query->id) .'" 
                                  class="btn btn-sm btn-danger"
                                 onClick="return confirm(\'Are you sure you want to delete this?\');" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete">
-                                <i class="fa fa-trash"></i>
+                                <i class="ti ti-trash"></i>
                             </a>';
-                $copy =' <a class="btn btn-sm btn-info" href="'.route('property-copy', $query->id) .'"  onClick="return confirm(\'Are you sure you want to copy this?\');" data-toggle="tooltip" data-placement="top" title="" data-original-title="Copy"><i class="fa fa-copy"></i></a>';
+                $copy =' <a class="btn btn-sm btn-info" href="'.route('property-copy', $query->id) .'"  onClick="return confirm(\'Are you sure you want to copy this?\');" data-toggle="tooltip" data-placement="top" title="" data-original-title="Copy"><i class="ti ti-copy"></i></a>';
 
-                $view =' <a class="btn btn-sm btn-warning" href="'.route('property-units', $query->id) .'" data-toggle="tooltip" data-placement="top" title="Units" data-original-title="Units"><i class="fa fa-eye"></i></a>';
+                $view =' <a class="btn btn-sm btn-warning" href="'.route('property-units', $query->id) .'" data-toggle="tooltip" data-placement="top" title="Units" data-original-title="Units"><i class="ti ti-eye"></i></a>';
 
 
                 
@@ -143,12 +144,12 @@ class PropertyController extends Controller
                 ], 422);
             }
 
-            $checkLeaseExist = Lease::where('property_id',$request->id)->count();
+            /*$checkLeaseExist = Lease::where('property_id',$request->id)->count();
             if($checkLeaseExist > 0 ) {
                 return response()->json([
                     'errors' => "You can't edit this property"
                 ], 422);
-            }
+            }*/
 
         } else{
             $validator = \Validator::make(
@@ -185,6 +186,7 @@ class PropertyController extends Controller
                 $property->user_id = auth()->user()->id;
                 $property->property_name       = $request->property_name;
                 $property->property_code       = $request->property_code;
+                $property->property_address       = $request->property_address;
                 $property->property_location       = $request->property_location;
                 $property->property_type       = $request->property_type;
                 $property->created_by       = auth()->user()->id;
@@ -264,22 +266,41 @@ class PropertyController extends Controller
     public function propertyUnits($id)
     {
         if (\Auth::user()->can('property-edit')) {
-            $property = Property::withCount('units')->findOrFail($id);
+            $property = Property::withCount('units','invoice','lease')->findOrFail($id);
             $propertyUnit = PropertyUnit::where('property_id',$id)->groupby('unit_name_prefix')->orderby('id','ASC')->get();
             $paymentSetting = PropertyPaymentSetting::where('property_id',$id)->get();
             $unitTypes = UnitType::get()->pluck('display_name', 'id');
             $partners = User::where('role_id','2')->get()->pluck('first_name', 'id');
             $allTenantIds = Lease::where('property_id',$id)->pluck('tenant_id')->toArray();
-            $allTenants = Tenant::whereIn('id',$allTenantIds)->get();
+            $allTenants = Tenant::whereIn('id',$allTenantIds)->orWhere('property_id',$id)->distinct()->get();
             $totalOccupied = PropertyUnit::where('property_id',$id)->where('is_rented','1')->count();  
             $totalFree = PropertyUnit::where('property_id',$id)->where('is_rented','0')->count(); 
+
             $invoice = Payment::query();
-            $countData['totalRent']= $invoice->where('property_id',$id)->where('invoice_type','rent')->sum('grand_total');
-            $countData['totalCam']= $invoice->where('property_id',$id)->where('invoice_type','cam')->sum('grand_total');
-            $countData['totalUtility']= $invoice->where('property_id',$id)->where('invoice_type','utility')->sum('grand_total');
+            $countData['totalInvoice']= Invoice::where('property_id',$id)->count();
+            $countData['totalInVoiceAmount']= InvoiceDetail::join('invoices','invoice_details.invoice_id','invoices.id')->where('invoices.property_id',$id)->whereIn('invoice_details.type',['rent','rent-gst'])->sum('invoice_details.amount');
+            if($countData['totalInVoiceAmount']==0){
+                $countData['totalInVoiceAmount'] = Lease::where('property_id',$id)->sum('total_rent');
+
+            }
+            $countData['totalPaid']= Payment::where('property_id',$id)->where('invoice_type','rent')->whereIn('status',['Full','Partial'])->sum('amount');
+            $countData['totalUnPaid']= $countData['totalInVoiceAmount']-$countData['totalPaid'];
+
+            $countData['totalCamInVoiceAmount']= InvoiceDetail::join('invoices','invoice_details.invoice_id','invoices.id')->where('invoices.property_id',$id)->whereIn('invoice_details.type',['cam','cam-gst'])->sum('invoice_details.amount');
+            if($countData['totalCamInVoiceAmount']==0){
+                $countData['totalCamInVoiceAmount'] = Lease::where('property_id',$id)->sum('total_cam');
+
+            }
+            $countData['totalCamPaid']= Payment::where('property_id',$id)->where('invoice_type','cam')->whereIn('status',['Full','Partial'])->sum('amount');
+            $countData['totalCamUnPaid']= $countData['totalCamInVoiceAmount']-$countData['totalCamPaid'];
+
+            $countData['totalUtilityInVoiceAmount']= InvoiceDetail::join('invoices','invoice_details.invoice_id','invoices.id')->where('invoices.property_id',$id)->whereIn('invoice_details.type',['utility','utility-gst'])->sum('invoice_details.amount');
+            $countData['totalUtilityPaid']= Payment::where('property_id',$id)->where('invoice_type','utility')->whereIn('status',['Full','Partial'])->sum('amount');
+            $countData['totalUtilityUnPaid']= $countData['totalUtilityInVoiceAmount']-$countData['totalUtilityPaid'];
+            
             $expense = Expense::query();
-            $countData['camExpense']= $expense->where('property_id',$id)->where('type','CAM')->sum('price');
-            $countData['utilityExpense']= $expense->where('property_id',$id)->where('type','Utility')->sum('price');
+            $countData['camExpense']= Expense::where('property_id',$id)->where('type','1')->sum('price');
+            $countData['utilityExpense']= Expense::where('property_id',$id)->where('type','2')->sum('price');
 
             return View('property.units',compact('partners','property','propertyUnit','paymentSetting','unitTypes','allTenants','totalOccupied','totalFree','countData'));
         } else {

@@ -25,7 +25,7 @@
         </div>
         <div class="col-md-6">
             <div class="mb-3">
-                {{ Form::label('price', __('Price'), ['class' => 'form-label']) }}
+                {{ Form::label('price', __('Price'), ['class' => 'form-label']) }}<span class="requiredLabel">*</span>
                 {{ Form::number('price', null, ['class' => 'form-control', 'required' => 'required', 'placeholder' => __('Price')]) }}
                 @error('price')
                     <small class="invalid-name" role="alert">
@@ -38,7 +38,7 @@
        
         <div class="col-md-6">
             <div class="mb-3">
-                {{ Form::label('ex_date', __('Date'), ['class' => 'form-label']) }}
+                {{ Form::label('ex_date', __('Date'), ['class' => 'form-label']) }}<span class="requiredLabel">*</span>
                 {{ Form::date('ex_date',date('Y-m-d',strtotime($expense->ex_date)), ['class' => 'form-control','required'=>'required', 'placeholder' => __('Date')]) }}
                 @error('ex_date')
                     <small class="invalid-name" role="alert">

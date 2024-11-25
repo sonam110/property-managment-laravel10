@@ -8,15 +8,19 @@
             </div>
 
             <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
+              <a href="{{ route('generate-invoice')}}" class="btn btn-primary remove-row-btn btn-sm">Generate Invoice</a>
+               &nbsp;
+               <a href="{{ route('send-invoice')}}" class="btn btn-warning remove-row-btn btn-sm">Send Invoice</a>
               <!-- Search -->
-              <div class="navbar-nav align-items-center">
+             <!--  <div class="navbar-nav align-items-center">
                 <div class="nav-item navbar-search-wrapper mb-0">
                   <a class="nav-item nav-link search-toggler d-flex align-items-center px-0" href="javascript:void(0);">
                     <i class="ti ti-search ti-md me-2"></i>
                     <span class="d-none d-md-inline-block text-muted">Search (Ctrl+/)</span>
                   </a>
                 </div>
-              </div>
+              </div> -->
+
               <!-- /Search -->
 
               <ul class="navbar-nav flex-row align-items-center ms-auto">
@@ -170,7 +174,7 @@
                 <!-- Quick links -->
 
                 <!-- Notification -->
-                <li class="nav-item dropdown-notifications navbar-dropdown dropdown me-3 me-xl-1">
+               <!--  <li class="nav-item dropdown-notifications navbar-dropdown dropdown me-3 me-xl-1">
                   <a
                     class="nav-link dropdown-toggle hide-arrow"
                     href="javascript:void(0);"
@@ -410,7 +414,7 @@
                       </a>
                     </li>
                   </ul>
-                </li>
+                </li> -->
                 <!--/ Notification -->
 
                 <!-- User -->

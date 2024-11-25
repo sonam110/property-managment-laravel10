@@ -34,6 +34,24 @@
 <li class="breadcrumb-item"><a href="{{route('users.index')}}">{{__('Invoice Management')}}</a></li>
 <li class="breadcrumb-item">{{__('Invoices')}}</li>
 @endsection
+@section('action-btn')
+    <div class="float-end">
+    
+          <a href="{{ route('invoice') }}"  data-title="{{__('Back')}}" data-bs-toggle="tooltip" data-size="lg" title="{{__('Go To Back')}}"  class="btn btn-sm btn-primary">
+              <i class="ti ti-arrow-left"></i>
+          </a>
+       
+    </div>
+@endsection
+@section('action-btn')
+    <div class="float-end">
+    
+          <a href="{{route('invoice')}}"  data-title="{{__('Back')}}" data-bs-toggle="tooltip" data-size="lg" title="{{__('Go To Back')}}"  class="btn btn-sm btn-primary">
+              <i class="ti ti-arrow-left"></i>
+          </a>
+       
+    </div>
+@endsection
 @section('content')
 @php $paymentDueTerms = $data->lease->due_on ;   
 $invoiceDate = $data->invoice_date;
@@ -42,9 +60,7 @@ $due_on = $invoiceDateObject->modify('+' . $paymentDueTerms . ' days');
 $partner_per = $data->partner_per;
 $partner_type = $data->partner_type;
 @endphp
-<div class="row invoice-preview">
- @include('invoice.invoice-head')
-<div>
+
 <div class="row invoice-preview">
   <!-- Invoice -->
   <div class="col-xl-12 col-md-12 col-12 mb-md-0 mb-4">
@@ -53,9 +69,6 @@ $partner_type = $data->partner_type;
         <div
           class="d-flex justify-content-between flex-xl-row flex-md-column flex-sm-row flex-column m-sm-3 m-0">
           <div class="mb-xl-0 mb-4">
-            <a class="header-brand" href="{{url('/')}}" class="app-brand-link">
-              <img src="{{url('/')}}/{{ $appSetting->app_logo}}" class="" alt="{{$appSetting->app_name}}">
-            </a> 
             <p class="mb-2">{{ $appSetting->address}}</p>
             <p class="mb-2">MADHYA PRADESH,INDIA</p>
             <p class="mb-0">(+91) {{ $appSetting->mobile_no}}</p>
@@ -116,15 +129,33 @@ $partner_type = $data->partner_type;
             @endphp
             @foreach($rent_invoices as $key =>  $rent)
             <?php 
-              if($partner_type=='1')
-              {
-                $amount = $partner_per;
-                $rate = '';
-                $persign = '';
+              if($data->invoice_type =='rent'){
+                if($partner_type=='1')
+                {
+                  $amount =$rent->amount;
+                  $rate = '';
+                  $persign = '';
+                  $parshow = '<span class="input-group-text">Fixed</span>';
+                  if($key+1 == 1){
+                    $rent_rate = $rent->amount;
+                  } else{
+                    $rent_rate = $rent->rate;
+                  }
+                  
+                } else{
+                  $amount = $rent->amount ;
+                  $rate = $rent->rate.'*'.$partner_per;
+                  $rent_rate = $rent->rate;
+                  $persign = '%';
+                  $parshow = '<span class="input-group-text">'.$partner_per.'%'.'</span>';
+                }
+
+                
               } else{
-                $amount = ($rent->amount * $partner_per)/100;
-                $rate = $rent->rate.'*'.$partner_per;
-                $persign = '%';
+                $amount = $rent->amount ;
+                $rate = $rent->rate;
+                $rent_rate = $rent->rate;
+                $parshow ='';
               }
               $totalRent += $amount; 
 
@@ -133,40 +164,40 @@ $partner_type = $data->partner_type;
 
 
             ?>
-            <tr class="rent">
-             
-              <td class="text-nowrap"><b>{{ $rent->item_desc }}</b></td>
-             
-              <td class="text-nowrap">{{ $rent->quantity }}</td>
-               @if($key+1==1)
-              <td class="text-nowrap"> {{ $rate }} {{ $persign }}</td>
-               @else
-               <td class="text-nowrap">{{ $rent->rate }} %</td>
-              @endif
-              <td>{{($key+1==1) ? 'Month' :'' }}</td>
             
-              <td class="amount"> {{ formatIndianCurrency($amount) }}</td>
-            </tr>
+            <tr class="{{ ($rent->type == 'rent'  ||  $rent->type == 'cam' || $rent->type == 'utility'  || $rent->item_type == 'extra') ? 'rent' : 'gst' }} {{ $rent->type }} {{ ($rent->item_type == 'rent' || $rent->item_type == 'cam' || $rent->item_type == 'utility') ? '' : $rent->item_type }}">
+           <input type="hidden" name="item_type[]" class=="item_type" value="{{ $rent->item_type == 'rent' ? '' : $rent->item_type }}">
+           <td class="text-nowrap text-left"><input type="text" class="form-control" name="description[]" value="{{ $rent->item_desc }}" placeholder="Enter description" /></td>
+            <td class="text-nowrap text-right"><input type="number" class="form-control quantity" name="quantity[]" value="{{ $rent->quantity }}" /></td>
+            <td class="text-nowrap   text-righ "><div class="input-group"><input type="number" class="form-control rate" name="rate[]" value="{{ $rent_rate }}" /> {!! ($key+1 == 1) ? $parshow : '' !!}</div></td>
+            <td>{{ ($key+1 == 1) ? 'Month' : '' }}</td>
+            <td class="text-nowrap  text-righ"><input type="number" class="form-control amount" name="amount[]" value="{{ $amount }}" readonly /></td>
+            <td><a href="#" class="remove-row-btn">X</a></td>
+          </tr>
            
            
             @endforeach
             </tbody>
-               <tr class="rent" ><td><button type="button" id="add-row-btn" class="btn btn-primary mt-2">Add New Row</button></td></tr>
+              <tr class="rent">
+                  <td><button type="button" id="add-row-btn" class="btn btn-primary mt-2">Add New Row</button></td>
+                  <td><button type="button" id="save-invoice-btn" class="btn btn-primary mt-2">Save</button></td>
+                  <td><a href="{{ route('invoice-view',$data->id)}}" id="save-invoice-btn" class="btn btn-primary mt-2">View</a></td>
+              </tr>
 
              <tr class="rent">
-              <td><b >{{ __('R/O') }}</b></td>
+              <td class="text-left"><b >{{ __('R/O') }}</b></td>
               <td></td>
               <td></td>
               <td></td>
-              <td><b id="ro-value">{{ formatIndianCurrency(abs($difference)) }}</b></td>
-              
+             <td class="text-right"><b id="ro-value">{{ formatIndianCurrency(abs($difference)) }}</b></td>
+        
            </tr>
              <tr class="rent">
               <td></td>
               <td></td>
               <td></td>
               <td><b>{{ __('Total') }}</b></td>
-              <td><b id="total-value">{{ formatIndianCurrency($roundof) }}</b></td>
+             <td class="text-left"> <b id="total-value">{{ formatIndianCurrency($roundof) }}</b></td>
               
            </tr>
            
@@ -178,82 +209,12 @@ $partner_type = $data->partner_type;
            <tr>
              
               <td colspan="1"><b>Amount Chargeable (in words):</b></td>
-              <td colspan="5"><b id="amount-in-words">INR {{ ucfirst($TotalInwords) }}</b></td>
+             <td colspan="5"><b id="amount-in-words">INR {{ ucfirst(getIndianCurrency($roundof)) }}</b></td>
               
           </tr>
           </tfoot>
         </table>
-        <br>
-        @if($data->is_gst=='1')
-        <?php 
-              if($partner_type=='1')
-              {
-                $total_amount = $partner_per;
-                $persign = '';
-              } else{
-                $total_amount = ($data->rent_total * $partner_per)/100;
-               
-              }
-              $cgst = ($total_amount*$data->rent_cgst_per)/100;
-              $sgst = ($total_amount*$data->rent_sgst_per)/100;
-
-              $gstTotal = $cgst+$sgst;
-            ?>
-        <table class="dt-complex-header table table-bordered dataTable">
-          <thead>
-            <tr>
-              <th rowspan="2">HSN/SAC</th>
-              <th rowspan="1">Taxable</th>
-              <th colspan="2">Central Tax</th>
-              <th colspan="2">State Tax</th>
-              <th rowspan="1">Total</th>
-            </tr>
-            <tr>
-
-              <th>Value</th>
-              <th>Rate</th>
-              <th>Amount</th>
-              <th>Rate</th>
-              <th>Amount</th>
-              <th>Tax Amount</th>
-            
-            </tr>
-          </thead>
-          <tbody>
-            <tr class="rent">
-             <td>997212</td>
-              <td>{{ formatIndianCurrency($total_amount) }}</td>
-              <td>{{ $data->rent_cgst_per }} %</td>
-               <td>{{ formatIndianCurrency($cgst) }}</td>
-              <td>{{ $data->rent_sgst_per }} %</td>
-              <td>{{ formatIndianCurrency($sgst) }}</td>
-               <td>{{ formatIndianCurrency($gstTotal) }}</td>
-          
-          </tbody>
-          @php  $TotalGstInwords = getIndianCurrency(round($gstTotal,0)); @endphp
-          <tfoot>
-             <tr class="rent">
-              <td><b>{{ __('Total') }}</b></td>
-              <td><b>{{ formatIndianCurrency($total_amount) }}</b></td>
-              <td></td>
-              <td><b>{{ formatIndianCurrency($cgst) }}</b></td>
-              <td></td>
-              <td><b>{{ formatIndianCurrency($sgst) }}</b></td>
-              <td><b>{{ formatIndianCurrency($gstTotal) }}</b></td>
-              
-           </tr>
-           <tr>
-             
-              <td colspan="4"><b>Tax Amount ( (in words):</b></td>
-              <td colspan="2"><b>{{ ucfirst($TotalGstInwords) }}</b></td>
-              
-          </tr>
-          </tfoot>
-        
-        </table>
-        @endif
-        
-
+      
       </div>
 
       <div class="card-body mx-3">
@@ -357,7 +318,7 @@ $partner_type = $data->partner_type;
 
                <div class="d-flex justify-content-between bg-lighter p-2 mb-3">
                 <p class="mb-0">Remaining Balance:</p>
-                <p class="fw-medium mb-0 remaining">{{ (!empty($data->remaining_amount)) ?  $data->remaining_amount : 0 }}</p>
+                <p class="fw-medium mb-0 remaining">{{ (!empty($data->remaining_amount)) ?  formatIndianCurrency($data->remaining_amount) : 0 }}</p>
               </div>
               <form>
                 
@@ -396,6 +357,8 @@ $partner_type = $data->partner_type;
                     <option value="Bank Transfer">Bank Transfer</option>
                     <option value="Debit Card">Debit Card</option>
                     <option value="Credit Card">Credit Card</option>
+                    <option value="UPI">UPI</option>
+                    <option value="cheque">Cheque</option>
 
                   </select>
                 </div>
@@ -428,10 +391,16 @@ $partner_type = $data->partner_type;
           <!-- /Offcanvas -->
 @endsection
 @section('extrajs')     
-<script src="{{ asset('assets/js/offcanvas-add-payment.js') }}"></script>
-  <script src="{{ asset('assets/js/offcanvas-send-invoice.js') }}"></script>
+
+ 
   <script>
    $(document).ready(function() {
+    // Assume partner_per is available as a global variable or passed via data attribute
+    const partner_per = '{{ $partner_per }}'; // Example: partner share is 30%
+    const partner_type = '{{ $partner_type }}'; 
+    const invoice_type = '{{ $data->invoice_type }}';// Example: partner share is 30%
+
+
     // Function to format currency
     function formatIndianCurrency(amount) {
         return amount.toLocaleString('en-IN', { style: 'currency', currency: 'INR' });
@@ -439,14 +408,10 @@ $partner_type = $data->partner_type;
 
     // Function to convert numbers to words
     function numberToWords(num) {
-        const ones = [
-            '', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine',
+        const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine',
             'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen',
-            'Seventeen', 'Eighteen', 'Nineteen'
-        ];
-        const tens = [
-            '', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'
-        ];
+            'Seventeen', 'Eighteen', 'Nineteen'];
+        const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
         const thousands = ['','Thousand'];
 
         if (num === 0) return 'Zero';
@@ -464,20 +429,71 @@ $partner_type = $data->partner_type;
         }
         return word.trim();
     }
-
-    // Update totals function
     function updateTotals() {
-        let totalSum = 0;
-        $('#invoice-rows tr').each(function() {
-            const amount = parseFloat($(this).find('input[name="amount[]"]').val()) || 0;
-            totalSum += amount;
+        let totalRent = 0;
+        let cgstAmount = 0;
+        let sgstAmount = 0;
+
+        $('#invoice-rows tr').each(function(index) {
+            const row = $(this);
+            const itemType = row.hasClass('rent') ? 'rent' : 'gst';
+            const quantity = parseFloat(row.find('.quantity').val()) || 0;
+            const rate = parseFloat(row.find('.rate').val()) || 0;
+            let amount = 0;
+
+            if (itemType === 'rent') {
+                if (row.hasClass('extra')) {
+                   //console.log(itemType);
+                    amount = quantity * rate;
+                    totalRent += amount;  // Accumulate rent amount
+                    row.find('.amount').val(amount.toFixed(2));
+                }
+                else if (row.hasClass('cam')) {
+                    
+                    amount =  rate;
+
+                    totalRent += amount;  // Accumulate rent amount
+                    row.find('.amount').val(amount.toFixed(2));
+                } else if (row.hasClass('utility')) {
+                  console.log(itemType)
+                    amount = quantity * rate;
+                    totalRent += amount;  // Accumulate rent amount
+                    row.find('.amount').val(amount.toFixed(2));
+                } else{
+                  if(partner_type==1){
+                    amount =  rate ;
+                    totalRent += amount;  // Accumulate rent amount
+                    row.find('.amount').val(amount.toFixed(2));
+                  } else{
+                    amount =  rate * (partner_per / 100);
+                    totalRent += amount;  // Accumulate rent amount
+                    row.find('.amount').val(amount.toFixed(2));
+                  }
+                  
+                  
+                }
+            } else if (itemType === 'gst') {
+                // Calculate GST based on totalRent
+                  
+                if (row.hasClass('cgst')) {
+                    cgstAmount = (totalRent * rate) / 100;
+                    //console.log(row.find('.amount'));
+                    row.find('.amount').val(cgstAmount.toFixed(2));  // Update CGST amount
+                }
+                if (row.hasClass('sgst')) {
+                    sgstAmount = (totalRent * rate) / 100;
+                    row.find('.amount').val(sgstAmount.toFixed(2));  // Update SGST amount
+                }
+                
+            }
+
+            //row.find('.amount').val(amount.toFixed(2));  // Update amount field
         });
 
-        // Round the total sum
-        const roundTotal = Math.round(totalSum);
-        const difference = totalSum - roundTotal;
-
-        // Update the displayed totals
+        // Update the total with GST included
+        const grandTotal = totalRent + cgstAmount + sgstAmount;
+        const roundTotal = Math.round(grandTotal);
+        const difference = grandTotal - roundTotal;
         $('#total-value').text(formatIndianCurrency(roundTotal));  // Update total
         $('#ro-value').text(formatIndianCurrency(Math.abs(difference)));  // Update R/O
 
@@ -485,27 +501,24 @@ $partner_type = $data->partner_type;
         $('#amount-in-words').text('INR ' + ucfirst(numberToWords(roundTotal)));  // Update amount in words
     }
 
+   
+    // Add a new row to the table
     $('#add-row-btn').on('click', function() {
         const newRow = `
-            <tr class="rent">
+            <tr class="rent extra">
+                <input type="hidden" name="item_type[]" class="item_type" value="extra">
                 <td><input type="text" class="form-control" name="description[]" placeholder="Enter description" /></td>
                 <td><input type="number" class="form-control quantity" name="quantity[]" placeholder="0" /></td>
                 <td><input type="number" class="form-control rate" name="rate[]" placeholder="0" /></td>
-                <td><input type="text" class="form-control" name="per[]" placeholder="e.g., Month" /></td>
+                <td></td>
                 <td><input type="number" class="form-control amount" name="amount[]" readonly /></td>
-                <td><button type="button" class="btn btn-danger remove-row-btn">Remove</button></td>
+                <td><a type="button" class="remove-row-btn">X</a></td>
             </tr>`;
         $('#invoice-rows').append(newRow);
     });
 
     // Calculate the amount when quantity and rate change
     $(document).on('keyup change', '.quantity, .rate', function() {
-        const row = $(this).closest('tr');
-        const quantity = parseFloat(row.find('input[name="quantity[]"]').val()) || 0;
-        const rate = parseFloat(row.find('input[name="rate[]"]').val()) || 0;
-        const amount = quantity * rate;
-        row.find('input[name="amount[]"]').val(amount);
-
         updateTotals();  // Update totals whenever a row changes
     });
 
@@ -514,131 +527,71 @@ $partner_type = $data->partner_type;
         $(this).closest('tr').remove();
         updateTotals();  // Update totals when a row is removed
     });
+
+    // Helper function to capitalize the first letter of a string
+    function ucfirst(string) {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
 });
 
-// Helper function to capitalize the first letter of a string
-function ucfirst(string) {
-    return string.charAt(0).toUpperCase() + string.slice(1);
-}
 
 
-    $(document).on('click','#downloadPdfButton',function() {
-      var id = '{{ $data->id }}'; 
-      var type =  'Rent'; 
-      var value = $(this).data('ttype');
-     // console.log(value);
-
-      $.ajax({
-          url: appurl + "download-pdf",
-          type: "post",
-          headers: {
-              'X-CSRF-TOKEN': '{{ csrf_token() }}'
-          },
-          data: { id: id,type:type },
-           success: function(response) {
-             var pdfUrl = response.pdfUrl; 
-            if(value=='print'){
-              var printWindow = window.open(pdfUrl, '_blank');
-              printWindow.onload = function() {
-              printWindow.print();
-              };
-            } else{
-                var link = document.createElement('a');
-                link.href = pdfUrl; // URL to the PDF file
-                console.log(pdfUrl);
-                // Append the link to the body and trigger the download
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link); // Remove the link after downloading
-
+$('#save-invoice-btn').on('click', function(e) {
+        e.preventDefault(); // Prevent form from submitting the traditional way
+        // Prepare data to send
+        let invoiceData = [];
+        $('#invoice-rows tr').each(function(index) {
+            const row = $(this);
+            const description = row.find('input[name="description[]"]').val();
+            const quantity = parseFloat(row.find('input[name="quantity[]"]').val()) || 1;
+            const rate = parseFloat(row.find('input[name="rate[]"]').val()) || 0;
+            const amount = parseFloat(row.find('input[name="amount[]"]').val()) || 0;
+            const item_type = row.find('input[name="item_type[]"]').val();
+          
+            
+            if (description && rate) {
+                invoiceData.push({
+                    description: description,
+                    quantity: quantity,
+                    rate: rate,
+                    amount: amount,
+                    item_type: item_type
+                });
             }
-          },
-          error: function(xhr, status, error) {
-              console.error('Error:', error);
-          }
-      });
-    });
-
-    $(document).ready(function() {
-        // Attach a submit event handler to the form
-       $('.submitForm').on('click', function(e) {
-            e.preventDefault(); // Prevent the default form submission
-
-            // Get form data
-            var formData = {
-                id: '{{ $data->id }}', 
-                type: '{{ $data->invoice_type }}' ,
-                grand_total: '{{ $roundof }}' ,
-                totalAmount: '{{ $invoiceBalance }}' ,
-                invoiceAmount: $('#invoiceAmount').val(),
-                paymentDate: $('#payment-date').val(),
-                paymentStatus: $('#payment-status').val(),
-                paymentMethod: $('#payment-method').val(),
-                paymentNote: $('#payment-note').val(),
-                reference_no: $('#reference_no').val()
-            };
-
-            $.ajax({
-                url: appurl+'add-payment', // Replace with your endpoint URL
-                type: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                data: formData,
-                success: function(response) {
-                    // Handle the response from the server
-                     toastr.success(response.message || "Payment Added successfully!");
-                    $('#addPaymentOffcanvas').offcanvas('hide'); // Hide the offcanvas
-                    // Optionally, you might want to clear the form or update other parts of the UI
-                    window.location.reload();
-                },
-                error: function(xhr) {
-                  const errors = xhr.responseJSON.errors;
-                  let errorMessage = '';
-
-                  if (errors) {
-                      $.each(errors, function(key, messages) {
-                          errorMessage += messages.join('<br>') + '<br>';
-                      });
-                  } else {
-                      errorMessage = "An unexpected error occurred.";
-                  }
-
-                  toastr.error(errorMessage);
-              }
-            });
         });
-    });
 
+        // Send the data via AJAX to the server to save the invoice
+        $.ajax({
+            url: '{{ route("invoices.save") }}', // Define the route for saving the invoice
+            method: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}', 
+                invoiceData: invoiceData,    
+                total: $('#total-value').text(), 
+                roundOff: $('#ro-value').text(),  
+                id: '{{ $data->id }}',  // Send round-off amount
+                is_gst: '{{ $data->is_gst }}',  // Send round-off amount
+            },
+            success: function(response) {
+      
+                toastr.success(response.message || "Invoice Updated successfully!");
+        
+                  window.location.reload();
+              },
+              error: function(xhr) {
+                const errors = xhr.responseJSON.errors;
+                let errorMessage = '';
 
-  $(document).ready(function() {
-        // Function to format the number as Indian currency
-        function formatIndianCurrency(amount) {
-            if (isNaN(amount)) return '0';
-            return amount.toLocaleString('en-IN', { style: 'currency', currency: 'INR' });
-        }
+                if (errors) {
+                    $.each(errors, function(key, messages) {
+                        errorMessage += messages.join('<br>') + '<br>';
+                    });
+                } else {
+                    errorMessage = "An unexpected error occurred.";
+                }
 
-        // Get the invoice balance from the text
-        var invoiceBalance = parseFloat($('.invoice-balance').text().replace(/[^0-9.-]+/g, '')) || 0;
-
-        // Event handler for keyup event on the invoiceAmount input field
-        $('#invoiceAmount').on('keyup', function() {
-            // Get the current payment amount
-            var paymentAmount = parseFloat($(this).val().replace(/[^0-9.-]+/g, '')) || 0;
-
-            // Calculate the remaining balance
-            var remainingBalance = invoiceBalance - paymentAmount;
-            if (paymentAmount > invoiceBalance) {
-            $('.invoiceAmount').val(formatIndianCurrency(0));
-            $('.remaining').text(formatIndianCurrency(0));
-            $('.warning').text('Payment amount exceeds invoice balance.').show();
-            } else {
-                $('.remaining').text(formatIndianCurrency(remainingBalance));
-                $('.warning').hide();
+                toastr.error(errorMessage);
             }
-
-            // Update the remaining balance
-            $('.remaining').text(formatIndianCurrency(remainingBalance));
         });
     });
 

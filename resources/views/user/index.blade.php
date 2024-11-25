@@ -23,11 +23,14 @@
       <div class="col-md-3 user_status">{{ Form::label('UserStatus', __('Select Status'), ['class' => 'form-label']) }}<select id="UserStatus" class="select2 form-selec text-capitalize"><option value=""> Select Status </option><option value="1">Active</option><option value="0">InActive</option></select></div>
     </div>
   </div>
+   {{ Form::open(array('route' => 'user-action', 'class'=> 'form-horizontal', 'autocomplete'=>'off')) }}
+       @csrf
   <div class="card-datatable table-responsive">
     <table class="datatables-users table">
       <thead class="border-top">
         <tr>
           <th></th>
+          <th>#</th>
           <th>Name</th>
           <th>Email</th>
           <th>Phone</th>
@@ -37,13 +40,34 @@
         </tr>
       </thead>
     </table>
+     <div class="row div-margin">
+     <div class="col-md-3 col-sm-6 col-xs-6">
+        <div class="input-group"> 
+           <span class="input-group-addon">
+           <i class="fa fa-hand-o-right"></i> </span> 
+           {{ Form::select('cmbaction', array(
+           ''              => 'Action', 
+           'Active'        => 'Active',
+           'Inactive'  => 'Inactive'), 
+           '', array('class'=>'form-control','id'=>'cmbaction'))}} 
+        </div>
+     </div>
+     <div class="col-md-8 col-sm-6 col-xs-6">
+        <div class="input-group">
+           <button type="submit" class="btn btn-danger pull-right" name="Action" onClick="return delrec(document.getElementById('cmbaction').value);">Apply</button>
+        </div>
+     </div>
   </div>
+  </div>
+   {{ Form::close() }}
   
 </div>
 @endsection
 @section('extrajs')     
+
  <!-- <script src="{{ asset('assets/js/app-user-list.js') }}"></script>   -->       
 <script>
+
    $(document).ready( function () {
     var userCreateUrl = '{{ route('users.create') }}';
     var table = $('.datatables-users').DataTable({
@@ -63,10 +87,11 @@
     "order": [["1", "desc" ]],
     "columns": [
             { "data": 'DT_RowIndex', "name": 'DT_RowIndex' , orderable: false, searchable: false },
+            { "data": 'check'},
             { "data": 'first_name'},
             { "data": "email"},
             { "data": "mobile"},
-            { "data": "role"},
+            { "data": "role","name":'role.name'},
             { "data": "status"},
             { "data": "action"},
         ],

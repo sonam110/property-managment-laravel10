@@ -45,7 +45,7 @@
     <div class="float-end">
     
           <a href="{{ url()->previous() }}"  data-title="{{__('Back')}}" data-bs-toggle="tooltip" data-size="lg" title="{{__('Go To Back')}}"  class="btn btn-sm btn-primary">
-              <i class="fa fa-mail-reply"></i>
+              <i class="ti ti-arrow-left"></i>
           </a>
        
     </div>
@@ -70,43 +70,85 @@
      
         $invoiceDate = (new DateTime())->setDate($currentDate->format('Y'), $currentDate->format('m'), 30);
     }
+
+
 @endphp
 <!-- Users List Table -->
-<div class="card">
+ <div class="card mb-4">
   <div class="card-header border-bottom">
-<h6>Next Invoice Generation Date: {{ $nextInvoiceDate->format('F j, Y') }}</h6>
+  <h6>Next Invoice Generation Date: {{ $nextInvoiceDate->format('F j, Y') }}</h6>
      <h6>Next Invoice Date:  {{ $invoiceDate->format('F j, Y') }}</h4>
     </div>
- <div class="row">
-  <div class="col-sm-6">
-     <div class="card mb-4">
-          <button class="btn btn-link" data-bs-toggle="collapse" data-bs-target="#leaseDetail" aria-expanded="true" aria-controls="leaseDetail">
-            <i class="ti ti-home"></i> Lease Details
-        </button>
-         <div class="collapse show" id="leaseDetail">
-            <div class="card-body">
-              
-                    <div class="info-container">
-                        <ul class="list-unstyled">
-                            <li class="mb-2"><span class="fw-medium me-1">Start Date:</span> <span>{{ $lease->start_date }}</span></li>
-                            <li class="mb-2"><span class="fw-medium me-1">End Month:</span> <span>{{ $lease->end_month }}</span></li>
-                            <li class="mb-2"><span class="fw-medium me-1">Due On(Day of month):</span> <span>{{ $lease->due_one }}</span></li>
-                            <li class="mb-2 pt-1"><span class="fw-medium me-1">Total Area:</span> <span>{{ $lease->total_square }}</span></li>
-                            <li class="mb-2 pt-1"><span class="fw-medium me-1">Current Rate:</span> <span>Rs.  {{ $lease->price }}</span></li>
-                            <li class="mb-2 pt-1"><span class="fw-medium me-1">CAM Rate:</span> <span>Rs .{{ $lease->camp_price }}</span></li>
-                            <li class="mb-2 pt-1"><span class="fw-medium me-1">Total Rent:</span> <span class="badge bg-label-success">{{ formatIndianCurrencyPdf($lease->total_square* $lease->price) }}</span></li>
-                            <li class="mb-2 pt-1"><span class="fw-medium me-1">Total CAM:</span> <span class="badge bg-label-success">{{ formatIndianCurrencyPdf($lease->total_square* $lease->camp_price) }}</span></li>
-
-                    </div>
-                </div>
-            </div>
+</div>
+<div class="row">
+ <div class="col-lg-12 col-md-12 col-12">
+    <div class="tab-content py-0">
+      <div class="tab-pane fade show active" id="payment" role="tabpanel">
+        <div class="d-flex mb-3 gap-3">
+          <div>
+            <span class="badge bg-label-primary rounded-2 p-2">
+              <i class="ti ti-home ti-lg"></i>
+            </span>
+          </div>
+          <div>
+            <h4 class="mb-0">
+              <span class="align-middle">{{ $leaseInfo->unique_id }}</span>
+            </h4>
+           
+          </div>
         </div>
-        <div class="card mb-4">
-          <button class="btn btn-link" data-bs-toggle="collapse" data-bs-target="#rencaminfo" aria-expanded="true" aria-controls="leaseDetail">
-            <i class="ti ti-home"></i> Rent/CAM Rate Info
-        </button>
-         <div class="collapse" id="rencaminfo">
-            <div class="card-body">
+        <div id="accordionPayment" class="accordion">
+          <div class="card accordion-item active">
+            <h2 class="accordion-header">
+              <button
+                class="accordion-button"
+                type="button"
+                data-bs-toggle="collapse"
+                aria-expanded="true"
+                data-bs-target="#accordionPayment-1"
+                aria-controls="accordionPayment-1">
+               Lease Detail
+              </button>
+            </h2>
+
+            <div id="accordionPayment-1" class="accordion-collapse collapse show">
+              <div class="accordion-body containernew">
+          
+                <div class="info-container">
+                  <ul class="list-unstyled">
+                      <li class="mb-2"><span class="fw-medium me-1">Start Date:</span> <span>{{ $leaseInfo->start_date }}</span></li>
+                      <li class="mb-2"><span class="fw-medium me-1">End Month:</span> <span>{{ $leaseInfo->end_month }}</span></li>
+                      <li class="mb-2"><span class="fw-medium me-1">Due On(Day of month):</span> <span>{{ $leaseInfo->due_one }}</span></li>
+                      <li class="mb-2 pt-1"><span class="fw-medium me-1">Total Area:</span> <span>{{ $leaseInfo->total_square }}</span></li>
+                      <li class="mb-2 pt-1"><span class="fw-medium me-1">Current Rate:</span> <span>Rs.  {{ $leaseInfo->price }}</span></li>
+                      <li class="mb-2 pt-1"><span class="fw-medium me-1">CAM Rate:</span> <span>Rs .{{ $leaseInfo->camp_price }}</span></li>
+                      <li class="mb-2 pt-1"><span class="fw-medium me-1">Total Rent:</span> <span class="badge bg-label-success">{{ formatIndianCurrencyPdf($leaseInfo->total_square* $leaseInfo->price) }}</span></li>
+                      <li class="mb-2 pt-1"><span class="fw-medium me-1">Total CAM:</span> <span class="badge bg-label-success">{{ formatIndianCurrencyPdf($leaseInfo->total_square* $leaseInfo->camp_price) }}</span></li>
+
+              </div>
+            
+              </div>
+            </div>
+          </div>
+
+          <div class="card accordion-item">
+            <h2 class="accordion-header">
+              <button
+                class="accordion-button collapsed"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#accordionPayment-2"
+                aria-controls="accordionPayment-2">
+               Rent/CAM Rate Info
+              </button>
+
+            </h2>
+            <div id="accordionPayment-2" class="accordion-collapse collapse">
+
+              <div class="accordion-body">
+                
+                <div class="table-responsive">
+                
                  <table class=" table border-top">
                       <thead>
                         <tr>
@@ -129,71 +171,142 @@
                       </tbody>
                     </table>
                 </div>
+              </div>
             </div>
-        </div>
-        <div class="card mb-4">
-         <button class="btn btn-link" data-bs-toggle="collapse" data-bs-target="#tenantDetail" aria-expanded="true" aria-controls="tenantDetail">
-            <i class="ti ti-user"></i> Tenant Details 
-        </button>
-         <div class="collapse" id="tenantDetail">
-            <div class="card-body">
-               
-                    <div class="info-container">
-                        <ul class="list-unstyled">
-                             <a href="{{ route('tenants.show',$lease->tenant->id)}}"><li class="mb-2"><span class="fw-medium me-1">Full Name:</span> <span>{{ $lease->tenant->full_name }}</span></li></a>
-                            <li class="mb-2"><span class="fw-medium me-1">Firm Name:</span> <span>{{ $lease->tenant->firm_name }}</span></li>
-                            <li class="mb-2 pt-1"><span class="fw-medium me-1">Email:</span> <span>{{ $lease->tenant->email }}</span></li>
-                            <li class="mb-2 pt-1"><span class="fw-medium me-1">Phone No:</span> <span>{{ $lease->tenant->phone }}</span></li>
-                            <li class="mb-2 pt-1"><span class="fw-medium me-1">GST No:</span> <span class="badge bg-label-success">{{ $lease->tenant->gst_no }}</span></li>
-                            <li class="mb-2 pt-1"><span class="fw-medium me-1">PAN No:</span> <span class="badge bg-label-warning">{{ $lease->tenant->pan_no }}</span></li>
-                            <li class="mb-2 pt-1"><span class="fw-medium me-1">City:</span> <span>{{ $lease->tenant->city }}</span></li>
-                            <li class="mb-2 pt-1"><span class="fw-medium me-1">Business name:</span> <span>{{ $lease->tenant->business_name }}</span></li>
-                            <li class="mb-2 pt-1"><span class="fw-medium me-1">Business industry:</span> <span>{{ $lease->tenant->business_industry }}</span></li>
-                            <li class="mb-2 pt-1"><span class="fw-medium me-1">Business Address:</span> <span>{{ $lease->tenant->business_address }}</span></li>
-                            <li class="pt-1"><span class="fw-medium me-1">Business description:</span> <span>{{ $lease->tenant->business_description }}</span></li>
-                        </ul>
-                        
-                    </div>
+          </div>
+
+          <div class="card accordion-item">
+            <h2 class="accordion-header">
+              <button
+                class="accordion-button collapsed"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#accordionPayment-3"
+                aria-controls="accordionPayment-3">
+              Property Units
+              </button>
+            </h2>
+            <div id="accordionPayment-3" class="accordion-collapse collapse">
+              <div class="accordion-body containernew">
+                @foreach($propertyUnit as $floor)
+              @php $allUnits = \App\Models\PropertyUnit::where('property_id',$floor->property_id)->where('unit_name_prefix',$floor->unit_name_prefix)->orderby('id','ASC')->get();     
+              @endphp
+                <div class="floor">
+                    <h6 style="grid-column: span 12;"><span class="badge bg-label-primary">Floor {{ $floor->unit_floor }} ({{ $floor->unit_name_prefix }})</span></h6>
+                    @foreach($allUnits as $unit)
+                     @php  
+                      $is_rented =  ($unit->is_rented =='1') ? 'btn btn-danger btn-sm' :'btn btn-outline-primary btn-sm' ;
+                      
+                 
+          
+                      $leaseInfo = \App\Models\Lease::WhereRaw("FIND_IN_SET(?, unit_ids) > 0", [$unit->id])->with('tenant')->first();
+                      $checkLease = \App\Models\Lease::whereRaw("FIND_IN_SET(?, unit_ids)", [$unit->id])->where('property_id',$unit->property_id)->where('id',$id)->first();
+
+                      $is_rented =  (!empty($checkLease)) ? 'btn btn-success btn-sm' : $is_rented ;
+                      $tenantId = $leaseInfo ? @$leaseInfo->tenant->id : ''; 
+                    @endphp
+
+                   
+                        @if(!empty($tenantId))
+                        <a href="{{ route('tenants.show', $tenantId) }}" class="{{ $is_rented }}" target="_blank">
+                            {{ $unit->unit_name }} 
+                             
+                        </a>
+                        @else
+                        <div class="{{ $is_rented }}" >
+                            {{ $unit->unit_name }} 
+                             
+                        </div>
+
+                        @endif
+                    @endforeach
                 </div>
+            @endforeach
+              </div>
             </div>
-        </div>
-     
-        <div class="card mb-4">
-          <button class="btn btn-link" data-bs-toggle="collapse" data-bs-target="#propertyDetail" aria-expanded="true" aria-controls="tenantDetails">
-            <i class="ti ti-file"></i> Property Details
-        </button>
-         <div class="collapse" id="propertyDetail">
-            <div class="card-body">
-               
+          </div>
+
+          <div class="card accordion-item">
+            <h2 class="accordion-header">
+              <button
+                class="accordion-button collapsed"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#accordionPayment-4"
+                aria-controls="accordionPayment-4">
+               Tenants Detail 
+              </button>
+            </h2>
+            <div id="accordionPayment-4" class="accordion-collapse collapse">
+              <div class="accordion-body">
+                <div class="info-container">
+                      <ul class="list-unstyled">
+                           <a href="{{ route('tenants.show', $tenant->id) }} "><li class="mb-2"><span class="fw-medium me-1">Full Name:</span> <span>{{ @$tenant->full_name }}</span></li></a>
+                          <li class="mb-2"><span class="fw-medium me-1">Firm Name:</span> <span>{{ @$tenant->firm_name }}</span></li>
+                          <li class="mb-2 pt-1"><span class="fw-medium me-1">Email:</span> <span>{{ @$tenant->email }}</span></li>
+                          <li class="mb-2 pt-1"><span class="fw-medium me-1">Phone No:</span> <span>{{ @$tenant->phone }}</span></li>
+                          <li class="mb-2 pt-1"><span class="fw-medium me-1">GST No:</span> <span class="badge bg-label-success">{{ @$tenant->gst_no }}</span></li>
+                          <li class="mb-2 pt-1"><span class="fw-medium me-1">PAN No:</span> <span class="badge bg-label-warning">{{ @$tenant->pan_no }}</span></li>
+                          <li class="mb-2 pt-1"><span class="fw-medium me-1">City:</span> <span>{{ @$tenant->city }}</span></li>
+                          <li class="mb-2 pt-1"><span class="fw-medium me-1">Business name:</span> <span>{{ @$tenant->business_name }}</span></li>
+                          <li class="mb-2 pt-1"><span class="fw-medium me-1">Business industry:</span> <span>{{ @$tenant->business_industry }}</span></li>
+                          <li class="mb-2 pt-1"><span class="fw-medium me-1">Business Address:</span> <span>{{ @$tenant->business_address }}</span></li>
+                          <li class="pt-1"><span class="fw-medium me-1">Business description:</span> <span>{{ @$tenant->business_description }}</span></li>
+                      </ul>
+                      
+                  </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card accordion-item">
+            <h2 class="accordion-header">
+              <button
+                class="accordion-button collapsed"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#accordionPayment-5"
+                aria-controls="accordionPayment-5">
+               Property Details
+              </button>
+            </h2>
+            <div id="accordionPayment-5" class="accordion-collapse collapse">
+              <div class="accordion-body">
                 <div class="info-container">
                     <ul class="list-unstyled">
                         <li class="mb-2">
                             <span class="fw-medium me-1">Property Name:</span>
-                            <span>{{ $lease->property->property_name }}</span>
+                            <span>{{ @$property->property_name }}</span>
                         </li>
                         <li class="mb-2">
                             <span class="fw-medium me-1">Property Code:</span>
-                            <span>{{ $lease->property->property_code }}</span>
+                            <span>{{ @$property->property_code }}</span>
                         </li>
                         <li class="mb-2 pt-1">
                             <span class="fw-medium me-1">Address:</span>
-                            <span>{{ $lease->property->property_address }}</span>
+                            <span>{{ @$property->property_address }}</span>
                         </li>
                     </ul>
                    
                 </div>
+              </div>
             </div>
-        </div>
-        </div>
-
-         <div class="card mb-4">
-          <button class="btn btn-link" data-bs-toggle="collapse" data-bs-target="#partnetShare" aria-expanded="true" aria-controls="partnetShare">
-            <i class="ti ti-home"></i> Partner's Share
-        </button>
-         <div class="collapse" id="partnetShare">
-            <div class="card-body">
-              <div class="card-datatable table-responsive">
-              <table class=" table border-top">
+          </div>
+          <div class="card accordion-item">
+            <h2 class="accordion-header">
+              <button
+                class="accordion-button collapsed"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#accordionPayment-6"
+                aria-controls="accordionPayment-6">
+               Partner's Share 
+              </button>
+            </h2>
+            <div id="accordionPayment-6" class="accordion-collapse collapse">
+              <div class="accordion-body">
+                <div class=" table-responsive">
+                  <table class=" table border-top">
                 <thead>
                   <tr>
                     <th>Partner Name</th>
@@ -208,7 +321,8 @@
                 <tbody>
                    @foreach($paymentSetting as $key=>  $payment)
                    @php
-                   $ramount =  $lease->total_square*$lease->price;
+                   
+                   $ramount =  @$leaseInfo->total_square*@$leaseInfo->price;
                    if($payment->commission_type=='1')
                   {
                     $amount = $payment->commission_value;
@@ -217,134 +331,111 @@
                    
                   } else{
                     $amount = ($ramount * $payment->commission_value)/100;
-                    $rate = $lease->price.'*'.$payment->commission_value;
+                    $rate = @$leaseInfo->price.'*'.$payment->commission_value;
                     $persign = '%';
                    
                   }
+
                 @endphp
                   <tr>
                     <td>{{ @$payment->partner->first_name }} {{ @$payment->partner->last_name }}</td>
                      <td>{{ (@$payment->commission_type == '1' ) ?'Fixed Value' :'% of Total Rent' }} </td>
                      <td>{{ $payment->commission_value }} %  {{ (@$payment->is_gst == '1' ) ?'With GST' :'No' }} </td>
-                     <td>{{ $lease->total_square }} </td>
+                     <td>{ @$leaseInfo->total_square }} </td>
                      <td>{{ $rate }} {{ $persign }} </td>
                      <td>{{ $amount}} </td>
                   </tr>
                   @endforeach
                 </tbody>
               </table>
+                    
+                  </div>
+              </div>
             </div>
-
-                </div>
-            </div>
-        </div>
-
-     
-  </div>
-  <div class="col-sm-6">
-   <div class="card-body containernew">
-          @foreach($propertyUnit as $floor)
-          @php $allUnits = \App\Models\PropertyUnit::where('property_id',$floor->property_id)->where('unit_name_prefix',$floor->unit_name_prefix)->orderby('id','ASC')->get();     @endphp
-            <div class="floor">
-                <h6 style="grid-column: span 6;"><span class="badge bg-label-primary">Floor {{ $floor->unit_floor }} ({{ $floor->unit_name_prefix }})</span></h6>
-                @foreach($allUnits as $unit)
-                @php  
-                  $is_rented =  ($unit->is_rented =='1') ? 'red' :'' ;
-                  
-                  $is_rented_color =  ($unit->is_rented =='1') ? '#fff' :'' ;
-
-                  $is_color = (in_array($unit->id,$unit_ids)) ? 'green' :$is_rented; 
-                  $lease = \App\Models\Lease::WhereRaw("FIND_IN_SET(?, unit_ids) > 0", [$unit->id])->with('tenant')->first();
-                  $checkLease = \App\Models\Lease::whereRaw("FIND_IN_SET(?, unit_ids)", [$unit->id])->where('property_id',$unit->property_id)->where('id',$id)->first();
-
-                  $is_rented =  (!empty($checkLease)) ? 'green' : $is_rented ;
-                  $tenantId = $lease ? @$lease->tenant->id : ''; 
-                @endphp
-                    @if(!empty($tenantId))
-                    <a href="{{ route('tenants.show', $tenantId) }}" target="_blank"><div class="unit" style="background:{{ $is_rented }};color:{{ $is_rented_color  }}">
-                        {{ $unit->unit_name }} 
-                         
-                    </div></a>
-                    @else
-                    <div class="unit" style="background:{{ $is_rented }};color:{{ $is_rented_color  }}">
-                        {{ $unit->unit_name }} 
-                         
-                    </div>
-                    @endif
-                @endforeach
-            </div>
-        @endforeach
-        </div>
-  </div>
-   <div class="col-xl-12 col-lg-12 col-md-12 order-0 order-md-1">
-        
-          <!-- Project table -->
-         
-            <div class="card mb-4">
-            <!-- Notifications -->
-            <h5 class="card-header pb-1">Invoice History</h5>
-            <div class="card-body">
-            </div>
-             <div class="card-datatable table-responsive">
-              <table class="invoice-list-table table border-top">
-                <thead>
-                  <tr>
-                    <th></th>
-                    <th>#Invoice No</th>
-                    <th>Type</th>
-                    <th>Lease</th>
-                    <th>Partner</th>
-                    <th>Total</th>
-                    <th>Total Paid</th>
-                    <th>Total UnPaid</th>
-                    <th class="text-truncate">Issued Date</th>
-                    <th>Invoice Status</th>
-                    <th>Payment Status</th>
-                    <th class="cell-fit">Actions</th>
-                  </tr>
-                </thead>
-              </table>
-            </div>
-           
-            <!-- /Notifications -->
           </div>
-          <!-- /Project table -->
-        </div>
-      <div class="col-xl-12 col-lg-12 col-md-12 order-0 order-md-1">
-        
-          <!-- Project table -->
-         
-            <div class="card mb-4">
-            <!-- Notifications -->
-            <h5 class="card-header pb-1">Payment History</h5>
-            <div class="card-body">
+           <div class="card accordion-item">
+            <h2 class="accordion-header">
+              <button
+                class="accordion-button collapsed"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#accordionPayment-7"
+                aria-controls="accordionPayment-7">
+               Invoice List
+              </button>
+            </h2>
+            <div id="accordionPayment-7" class="accordion-collapse collapse">
+              <div class="accordion-body">
+                <div class=" table-responsive">
+                  <table class="invoice-list-table table border-top">
+                  <thead>
+                    <tr>
+                      <th></th>
+                      <th>#Invoice No</th>
+                      <th>Type</th>
+                      <th>Lease</th>
+                      <th>Partner</th>
+                      <th>Tenant</th>
+                      <th>Total</th>
+                      <th>Total Paid</th>
+                      <th>Total UnPaid</th>
+                      <th class="text-truncate">Issued Date</th>
+                      <th>Invoice Status</th>
+                      <th>Payment Status</th>
+                      <th class="cell-fit">Actions</th>
+                    </tr>
+                  </thead>
+                </table>
+                    
+                  </div>
+              </div>
             </div>
-             <div class="card-datatable table-responsive">
-              <table class="datatables-users table border-top">
-                <thead>
-                 <tr>
-                    <th></th>
-                    <th>Lease Number</th>
-                    <th>Invoice No</th>
-                    <th>Total Amount</th>
-                    <th>Paid Amountr</th>
-                    <th>Remaining Amount</th>
-                    <th>Payment Date</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-              </table>
-            </div>
-           
-            <!-- /Notifications -->
           </div>
-          <!-- /Project table -->
+          <div class="card accordion-item">
+            <h2 class="accordion-header">
+              <button
+                class="accordion-button collapsed"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#accordionPayment-8"
+                aria-controls="accordionPayment-8">
+                Payment History
+              </button>
+            </h2>
+            <div id="accordionPayment-8" class="accordion-collapse collapse">
+              <div class="accordion-body">
+                <div class=" table-responsive">
+                      <table class="datatables-users table">
+                      <thead class="border-top">
+                        <tr>
+                          <th></th>
+                          <th>Lease Number</th>
+                          <th>Invoice No</th>
+                          <th>Total Amount</th>
+                          <th>Paid Amount</th>
+                          <th>Remaining Amount</th>
+                          <th>Payment Date</th>
+                          <th>Status</th>
+                          <th>Actions</th>
+                        </tr>
+                      </thead>
+                    </table>
+                    
+                  </div>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
- </div>
-  
+     
+    </div>
+  </div>
+
 </div>
+
+  
+
 @endsection
 @section('extrajs')           
 <script>

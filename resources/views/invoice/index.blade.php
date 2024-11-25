@@ -3,7 +3,7 @@
     {{ __('Manage Invoice') }}
 @endsection
 @section('breadcrumb')
-    <li class="breadcrumb-item"><a href="{{route('users.index')}}">{{__('Invoice Management')}}</a></li>
+    <li class="breadcrumb-item"><a href="{{route('invoice')}}">{{__('Invoice Management')}}</a></li>
     <li class="breadcrumb-item">{{__('Invoices')}}</li>
 @endsection
 @section('content')
@@ -19,7 +19,7 @@
           <div
             class="d-flex justify-content-between align-items-start card-widget-1 border-end pb-3 pb-sm-0">
             <div>
-              <h3 class="mb-1">{{ $countData['totalInvoice'] }}</h3>
+              <h6 class="mb-1">{{ $countData['totalInvoice'] }}</h6>
               <p class="mb-0">Total Invoices</p>
             </div>
             <span class="avatar me-sm-4">
@@ -34,8 +34,8 @@
           <div
             class="d-flex justify-content-between align-items-start card-widget-2 border-end pb-3 pb-sm-0">
             <div>
-              <h3 class="mb-1">{{ formatIndianCurrency($countData['totalInVoiceAmount']) }}</h3>
-              <p class="mb-0">Total Amount</p>
+              <h6 class="mb-1">{{ formatIndianCurrency($countData['totalInVoiceAmount']) }}</h6>
+              <p class="mb-0">Total Rent</p>
             </div>
             <span class="avatar me-lg-4">
               <span class="avatar-initial bg-label-secondary rounded"
@@ -49,8 +49,8 @@
           <div
             class="d-flex justify-content-between align-items-start border-end pb-3 pb-sm-0 card-widget-3">
             <div>
-              <h3 class="mb-1">{{ formatIndianCurrency($countData['totalPaid']) }}</h3>
-              <p class="mb-0">Paid</p>
+              <h6 class="mb-1">{{ formatIndianCurrency($countData['totalPaid']) }}</h6>
+              <p class="mb-0">Paid Rent </p>
             </div>
             <span class="avatar me-sm-4">
               <span class="avatar-initial bg-label-secondary rounded"
@@ -62,8 +62,8 @@
         <div class="col-sm-6 col-lg-3">
           <div class="d-flex justify-content-between align-items-start">
             <div>
-              <h3 class="mb-1">{{ formatIndianCurrency($countData['totalUnPaid']) }}</h3>
-              <p class="mb-0">Unpaid</p>
+              <h6 class="mb-1">{{ formatIndianCurrency($countData['totalUnPaid']) }}</h6>
+              <p class="mb-0">Unpaid Rent </p>
             </div>
             <span class="avatar">
               <span class="avatar-initial bg-label-secondary rounded"
@@ -72,13 +72,156 @@
             </span>
           </div>
         </div>
+       
+         
       </div>
+
+    </div>
+  </div>
+</div>
+<div class="card mb-4">
+  <div class="card-widget-separator-wrapper">
+    <div class="card-body card-widget-separator">
+      <div class="row gy-4 gy-sm-1">
+    
+        <div class="col-sm-6 col-lg-3">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <h6 class="mb-1">{{ formatIndianCurrency($countData['totalCamInVoiceAmount']) }}</h6>
+              <p class="mb-0">Total CAM </p>
+            </div>
+            <span class="avatar">
+              <span class="avatar-initial bg-label-secondary rounded"
+                ><i class="ti ti-circle-off ti-md"></i
+              ></span>
+            </span>
+          </div>
+        </div>
+         <div class="col-sm-6 col-lg-3">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <h6 class="mb-1">{{ formatIndianCurrency($countData['totalCamPaid']) }}</h6>
+              <p class="mb-0">CAM Paid </p>
+            </div>
+            <span class="avatar">
+              <span class="avatar-initial bg-label-secondary rounded"
+                ><i class="ti ti-circle-off ti-md"></i
+              ></span>
+            </span>
+          </div>
+        </div>
+         <div class="col-sm-6 col-lg-3">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <h6 class="mb-1">{{ formatIndianCurrency($countData['totalCamUnPaid']) }}</h6>
+              <p class="mb-0">CAM Unpaid </p>
+            </div>
+            <span class="avatar">
+              <span class="avatar-initial bg-label-secondary rounded"
+                ><i class="ti ti-circle-off ti-md"></i
+              ></span>
+            </span>
+          </div>
+        </div>
+
+      </div>
+      
+    </div>
+  </div>
+</div>
+<div class="card mb-4">
+  <div class="card-widget-separator-wrapper">
+    <div class="card-body card-widget-separator">
+      <div class="row gy-4 gy-sm-1">
+    
+        <div class="col-sm-6 col-lg-3">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <h6 class="mb-1">{{ formatIndianCurrency($countData['totalUtilityInVoiceAmount']) }}</h6>
+              <p class="mb-0">Total Utility </p>
+            </div>
+            <span class="avatar">
+              <span class="avatar-initial bg-label-secondary rounded"
+                ><i class="ti ti-circle-off ti-md"></i
+              ></span>
+            </span>
+          </div>
+        </div>
+         <div class="col-sm-6 col-lg-3">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <h6 class="mb-1">{{ formatIndianCurrency($countData['totalUtilityPaid']) }}</h6>
+              <p class="mb-0">Utility Paid </p>
+            </div>
+            <span class="avatar">
+              <span class="avatar-initial bg-label-secondary rounded"
+                ><i class="ti ti-circle-off ti-md"></i
+              ></span>
+            </span>
+          </div>
+        </div>
+         <div class="col-sm-6 col-lg-3">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <h6 class="mb-1">{{ formatIndianCurrency($countData['totalUtilityUnPaid']) }}</h6>
+              <p class="mb-0">Utility Unpaid </p>
+            </div>
+            <span class="avatar">
+              <span class="avatar-initial bg-label-secondary rounded"
+                ><i class="ti ti-circle-off ti-md"></i
+              ></span>
+            </span>
+          </div>
+        </div>
+        
+      </div>
+      
     </div>
   </div>
 </div>
 
+
 <!-- Invoice List Table -->
 <div class="card">
+  <div class="card-header border-bottom">
+    <h5 class="card-title mb-3">Search filter</h5>
+    <div class="d-flex  align-items-center row pb-2 gap-3 gap-md-0">
+      <div class="col-md-3 user_role">{{ Form::label('UserRole', __('Select Lease'), ['class' => 'form-label']) }}<select id="lease_id" class="select2 form-selec text-capitalize"><option value="" > Select Lease
+       </option>
+       @foreach($leases as $key => $lease)
+        <option  value="{{ $key }}" >
+        {{ $lease }}
+      </option> 
+      @endforeach</select></div>
+      <div class="col-md-3 user_role">{{ Form::label('UserRole', __('Select Property'), ['class' => 'form-label']) }}<select id="property_id" class="select2 form-selec text-capitalize"><option value="" > Select Property
+       </option>
+       @foreach($propertyTypes as $key => $pp)
+        <option  value="{{ $key }}">
+        {{ $pp }}
+      </option> 
+      @endforeach</select></div>
+       <div class="col-md-3 user_role">{{ Form::label('UserRole', __('Select Tenant'), ['class' => 'form-label']) }}<select id="tenant_id" class="select2 form-selec text-capitalize"><option value="" > Select Tenant
+       </option>
+       @foreach($tenants as $key1 => $tenant)
+        <option  value="{{ $key1 }}">
+        {{ $tenant }}
+      </option> 
+      @endforeach</select></div>
+    
+      <div class="col-md-3 user_status">{{ Form::label('UserStatus', __('Select Status'), ['class' => 'form-label']) }}<select id="status" class="select2 form-selec text-capitalize"><option value=""> Select Status </option><option value="Full">Full</option><option value="Pending">Pending</option><option value="Partial">Partial</option></select></div>
+       <div class="col-md-3 type">{{ Form::label('type', __('Select Type'), ['class' => 'form-label']) }}<select id="type" class="select2 form-selec text-capitalize"><option value=""> Select Type </option><option value="rent">Rent</option><option value="cam">CAM</option><option value="utility">Utility</option></select></div>
+         <div class="col-md-3">
+        <label for="start_date" class="form-label">Start Date</label>
+        <input type="date" id="start_date" class="form-control">
+      </div>
+      <div class="col-md-3">
+        <label for="end_date" class="form-label">End Date</label>
+        <input type="date" id="end_date" class="form-control">
+      </div>
+    </div>
+
+    </div> 
+  </div>
   <div class="card-datatable table-responsive">
     <table class="invoice-list-table table border-top">
       <thead>
@@ -86,7 +229,7 @@
           <th></th>
           <th>#Invoice No</th>
           <th>Type</th>
-          <th>Lease</th>
+          <th>Property</th>
           <th>Partner</th>
           <th>Tenant</th>
           <th>Total</th>
@@ -118,6 +261,11 @@
             "data": function(d) {
             d.property_id   = $('#property_id').val();
             d.status   = $('#status').val();
+            d.tenant_id   = $('#tenant_id').val();
+            d.lease_id   = $('#lease_id').val();
+            d.type   = $('#type').val();
+            d.start_date = $('#start_date').val();
+            d.end_date = $('#end_date').val();
             },
            'headers': {
             'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -128,7 +276,7 @@
             { "data": 'DT_RowIndex', "name": 'DT_RowIndex' , orderable: false, searchable: false },
             { "data": "invoice_no"},
             { "data": "invoice_type"},
-            { "data": "lease_id", "name":'lease.unique_id'},
+            { "data": "property_id", "name":'property.property_name'},
             { "data": "partner_id", "name":'partner.first_name'},
             { "data": "tenant_id", "name":'tenant.firm_name'},
             { "data": "grand_total"},
@@ -309,7 +457,7 @@
         }
   });
 
-$('#property_id, #status').on('change', function(e) {
+$('#property_id, #status,#lease_id,#tenant_id,#type,#start_date, #end_date').on('change', function(e) {
        table.draw();
    });
 });

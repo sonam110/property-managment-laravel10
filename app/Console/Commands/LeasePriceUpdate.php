@@ -59,12 +59,15 @@ class LeasePriceUpdate extends Command
           
             if (!empty($priceRange)) {
                 // Update rent price
-                $lease->price = $priceRange->price;
+                $lease_amount = $lease->total_rent*$priceRange->inc_percentage/100;
+
+                $lease->total_rent = $lease->total_rent+$lease_amount;
                 $lease->save();
             }
             if (!empty($CamRange)) {
                 // Update cam price
-                $lease->camp_price = $priceRange->price;
+                $cam_amount = $lease->total_cam*$CamRange->inc_percentage/100;
+                $lease->total_cam = $lease->total_cam+$cam_amount;
                 $lease->save();
             }
             

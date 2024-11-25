@@ -16,7 +16,7 @@
     <div class="float-end">
     
           <a href="{{ url()->previous() }}"  data-title="{{__('Back')}}" data-bs-toggle="tooltip" data-size="lg" title="{{__('Go To Back')}}"  class="btn btn-sm btn-primary">
-              <i class="fa fa-mail-reply"></i>
+              <i class="ti ti-arrow-left"></i>
           </a>
        
     </div>
@@ -61,7 +61,7 @@
                                 </small>
                               @enderror
                         </div>
-                        <div class="col-sm-12">
+                       <!--  <div class="col-sm-12">
                            {{ Form::label('property_location', __('Location Map Iframe'), ['class' => 'form-label']) }}
                             {{ Form::text('property_location', $property->property_location, ['class' => 'form-control','id'=>'property_location', 'placeholder' => __('Location')]) }}
                             @error('property_location')
@@ -69,7 +69,7 @@
                                     <strong class="text-danger">{{ $message }}</strong>
                                 </small>
                               @enderror
-                        </div> 
+                        </div>  -->
                         <div class="col-sm-12">
                            {{ Form::label('property_address', __('address'), ['class' => 'form-label']) }}
                             {{ Form::text('property_address', $property->property_address, ['class' => 'form-control','id'=>'property_address', 'placeholder' => __('Address')]) }}
@@ -89,6 +89,9 @@
                                 <div class="col-md-9">
                                     
                                     <input type="text" class="form-control" name="unit_floor[]" id="unitFloorInput_{{ $key+1 }}" value="{{ $unit->unit_floor }}" >
+                                     <small id="displayText_{{ $key+1 }}" class="form-text text-muted">
+                                            {{ $unit->unit_floor }} (Total Units: {{ $unit->total_shop }})
+                                    </small>
                                     <input type="hidden" class="form-control" name="unit_name_prefix[]" id="unitPrefixInput_{{ $key+1 }}" value="{{ $unit->unit_name_prefix }}" >
                                     <input type="hidden" class="form-control" name="unit_type[]" id="unitTypeInput_{{ $key+1 }}" value="{{ $unit->unit_type }}" >
                                     
@@ -96,7 +99,7 @@
                                     
                                 </div>
                                 <div class="unit-actions col-md-3">
-                                    <button class="btn btn-secondary btn-sm copy-btn" data-id="unitInput_{{ $key+1 }}"><i class="ti ti-copy text-white"></i></button>
+                                    <button class="btn btn-primary btn-sm copy-btn" data-id="unitInput_{{ $key+1 }}"><i class="ti ti-copy text-white"></i></button>
                                     <button class="btn btn-danger btn-sm delete-btn" data-id="unitRow_{{ $key+1 }}"><i class="ti ti-trash text-white"></i></button>
                                 </div>
                             </div><br>
@@ -110,12 +113,12 @@
                         @endif
 
                         <div class="col-12 d-flex justify-content-between mt-4">
-                          <button class="btn btn-label-secondary btn-prev" disabled>
+                          <button class="btn btn-label-primary btn-prev" disabled>
                             <i class="ti ti-arrow-left ti-xs me-sm-1 me-0"></i>
                             <span class="align-middle d-sm-inline-block d-none">Previous</span>
                           </button>
                           <button class="btn btn-primary btn-next">
-                            <span class="align-middle d-sm-inline-block d-none me-sm-1">Next</span>
+                            <span class="align-middle d-sm-inline-block d-none me-sm-1">Update</span>
                             <i class="ti ti-arrow-right ti-xs"></i>
                           </button>
                         </div>
@@ -147,20 +150,20 @@
                             </div>
                             
                             <div class="col-sm-12 mb-3">
-                                {{ Form::label('unit_floor', __('Unit Floor'), ['class' => 'form-label']) }}
-                                {{ Form::text('unit_floor', null, ['class' => 'form-control unit_floor', 'id'=>'unit_floor', 'required' => 'required','placeholder' => __('Unit Floor')]) }}
+                                {{ Form::label('unit_floor', __('Floor Name'), ['class' => 'form-label']) }}
+                                {{ Form::text('unit_floor', null, ['class' => 'form-control unit_floor', 'id'=>'unit_floor', 'required' => 'required','placeholder' => __('Floor Name')]) }}
                            
                             </div>
                             <div class="col-sm-6 mb-3">
-                                {{ Form::label('unit_name_prefix', __('Number Prefix'), ['class' => 'form-label']) }}
-                                {{ Form::text('unit_name_prefix', null, ['class' => 'form-control unit_name_prefix', 'required' => 'required', 'id'=>'unit_name_prefix','placeholder' => __('Number Prefix')]) }}
+                                {{ Form::label('unit_name_prefix', __('Floor Name Prefix'), ['class' => 'form-label']) }}
+                                {{ Form::text('unit_name_prefix', null, ['class' => 'form-control unit_name_prefix', 'required' => 'required', 'id'=>'unit_name_prefix','placeholder' => __('Floor Name Prefix')]) }}
                            
                             </div>
                            
                             <div class="col-sm-6">
                                 <div class="mb-3">
-                                    {{ Form::label('total_shop', __('Total Shop'), ['class' => 'form-label']) }}
-                                    {{ Form::number('total_shop', null, ['class' => 'form-control total_shop', 'id'=>'total_shop','placeholder' => __('Total Rooms')]) }}
+                                    {{ Form::label('total_shop', __('Total Units'), ['class' => 'form-label']) }}
+                                    {{ Form::number('total_shop', null, ['class' => 'form-control total_shop', 'id'=>'total_shop','placeholder' => __('Total Units')]) }}
                                 </div>
                            
                             </div>
@@ -169,7 +172,7 @@
                         </form>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary"  data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary"  data-bs-dismiss="modal">Close</button>
                         <button type="button" class="btn btn-primary" id="continueButton">Continue</button>
                     </div>
                 </div>
@@ -189,7 +192,7 @@
 
     function openUnitModal(inputId = '') {
         currentInputId = inputId;
-        console.log(inputId);
+        //console.log(inputId);
         $('#unitModal').modal('show');
 
         // Pre-fill the modal with existing data if updating
@@ -230,7 +233,14 @@
             $(`#unitFloorInput_${newInput}`).val(unit_floor);
             $(`#unitPrefixInput_${newInput}`).val(unit_name_prefix);
             $(`#unitTypeInput_${newInput}`).val(unit_type);
-            $(`#totalShopInput_${newInput}`).val(total_shop);;
+            $(`#totalShopInput_${newInput}`).val(total_shop);
+            $(`#displayText_${newInput}`).html(`
+                <small class="form-text text-muted">
+                    ${unit_floor} (Total Units: ${total_shop})
+                </small>
+            `);
+
+           
         } else {
             // For adding new unit
             addUnitRow(unit_floor, unit_name_prefix, unit_type, total_shop);
@@ -245,12 +255,15 @@
             <div class="unit-row row" id="unitRow_${unitCount}">
                 <div class="col-md-9">
                     <input type="text" class="form-control" name="unit_floor[]" id="unitFloorInput_${unitCount}" value="${unit_floor}" >
+                     <small id="displayText_${unitCount}" class="form-text text-muted">
+                        ${unit_floor} (Total Units: ${total_shop})
+                    </small>
                     <input type="hidden" class="form-control" name="unit_name_prefix[]" id="unitPrefixInput_${unitCount}" value="${unit_name_prefix}" >
                     <input type="hidden" class="form-control" name="unit_type[]" id="unitTypeInput_${unitCount}" value="${unit_type}" >
                     <input type="hidden" class="form-control" name="total_shop[]" id="totalShopInput_${unitCount}" value="${total_shop}" >
                 </div>
                 <div class="unit-actions col-md-3">
-                    <button class="btn btn-secondary btn-sm copy-btn" data-id="unitInput_${unitCount}"><i class="ti ti-copy text-white"></i></button>
+                    <button class="btn btn-primary btn-sm copy-btn" data-id="unitInput_${unitCount}"><i class="ti ti-copy text-white"></i></button>
                     <button class="btn btn-danger btn-sm delete-btn" data-id="unitRow_${unitCount}"><i class="ti ti-trash text-white"></i></button>
                 </div>
             </div><br>

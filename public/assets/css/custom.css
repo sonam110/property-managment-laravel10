@@ -1,7 +1,79 @@
 .requiredLabel {
   color: #ff0000;
 }
-
+.card-title {
+    font-weight: bolder;
+}
 #template-customizer{
   visibility: hidden !important;
+}
+
+.text-left {
+    text-align: left!important;
+}
+
+.text-right {
+    text-align: right!important;
+}
+.tab-content {
+    padding: 0rem;
+}
+.floor {
+    border: 1px solid #c9c9c9;
+    padding: 15px;
+    margin-bottom: 15px;
+    overflow-x: auto; /* Adds horizontal scrolling if items overflow */
+}
+.accordion:not(.accordion-bordered) > .card:not(:last-of-type) {
+    margin-bottom: 1rem;
+}
+
+h2, .h2 {
+    font-weight: 800;
+}
+.table th {
+    font-weight: 600;
+}
+
+.unit {
+    width: 85px!important;
+    height: 30px!important;
+    margin-right: 10px!important;
+    margin-bottom: 5px!important;
+    border: 1px solid #c9c9c9!important;
+    border-color: #7367f0;
+    box-shadow: 2px 3px 0px 1px rgba(0, 0, 0, 0.1) 
+}
+
+@media(max-width: 1280px) {
+    .unit {
+        width: 55px !important; /* Adjust as needed */
+        font-size: 0.8em;       /* Reduce font size if needed */
+    }
+}
+@media(max-width: 900px) {
+    .unit {
+        width: 40px !important; /* Adjust as needed */
+        font-size: 0.8em;       /* Reduce font size if needed */
+    }
+}
+
+.avatar img {
+    width: 100%;
+    height: 100% !important;
+}
+
+.light-style .auth-cover-bg-color {
+    background-color: #ffffff;
+}
+
+.property-header {
+padding: 15px;
+    text-transform: capitalize;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.is-invalid {
+    border: 1px solid red;
+    background-color: #ffe6e6;
 }

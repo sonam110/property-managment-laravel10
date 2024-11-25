@@ -29,7 +29,9 @@ return new class extends Migration
             $table->timestamp('payment_date')->nullable();
             $table->string('paid_by')->nullable();
             $table->string('reference_no')->nullable();
+            $table->string('payment_image')->nullable();
             $table->text('note')->nullable();
+            $table->string('invoice_type')->nullable()->comment('rent','gst','Cam','Utility');
             $table->string('status')->default('Pending')->nullable()->comment('Full','Partial','Pending');
             $table->timestamps();
         });

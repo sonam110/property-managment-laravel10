@@ -14,9 +14,11 @@ return new class extends Migration
         Schema::create('invoices', function (Blueprint $table) {
             $table->id();
             $table->string('random_no')->nullable();
+
             $table->string('invoice_no')->unique()->nullable();
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('partner_id');
+            $table->unsignedBigInteger('tenant_property_utility_id')->nullable();
 
             $table->unsignedBigInteger('lease_id');
             $table->foreign('lease_id')->references('id')->on('leases')->onDelete('cascade');

@@ -25,14 +25,16 @@ use App\Models\AppSetting;
 use App\Models\Invoice;
 use App\Models\InvoiceDetail;
 use App\Models\Payment;
+use App\Models\Expense;
 use Validator;
 use Auth;
 use Exception;
 use DB;
 use Str;
 use PDF;
+use Storage;
 use NumberToWords\NumberToWords;
-
+use Illuminate\Support\Facades\Artisan;
 class InvoiceController extends Controller
 {
      public function __construct()
@@ -47,47 +49,68 @@ class InvoiceController extends Controller
     public function invoice()
     {
         if (\Auth::user()->can('invoice-browse')) {
-            $data = Lease::get();
+            $leases = Lease::get()->pluck('unique_id', 'id');
             $propertyTypes = Property::get()->pluck('property_name', 'id');
+            $tenants = Tenant::get()->pluck('firm_name', 'id');
             $partners = User::get()->pluck('first_name', 'id');
 
             $invoice = Payment::query();
             $countData['totalInvoice']= Invoice::count();
-            $countData['totalInVoiceAmount']= $invoice->sum('grand_total');
-            $countData['totalPaid']= $invoice->whereIn('status',['Full','Partial'])->sum('amount');
-            $countData['totalUnPaid']= $invoice->whereIn('status',['Full','Partial'])->sum('remaining_amount');
+            $countData['totalInVoiceAmount']= InvoiceDetail::whereIn('type',['rent','rent-gst'])->sum('amount');
+            $countData['totalPaid']= Payment::where('invoice_type','rent')->whereIn('status',['Full','Partial'])->sum('amount');
+            $countData['totalUnPaid']=    $countData['totalInVoiceAmount']-$countData['totalPaid'];
+
+            $countData['totalCamInVoiceAmount']= InvoiceDetail::whereIn('type',['cam','cam-gst'])->sum('amount');
+            $countData['totalCamPaid']= Payment::where('invoice_type','cam')->whereIn('status',['Full','Partial'])->sum('amount');
+            $countData['totalCamUnPaid']= $countData['totalCamInVoiceAmount']-$countData['totalCamPaid'];
+
+            $countData['totalUtilityInVoiceAmount']= InvoiceDetail::whereIn('type',['utility','utility-gst'])->sum('amount');
+            $countData['totalUtilityPaid']= Payment::where('invoice_type','utility')->whereIn('status',['Full','Partial'])->sum('amount');
+            $countData['totalUtilityUnPaid']=  $countData['totalUtilityInVoiceAmount']-$countData['totalUtilityPaid'];
             
-            return View('invoice.index',compact('propertyTypes','data','partners','countData'));
+            return View('invoice.index',compact('propertyTypes','leases','partners','countData','tenants'));
         } else {
             return redirect()->back();
         }
     }
     public function invoiceList(Request $request)
     {
-        $query = Invoice::orderBy('id','DESC')->with('property','tenant','partner','lease');
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+        $query = Invoice::select('invoices.*')
+        ->when($startDate, function($query) use ($startDate) {
+                return $query->whereDate('invoices.invoice_date', '>=', $startDate);
+        })
+        ->when($endDate, function($query) use ($endDate) {
+            return $query->whereDate('invoices.invoice_date', '<=', $endDate);
+        })->orderBy('invoices.id','DESC')->with('property','tenant','partner','lease');
        
         if(!empty($request->property_id))
         {
-            $query->where('property_id', $request->property_id);
+            $query->where('invoices.property_id', $request->property_id);
         }
         if(!empty($request->tenant_id))
         {
-            $query->where('tenant_id', $request->tenant_id);
+            $query->where('invoices.tenant_id', $request->tenant_id);
         }
         if(!empty($request->lease_id))
         {
-            $query->where('lease_id', $request->lease_id);
+            $query->where('invoices.lease_id', $request->lease_id);
         }
 
         if($request->status!='')
         {
-            $query->where('status', $request->status);
+            $query->where('invoices.payment_status', $request->status);
+        }
+        if($request->type!='')
+        {
+            $query->where('invoices.invoice_type', $request->type);
         }
         return datatables($query)
             ->editColumn('property_id', function ($query)
             {
                 
-                return $query->property->property_code;
+                return $query->property->property_name;
             })
             ->editColumn('invoice_no', function ($query)
             {
@@ -111,40 +134,22 @@ class InvoiceController extends Controller
             })
             ->editColumn('grand_total', function ($query)
             {
-                  if($query->partner_type=='1')
-                    {
-                      $total_amount = $query->partner_per;
-                      $persign = '';
-                    } else{
-                      $total_amount = ($query->rent_total * $query->partner_per)/100;
-                     
-                    }
-                    $cgst = ($total_amount*$query->rent_cgst_per)/100;
-                    $sgst = ($total_amount*$query->rent_sgst_per)/100;
-                    if($query->is_gst =='1' && $query->invoice_type=='rent'){
-                        $grand_total = $total_amount+$cgst+$sgst;
-                    } else{
-                        $grand_total = $total_amount;
-                    }
-                    if($query->invoice_type=='cam'){
-
-                        $grand_total = $query->cam_total_amount;
-                    }
-                    if($query->invoice_type=='utility'){
-                        $ucgst = ($query->utility_total*$query->rent_cgst_per)/100;
-                        $usgst = ($query->utility_total*$query->rent_sgst_per)/100;
-                        $grand_total = $query->utility_total+ $ucgst+$usgst;
-                    }
+                $grand_total = InvoiceDetail::where('invoice_id',$query->id)->sum('amount');
                   
-                return formatIndianCurrency($grand_total);
+                return formatIndianCurrency($query->grand_total);
             })
             ->addColumn('total_paid', function ($query)
             {
                 $payment = Payment::query();
-                $totalPaid= $payment->where('invoice_id',$query->id)->whereIn('status',['Full','Partial'])->sum('amount');
+                $totalPaid= $payment->where('invoice_id',$query->id)->where('invoice_type',$query->invoice_type)->whereIn('status',['Full','Partial'])->sum('amount');
 
                  return formatIndianCurrency($totalPaid);
           
+            })
+             ->editColumn('invoice_date', function ($query)
+            {
+                
+                return date('M d ,Y',strtotime($query->invoice_date));
             })
              ->addColumn('total_unpaid', function ($query)
             {
@@ -174,6 +179,7 @@ class InvoiceController extends Controller
             })
             ->editColumn('payment_status', function ($query)
             {
+
                 if ($query->payment_status == 'Full')
                 {
                     $status = 'Paid';
@@ -204,6 +210,7 @@ class InvoiceController extends Controller
                     $view =' <a class="btn btn-sm btn-info" href="'.route('invoice-view', $query->id) .'" data-bs-toggle="tooltip" data-placement="top" title="View" data-original-title="view">View</a>';
                 }
                 
+                
 
 
 
@@ -217,113 +224,119 @@ class InvoiceController extends Controller
     {
         if (\Auth::user()->can('invoice-browse')) {
           
-            $data = Invoice::with('tenant','property','lease','partner')->findOrFail($id);
+            $data = Invoice::with('tenant','property','lease','partner','TenantPropertyUtility')->findOrFail($id);
             if($data->invoice_type=='rent'){
-                if($data->is_gst=='1') {
-                    $rent_invoices = InvoiceDetail::where('invoice_id',$id)->whereIn('type',['rent','rent-gst'])->orderBy('id','ASC')->get();
-                }
-                else{
-                    $rent_invoices = InvoiceDetail::where('invoice_id',$id)->where('type','rent')->orderBy('id','ASC')->get();
-                }
-
-               
+                $rent_invoices = InvoiceDetail::where('invoice_id',$id)->whereIn('type',['rent','rent-gst'])->orderBy('id','ASC')->get();
                 return View('invoice.show',compact('data','rent_invoices'));
 
             }
             if($data->invoice_type=='cam'){
 
-                if($data->is_gst=='1') {
-                    $cam_invoices = InvoiceDetail::where('invoice_id',$id)->whereIn('type',['cam','cam-gst'])->orderBy('id','ASC')->get();
-                }
-                else{
-                    $cam_invoices = InvoiceDetail::where('invoice_id',$id)->where('type','cam')->orderBy('id','ASC')->get();
-                }
-
+                
+                $rent_invoices = InvoiceDetail::where('invoice_id',$id)->whereIn('type',['cam','cam-gst'])->orderBy('id','ASC')->get();
             
-                return View('invoice.cam-invoice',compact('data','cam_invoices'));
+                return View('invoice.cam-invoice',compact('data','rent_invoices'));
             }
             if($data->invoice_type=='utility'){
-                $utility_invoices = InvoiceDetail::where('invoice_id',$id)->where('type','utility')->get();
+                $rent_invoices = InvoiceDetail::where('invoice_id',$id)->whereIn('type',['utility','utility-gst'])->get();
            
-                return View('invoice.utility-invoice',compact('data','utility_invoices'));
+                return View('invoice.utility-invoice',compact('data','rent_invoices'));
+
+            }
+            if($data->invoice_type=='electricity'){
+                $rent_invoices = InvoiceDetail::where('invoice_id',$id)->where('type','electricity')->get();
+           
+                return View('invoice.electricity-invoice',compact('data','rent_invoices'));
 
             }
         } else {
             return redirect()->back();
         }
     }
-    public function camInvoice($id)
-    {
-        if (\Auth::user()->can('invoice-browse')) {
     
-            $data = Invoice::with('tenant','property','lease','partner')->findOrFail($id);
-            if($data->is_gst=='1') {
-                $cam_invoices = InvoiceDetail::where('invoice_id',$id)->whereIn('type',['cam','cam-gst'])->orderBy('id','ASC')->get();
-            }
-            else{
-                $cam_invoices = InvoiceDetail::where('invoice_id',$id)->where('type','cam')->orderBy('id','ASC')->get();
-            }
-
-        
-            return View('invoice.cam-invoice',compact('data','cam_invoices'));
-        } else {
-            return redirect()->back();
-        }
-    }
-     public function utilityInvoice($id)
-    {
-        if (\Auth::user()->can('invoice-browse')) {
-            $data = Invoice::with('tenant','property','lease','partner')->findOrFail($id);
-            $utility_invoices = InvoiceDetail::where('invoice_id',$id)->where('type','utility')->get();
-           
-            return View('invoice.utility-invoice',compact('data','utility_invoices'));
-        } else {
-            return redirect()->back();
-        }
-    }
     public function invoiceEdit($id)
     {
         if (\Auth::user()->can('invoice-browse')) {
-            $numberToWords = new NumberToWords();
-            // Get the number transformer
-            $numberTransformer = $numberToWords->getNumberTransformer('en'); 
             $data = Invoice::with('tenant','property','lease','partner')->findOrFail($id);
-            if($data->is_gst=='1') {
-                $rent_invoices = InvoiceDetail::where('invoice_id',$id)->whereIn('type',['rent','rent-gst'])->orderBy('id','ASC')->get();
+            if($data->status =='Sent'){
+                return redirect()->back()->with('error', __('You can not edit this invoice.'));
             }
-            else{
-                $rent_invoices = InvoiceDetail::where('invoice_id',$id)->where('type','rent')->orderBy('id','ASC')->get();
-            }
+            if($data->invoice_type=='rent'){
+               $rent_invoices = InvoiceDetail::where('invoice_id',$id)->whereIn('type',['rent','rent-gst'])->orderBy('id','ASC')->get();
 
-            $rent_gts = InvoiceDetail::where('invoice_id',$id)->where('type','rent-gst')->get();
-            $cam_invoices = InvoiceDetail::where('invoice_id',$id)->where('type','cam')->get();
-            $utility_invoices = InvoiceDetail::where('invoice_id',$id)->where('type','utility')->get();
+               
+               
+
+            }
+            if($data->invoice_type=='cam'){
+
+                $rent_invoices = InvoiceDetail::where('invoice_id',$id)->whereIn('type',['cam','cam-gst'])->orderBy('id','ASC')->get();
+
+            
+              
+            }
+            if($data->invoice_type=='utility'){
+                $rent_invoices = InvoiceDetail::where('invoice_id',$id)->whereIn('type',['utility','utility-gst'])->get();
            
-            return View('invoice.edit',compact('data','rent_invoices','cam_invoices','utility_invoices','numberTransformer','rent_gts'));
+               
+
+            }
+            if($data->invoice_type=='electricity'){
+                $rent_invoices = InvoiceDetail::where('invoice_id',$id)->where('type','electricity')->get();
+
+           
+
+            }
+            return View('invoice.edit',compact('data','rent_invoices'));
         } else {
             return redirect()->back();
         }
     }
-    public function invoiceTemplate()
+    public function invoiceTemplate($id)
     {
-        $id='1';
+       
         if (\Auth::user()->can('invoice-browse')) {
             $numberToWords = new NumberToWords();
             // Get the number transformer
             $numberTransformer = $numberToWords->getNumberTransformer('en'); 
-            $data = Invoice::with('tenant','property','lease','partner')->findOrFail($id);
-            if($data->is_gst=='1') {
-                $rent_invoices = InvoiceDetail::where('invoice_id',$id)->whereIn('type',['rent','rent-gst'])->orderBy('id','ASC')->get();
-            }
-            else{
-                $rent_invoices = InvoiceDetail::where('invoice_id',$id)->where('type','rent')->orderBy('id','ASC')->get();
+            $data = Invoice::with('tenant','property','lease','partner','TenantPropertyUtility')->findOrFail($id);
+            if(!empty($data)) {
+                if($data->invoice_type=='rent'){
+              
+                        if($data->is_gst=='1') {
+                            $rent_invoices = InvoiceDetail::where('invoice_id',$data->id)->whereIn('type',['rent','rent-gst'])->orderBy('id','ASC')->get();
+                        }
+                        else{
+                            $rent_invoices = InvoiceDetail::where('invoice_id',$data->id)->where('type','rent')->orderBy('id','ASC')->get();
+                        }
+
+                        return View('invoice-new-1',compact('data','rent_invoices'));
+                }
+                if($data->invoice_type=='cam'){
+              
+                        if($data->is_gst=='1') {
+                            $rent_invoices = InvoiceDetail::where('invoice_id',$data->id)->whereIn('type',['cam','cam-gst'])->orderBy('id','ASC')->get();
+                        }
+                        else{
+                            $rent_invoices = InvoiceDetail::where('invoice_id',$data->id)->where('type','cam')->orderBy('id','ASC')->get();
+                        }
+
+                        return View('invoice-cam-1',compact('data','rent_invoices'));
+                }
+                if($data->invoice_type=='utility'){
+              
+                        if($data->is_gst=='1') {
+                            $rent_invoices = InvoiceDetail::where('invoice_id',$data->id)->whereIn('type',['utility','utility-gst'])->orderBy('id','ASC')->get();
+                        }
+                        else{
+                            $rent_invoices = InvoiceDetail::where('invoice_id',$data->id)->where('type','utility')->orderBy('id','ASC')->get();
+                        }
+
+                        return View('invoice-utility-1',compact('data','rent_invoices'));
+                }
+
             }
 
-            $rent_gts = InvoiceDetail::where('invoice_id',$id)->where('type','rent-gst')->get();
-            $cam_invoices = InvoiceDetail::where('invoice_id',$id)->where('type','cam')->get();
-            $utility_invoices = InvoiceDetail::where('invoice_id',$id)->where('type','utility')->get();
-           
-            return View('invoice-new-1',compact('data','rent_invoices','cam_invoices','utility_invoices','numberTransformer','rent_gts'));
         } else {
             return redirect()->back();
         }
@@ -331,64 +344,83 @@ class InvoiceController extends Controller
 
     public function downloadPdf(Request $request)
     {
-        $data = Invoice::where('id',$request->id)->first();
+        $data = Invoice::where('id',$request->id)->with('tenant','TenantPropertyUtility')->first();
         if(!empty($data)) {
+            $invoice_date = date('M-d-Y',strtotime($data->invoice_date));
+            $directory = '';
+            if (Storage::disk('public')->exists($directory)) {
+                $directories = Storage::disk('public')->allDirectories($directory);
+                    // Loop through and delete each directory
+                    foreach ($directories as $dir) {
+                        Storage::disk('public')->deleteDirectory($dir);
+                    }
+               
+            }
             if($data->invoice_type=='rent'){
               
-                if($data->is_gst=='1') {
-                    $rent_invoices = InvoiceDetail::where('invoice_id',$data->id)->whereIn('type',['rent','rent-gst'])->orderBy('id','ASC')->get();
-                }
-                else{
-                    $rent_invoices = InvoiceDetail::where('invoice_id',$data->id)->where('type','rent')->orderBy('id','ASC')->get();
-                }
+                $rent_invoices = InvoiceDetail::where('invoice_id',$data->id)->whereIn('type',['rent','rent-gst'])->orderBy('id','ASC')->get();
                 
-                $FileName = 'Rent'.'-'.$data->invoice_no.'-'.time().'.pdf';
+
+                $FileName = @$data->tenant->firm_name.'-Rent-'.$invoice_date.'.pdf';
                 $pdf = PDF::loadView('invoice-new-1',compact('rent_invoices', 'data'));
                 $FilePath = 'pdf/' . $FileName;
-                \Storage::disk('pdf_uploads')->put($FilePath, $pdf->output(), 'public');
+                \Storage::disk('public')->put($FilePath, $pdf->output(), 'public');
 
                 $path = \Storage::path('public/'.$FilePath);
                 
+                
                 return response()->json([
-                    'pdfUrl' => asset('storage/pdf/' . $FileName)
+                    'pdfUrl' => Storage::disk('public')->url($FilePath)
                 ]);
                    
                 
             }
             if($data->invoice_type=='cam'){
        
-                if($data->is_gst=='1') {
-                    $rent_invoices = InvoiceDetail::where('invoice_id',$data->id)->whereIn('type',['cam','cam-gst'])->orderBy('id','ASC')->get();
-                }
-                else{
-                    $rent_invoices = InvoiceDetail::where('invoice_id',$data->id)->where('type','cam')->orderBy('id','ASC')->get();
-                }
+                $rent_invoices = InvoiceDetail::where('invoice_id',$data->id)->whereIn('type',['cam','cam-gst'])->orderBy('id','ASC')->get();
                 
-                $FileName = 'Cam'.'-'.$data->invoice_no.'-'.time().'.pdf';
+                $FileName = @$data->tenant->firm_name.'-CAM-'.$invoice_date.'.pdf';
                 $pdf = PDF::loadView('invoice-cam-1',compact('rent_invoices', 'data'));
                 $FilePath = 'pdf/' . $FileName;
-                \Storage::disk('pdf_uploads')->put($FilePath, $pdf->output(), 'public');
+                \Storage::disk('public')->put($FilePath, $pdf->output(), 'public');
 
                 $path = \Storage::path('public/'.$FilePath);
                 
                 return response()->json([
-                    'pdfUrl' => asset('storage/pdf/' . $FileName)
+                    'pdfUrl' => Storage::disk('public')->url($FilePath)
                 ]);
                 
             }
             if($data->invoice_type=='utility'){
-           
-                $rent_invoices = InvoiceDetail::where('invoice_id',$data->id)->where('type','utility')->orderBy('id','ASC')->get();
                 
-                $FileName = 'Utility'.'-'.$data->invoice_no.'-'.time().'.pdf';
+                $rent_invoices = InvoiceDetail::where('invoice_id',$data->id)->whereIn('type',['utility','utility-gst'])->orderBy('id','ASC')->get();
+                $FileName = @$data->tenant->firm_name.'-Utility-'.$invoice_date.'.pdf';
                 $pdf = PDF::loadView('invoice-utility-1',compact('rent_invoices', 'data'));
                 $FilePath = 'pdf/' . $FileName;
-                \Storage::disk('pdf_uploads')->put($FilePath, $pdf->output(), 'public');
+                \Storage::disk('public')->put($FilePath, $pdf->output(), 'public');
 
                 $path = \Storage::path('public/'.$FilePath);
                 
+                
                 return response()->json([
-                    'pdfUrl' => asset('storage/pdf/' . $FileName)
+                    'pdfUrl' => Storage::disk('public')->url($FilePath)
+                ]);
+                   
+                
+            }
+            if($data->invoice_type=='electricity'){
+                
+                $rent_invoices = InvoiceDetail::where('invoice_id',$data->id)->where('type','electricity')->orderBy('id','ASC')->get();
+                $FileName = @$data->tenant->firm_name.'-Elec-'.$invoice_date.'.pdf';
+                $pdf = PDF::loadView('invoice-electricity',compact('rent_invoices', 'data'));
+                $FilePath = 'pdf/' . $FileName;
+                \Storage::disk('public')->put($FilePath, $pdf->output(), 'public');
+
+                $path = \Storage::path('public/'.$FilePath);
+                
+                
+                return response()->json([
+                    'pdfUrl' => Storage::disk('public')->url($FilePath)
                 ]);
                    
                 
@@ -396,6 +428,181 @@ class InvoiceController extends Controller
         }
 
     }
+
+    public function saveInvoice(Request $request)
+    {
+        // Validate the incoming request data
+        $request->validate([
+            'id' => 'required|exists:invoices,id',
+            'invoiceData' => 'required|array',
+            'invoiceData.*.description' => 'required|string|max:255',
+            'invoiceData.*.quantity' => 'required|numeric|min:1',
+            'invoiceData.*.rate' => 'required|numeric|min:0',
+            'invoiceData.*.amount' => 'required|numeric|min:0',
+        ]);
+      
+        DB::beginTransaction();
+        //dd($request->all());
+        try{
+        $inVoice = Invoice::where('id',$request->id)->first();
+        $total = str_replace('₹', '', $request->total);
+        $totalAmount = floatval(str_replace(',', '', $total));
+     
+        if(count($request->invoiceData) >0) {
+            $deleteOld = InvoiceDetail::where('invoice_id',$request->id)->delete();
+            foreach ($request->invoiceData as $item) {
+                $quantity = (!empty($item['quantity'])) ? $item['quantity'] :'1';
+                if($inVoice->invoice_type=='rent' ){
+                    $invoice_type =($item['item_type']=='') ? 'rent' :'rent-gst';
+                }
+                elseif($inVoice->invoice_type=='cam'){
+                    $invoice_type =($item['item_type']=='') ? 'cam' :'cam-gst';
+                } else{
+                     $invoice_type =($item['item_type']=='') ? 'utility' :'utility';
+                }
+                
+                $subTotal = $quantity*$item['rate'];
+                InvoiceDetail::create([
+                    'invoice_id' => $request->id,
+                    'random_id' => $inVoice->random_no,
+                    'item_desc' => $item['description'],
+                    'quantity' => $quantity,
+                    'rate' => $item['rate'],
+                    'amount' => $item['amount'],
+                    'partner_share' => ($invoice_type =='rent') ? $inVoice->partner_per :'',
+                    'term' => 'Month',
+                    'type' => $invoice_type,
+                    'item_type' => $item['item_type'] ,
+                    'sub_total' => $subTotal ,
+                    
+                ]);
+            }
+        }
+
+
+       
+        if($inVoice->invoice_type=='rent' ){
+            $rentInfo = InvoiceDetail::where('invoice_id',$request->id)->where('type','rent')->whereNull('item_type')->first();
+            if($request->is_gst=='1'){
+                $cgst = InvoiceDetail::where('invoice_id',$request->id)->where('type','rent-gst')->where('item_type','cgst')->first();
+                $sgst = InvoiceDetail::where('invoice_id',$request->id)->where('type','rent-gst')->where('item_type','sgst')->first();
+                
+                $rent_cgst_per = $cgst->rate;
+                $rent_cgst_amount = $cgst->quantity* $cgst->rate;
+                $rent_sgst_per = $sgst->rate;
+                $rent_sgst_amount = $sgst->quantity* $sgst->rate;
+                $rent_total_amount = $rentInfo->rate+$cgst->quantity* $cgst->rate+$sgst->quantity* $sgst->rate;
+            } else{
+                $rent_cgst_per =0;
+                $rent_cgst_amount =0;
+                $rent_sgst_per =0;
+                $rent_sgst_amount =0;
+                $rent_total_amount = $rentInfo->rate;
+            }
+            $inVoice->rent_total =  $rentInfo->rate;
+            $inVoice->rent_cgst_per = $rent_cgst_per;
+            $inVoice->rent_cgst_amount =$rent_cgst_amount;
+            $inVoice->rent_sgst_per = $rent_sgst_per;
+            $inVoice->rent_sgst_amount = $rent_sgst_amount;
+            $inVoice->rent_total_amount = $rent_total_amount;
+            $inVoice->total_amount = $totalAmount;
+            $inVoice->remaining_amount = $totalAmount;
+            $inVoice->grand_total = $totalAmount;
+            $inVoice->save();
+        }
+        if($inVoice->invoice_type=='cam'){
+            $camInfo =  InvoiceDetail::where('invoice_id',$request->id)->where('type','cam')->whereNull('item_type')->first();
+
+            $cgst =  InvoiceDetail::where('invoice_id',$request->id)->where('type','cam-gst')->where('item_type','cgst')->first();
+            $sgst =  InvoiceDetail::where('invoice_id',$request->id)->where('type','cam-gst')->where('item_type','sgst')->first();
+            $cam_cgst_per = $cgst->rate;
+            $cam_cgst_amount = $cgst->quantity* $cgst->rate;
+            $cam_sgst_per = $sgst->rate;
+            $cam_sgst_amount = $sgst->quantity* $sgst->rate;
+            $cam_total_amount =  $camInfo->rate+$cgst->quantity* $cgst->rate+$sgst->quantity* $sgst->rate;
+        
+            $inVoice->cam_total =  $camInfo->rate;
+            $inVoice->cam_cgst_per = $cam_cgst_per;
+            $inVoice->cam_cgst_amount =$cam_cgst_amount;
+            $inVoice->cam_sgst_per = $cam_sgst_per;
+            $inVoice->cam_sgst_amount = $cam_sgst_amount;
+            $inVoice->cam_total_amount = $cam_total_amount;
+            $inVoice->total_amount = $totalAmount;
+            $inVoice->remaining_amount = $totalAmount;
+            $inVoice->grand_total = $totalAmount;
+            $inVoice->save();
+        }
+        if($inVoice->invoice_type=='utility'){
+            $inVoice->total_amount = $totalAmount;
+            $inVoice->remaining_amount = $totalAmount;
+            $inVoice->grand_total = $totalAmount;
+            $inVoice->save();
+        }
+       
+
+       if($inVoice) {
+         DB::commit();
+        return response()->json([
+            'message' => 'Invoice updated Successfully!'
+        ], 200);
+        } else {
+            return response()->json([
+                'errors' => 'Something went wrong!'
+            ], 500);
+        }
+    
+    } catch (Exception $exception) {
+        \Log::info($exception->getMessage());
+        return response()->json([
+            'errors' => $exception->getMessage()
+        ], 500);
+    }
+}
+
+public function generateInvoice()
+{
+    try {
+       
+        Invoice::orderby('id','DESC')->delete();
+        InvoiceDetail::orderby('id','DESC')->delete();
+        Payment::orderby('id','DESC')->delete();
+        Expense::orderby('id','DESC')->delete();
+
+         // Reset AUTO_INCREMENT counters for each table
+        \DB::statement('ALTER TABLE invoices AUTO_INCREMENT = 1');
+        \DB::statement('ALTER TABLE invoice_details AUTO_INCREMENT = 1');
+        \DB::statement('ALTER TABLE payments AUTO_INCREMENT = 1');
+       
+        Artisan::call('app:generate-invoice 2'); 
+        Artisan::call('app:generate-invoice 1'); 
+        Artisan::call('app:electricity-utility'); 
+
+
+        return redirect()->route('invoice')->with('success', __('Generated successfully.'));
+        
+    } catch (\Exception $e) {
+        // Log the exception for debugging
+        \Log::error('Invoice generation failed: ' . $e->getMessage());
+
+        return redirect()->back()->with('error', __('Something went wrong.'));
+    }
+}
+public function sendInvoice()
+{
+    try {
+       
+       Invoice::orderby('id','DESC')->update(['status'=>'Sent']);
+
+        return redirect()->route('invoice')->with('success', __('Sent successfully.'));
+        
+    } catch (\Exception $e) {
+        // Log the exception for debugging
+        \Log::error('Invoice generation failed: ' . $e->getMessage());
+
+        return redirect()->back()->with('error', __('Something went wrong.'));
+    }
+}
+
 
     
 }

@@ -37,7 +37,7 @@ class UserController extends Controller
     }
     public function userList(Request $request)
     {
-        $query = User::whereNotIn('role_id',['1','3'])->orderBy('id','DESC');
+        $query = User::whereNotIn('role_id',['1','3'])->with('role')->orderBy('id','DESC');
         if(!empty($request->role_id))
         {
             $query->where('role_id', $request->role_id);
@@ -55,8 +55,16 @@ class UserController extends Controller
             ->editColumn('role', function ($query)
             {
 
-                return $query->role->name;
+                return @$query->role->name;
             })
+            ->addColumn('check', function ($query)
+            {
+                return '<label class="custom-control custom-checkbox">
+                       <input type="checkbox" name="boxchecked[]" value="' . $query->id . '"  class ="colorinput-input custom-control-input allChecked" id="boxchecked-'.$query->id.'">
+                         <span class="custom-control-label"></span>
+                        </label>';
+            })
+
             ->editColumn('status', function ($query)
             {
                 if ($query->status == 1)
@@ -70,7 +78,7 @@ class UserController extends Controller
                     $class='bg-label-secondary';
                 }
 
-                return '<s<span class="badge '.$class.' text-capitalize ">' . $status . '</span>';
+                return '<span class="badge '.$class.' text-capitalize ">' . $status . '</span>';
             })
 
             ->addColumn('action', function ($query)
@@ -111,6 +119,33 @@ class UserController extends Controller
         }
     }
 
+    public function checkEmail(Request $request)
+{
+    // Validate the request
+    $request->validate([
+        'email' => 'required|email',
+    ]);
+
+    $email = $request->input('email');
+    $id = $request->input('id');
+    if(!empty($id)){
+        $exists = User::where('email', $email)
+            ->when($id, function($query) use ($id) {
+                return $query->where('id', '!=', $id);
+            })
+            ->exists();
+        
+    } else{
+        $exists = User::where('email', $email)->exists();
+    }
+
+    // Check if the email exists in the users table
+   
+
+    // Return a JSON response indicating if the email exists
+    return response()->json(['valid' => !$exists]);
+}
+
     
     /**
      * Store a newly created resource in storage.
@@ -126,13 +161,13 @@ class UserController extends Controller
             'first_name'      => 'required',
             'mobile'         => 'required|regex:/^(\+?1?[-. ]?)?(\(?\d{3}\)?[-. ]?)?\d{3}[-. ]?\d{4}$/',
             'email'     => 'required|email|unique:users,email',
-            'password'  => 'required|min:6|same:confirm-password',
+            'password'  => 'required|min:8|same:confirm_password',
             'role_id'  => 'required',
         ]);
 
         if ($validator->fails()) {
             $messages = $validator->getMessageBag();
-            return redirect()->back()->with('error', $messages->first());
+            return redirect()->back()->with('error', $messages->first())->withInput();
         }
 
         DB::beginTransaction();
@@ -259,7 +294,7 @@ class UserController extends Controller
 
         if ($validator->fails()) {
             $messages = $validator->getMessageBag();
-            return redirect()->back()->with('error', $messages->first());
+            return redirect()->back()->with('error', $messages->first())->withInput();
         }
 
         DB::beginTransaction();
@@ -336,6 +371,23 @@ class UserController extends Controller
         } else {
             return redirect()->back();
         }
+    }
+    public function action(Request $request)
+    {
+        $data  = $request->all();
+        foreach($request->input('boxchecked') as $action)
+        {
+            if($request->input('cmbaction') == 'Active')
+            {
+                User::where('id', $action)->update(array('status' => '1'));
+            }
+            else
+            {
+                User::where('id', $action)->update(array('status' => '0'));
+            }
+        }
+        return redirect()->route('users.index')->with('success', __('Action successfully done .'));
+      
     }
 
   

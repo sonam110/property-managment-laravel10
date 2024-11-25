@@ -24,5 +24,9 @@ class Invoice extends Model
     {
         return $this->belongsTo(User::class, 'partner_id', 'id');
     }
+    public function TenantPropertyUtility()
+    {
+        return $this->belongsTo(TenantPropertyUtility::class, 'tenant_property_utility_id', 'id');
+    }
 
 }

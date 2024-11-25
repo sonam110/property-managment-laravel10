@@ -38,48 +38,49 @@ function getIndianCurrency(float $number)
 function formatIndianCurrency($amount) {
     // Remove any existing formatting (e.g., commas) and convert to float
     $amount = floatval($amount);
-    
+
+    // Convert the amount to string and split the integer and decimal parts
+    $integerPart = floor(round($amount,0));
+    $decimalPart = round(($amount - $integerPart) * 100);
+
+    // Format the integer part with Indian numbering system
+    $integerStr = (string)$integerPart;
+    $len = strlen($integerStr);
+
+    if ($len > 3) {
+        $lastThree = substr($integerStr, -3);
+        $remainingDigits = substr($integerStr, 0, $len - 3);
+        $formattedIntegerPart = preg_replace('/\B(?=(\d{2})+(?!\d))/', ',', $remainingDigits) . ',' . $lastThree;
+    } else {
+        $formattedIntegerPart = $integerStr;
+    }
+
+    // Add decimal part and currency symbol
+    return '₹ ' . $formattedIntegerPart;
+}
+
+function formatIndianCurrencyPdf($amount) {
+  // Remove any existing formatting (e.g., commas) and convert to float
+    $amount = floatval($amount);
+
     // Convert the amount to string and split the integer and decimal parts
     $integerPart = floor($amount);
     $decimalPart = round(($amount - $integerPart) * 100);
-    
-    // Format the integer part
-    $formattedIntegerPart = number_format($integerPart, 0, '.', ',');
-    
-    // Split formatted integer part into parts for Indian numbering system
-    $parts = explode(',', $formattedIntegerPart);
-    $lastPart = array_pop($parts);
-    
-    // Combine parts for Indian format (with lakhs and crores)
-    if (count($parts) > 1) {
-        $formattedIntegerPart = implode(',', $parts) . ',' . $lastPart;
+
+    // Format the integer part with Indian numbering system
+    $integerStr = (string)$integerPart;
+    $len = strlen($integerStr);
+
+    if ($len > 3) {
+        $lastThree = substr($integerStr, -3);
+        $remainingDigits = substr($integerStr, 0, $len - 3);
+        $formattedIntegerPart = preg_replace('/\B(?=(\d{2})+(?!\d))/', ',', $remainingDigits) . ',' . $lastThree;
+    } else {
+        $formattedIntegerPart = $integerStr;
     }
-    
+
     // Add decimal part and currency symbol
     return '₹ ' . $formattedIntegerPart . '.' . str_pad($decimalPart, 2, '0', STR_PAD_LEFT);
-}
-function formatIndianCurrencyPdf($amount) {
-    // Remove any existing formatting (e.g., commas) and convert to float
-    $amount = floatval($amount);
-    
-    // Convert the amount to string and split the integer and decimal parts
-    $integerPart = floor($amount);
-    $decimalPart = round(($amount - $integerPart) * 100);
-    
-    // Format the integer part
-    $formattedIntegerPart = number_format($integerPart, 0, '.', ',');
-    
-    // Split formatted integer part into parts for Indian numbering system
-    $parts = explode(',', $formattedIntegerPart);
-    $lastPart = array_pop($parts);
-    
-    // Combine parts for Indian format (with lakhs and crores)
-    if (count($parts) > 1) {
-        $formattedIntegerPart = implode(',', $parts) . ',' . $lastPart;
-    }
-    
-    // Add decimal part and currency symbol
-    return 'Rs.' . $formattedIntegerPart . '.' . str_pad($decimalPart, 2, '0', STR_PAD_LEFT);
 }
 
 

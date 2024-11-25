@@ -8,18 +8,12 @@
         <div class="d-none d-lg-flex col-lg-7 p-0">
           <div class="auth-cover-bg auth-cover-bg-color d-flex justify-content-center align-items-center">
             <img
-              src="{{ url('assets/img/illustrations/auth-login-illustration-light.png') }}"
+              src="{{url('/')}}/{{ $appSetting->app_logo}}"
               alt="auth-login-cover"
               class="img-fluid my-5 auth-illustration"
-              data-app-light-img="illustrations/auth-login-illustration-light.png"
-              data-app-dark-img="illustrations/auth-login-illustration-dark.png" />
+             
+               />
 
-            <img
-              src="{{ url('assets/img/illustrations/bg-shape-image-light.png') }}"
-              alt="auth-login-cover"
-              class="platform-bg"
-              data-app-light-img="illustrations/bg-shape-image-light.png"
-              data-app-dark-img="illustrations/bg-shape-image-dark.png" />
           </div>
         </div>
         <!-- /Left Text -->
@@ -29,14 +23,10 @@
          
           <div class="w-px-400 mx-auto">
             <!-- Logo -->
-            <div class="app-brand mb-4">
-              <a href="{{url('/')}}" class="app-brand-link gap-2">
-                <img src="{{url('/')}}/{{ $appSetting->app_logo}}" class="" alt="{{$appSetting->app_name}}">
-              </a>
-            </div>
+           
             <!-- /Logo -->
-            <h3 class="mb-1">Welcome to Signature Group! 👋</h3>
-            <p class="mb-4">Please sign-in to your account and start the adventure</p>
+            <h3 class="mb-1">Welcome to Signature Group! ðŸ‘‹</h3>
+            <p class="mb-4">Please sign-in to your account </p>
 
             <form id="formAuthentication" class="mb-3"action="{{ route('login') }}" method="POST">
               @if (session('status'))

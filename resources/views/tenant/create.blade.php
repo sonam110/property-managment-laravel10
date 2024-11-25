@@ -9,13 +9,13 @@
     {{ __('Manage Tenant') }}
 @endsection
 @section('breadcrumb')
-    <li class="breadcrumb-item"><a href="{{route('tenants.index')}}">{{__('Lease Management')}}</a></li>
+    <li class="breadcrumb-item"><a href="{{route('tenants.index')}}">{{__('Tenant Management')}}</a></li>
     <li class="breadcrumb-item">{{__('Tenant')}}</li>
 @endsection
  <div class="float-end">
     
           <a href="{{ url()->previous() }}"  data-title="{{__('Back')}}" data-bs-toggle="tooltip" data-size="lg" title="{{__('Go To Back')}}"  class="btn btn-sm btn-primary">
-              <i class="fa fa-mail-reply"></i>
+              <i class="ti ti-arrow-left"></i>
           </a>
        
     </div>
@@ -47,10 +47,20 @@
                 <div class="bs-stepper-content">
                   <form id="wizard-property-listing-form" onSubmit="return false">
                     {!! Form::hidden('id',null,array('class'=>'form-control')) !!}
+                    {!! Form::hidden('property_id',$property_id,array('class'=>'form-control')) !!}
                     @csrf
                     <!-- Tenant Details -->
                     <div id="tenant-info" class="content active">
                       <div class="row g-3">
+                        <div class="col-sm-6">
+                            {{ Form::label('tenant_code', __('Tenant Code'), ['class' => 'form-label']) }} <span class="requiredLabel">*</span>
+                            {{ Form::text('tenant_code', null, ['class' => 'form-control', 'placeholder' => __('Tenant Code')]) }}
+                            @error('tenant_code')
+                                <small class="invalid-name" role="alert">
+                                    <strong class="text-danger">{{ $message }}</strong>
+                                </small>
+                            @enderror
+                        </div>
                         <div class="col-sm-6">
                             {{ Form::label('full_name', __('Company Name'), ['class' => 'form-label']) }} <span class="requiredLabel">*</span>
                             {{ Form::text('full_name', null, ['class' => 'form-control', 'placeholder' => __('Company Name')]) }}
@@ -82,7 +92,7 @@
                         </div>
                     
                         <div class="col-sm-6">
-                            {{ Form::label('phone', __('Phone'), ['class' => 'form-label']) }}
+                            {{ Form::label('phone', __('Phone'), ['class' => 'form-label']) }}<span class="requiredLabel">*</span>
                             {{ Form::text('phone', null, ['class' => 'form-control', 'placeholder' => __('User Phone')]) }}
                             @error('phone')
                                 <small class="invalid-email" role="alert">
@@ -90,7 +100,7 @@
                                 </small>
                             @enderror
                         </div>
-                        <div class="col-sm-4">
+                        <div class="col-sm-6">
                            {{ Form::label('pan_no', __('PAN NO.'), ['class' => 'form-label']) }}
                             {{ Form::text('pan_no', null, ['class' => 'form-control','id'=>'pan_no', 'placeholder' => __('PAN No')]) }}
                             @error('pan_no')
@@ -100,7 +110,7 @@
                               @enderror
                         </div>
 
-                         <div class="col-sm-4">
+                         <div class="col-sm-6">
                            {{ Form::label('gst_no', __('GST NO.'), ['class' => 'form-label']) }}
                             {{ Form::text('gst_no', null, ['class' => 'form-control','id'=>'gst_no', 'placeholder' => __('GST NO')]) }}
                             @error('gst_no')
@@ -110,7 +120,7 @@
                               @enderror
                         </div>
 
-                        <div class="col-sm-4">
+                        <div class="col-sm-6">
                            {{ Form::label('business_name', __('Business name'), ['class' => 'form-label']) }}
                             {{ Form::text('business_name', null, ['class' => 'form-control','id'=>'business_name', 'placeholder' => __('Business name')]) }}
                             @error('business_name')
@@ -176,7 +186,7 @@
                         
                         
                         <div class="col-12 d-flex justify-content-between mt-4">
-                          <button class="btn btn-label-secondary btn-prev" disabled>
+                          <button class="btn btn-label-primary btn-prev" disabled>
                             <i class="ti ti-arrow-left ti-xs me-sm-1 me-0"></i>
                             <span class="align-middle d-sm-inline-block d-none">Previous</span>
                           </button>
@@ -193,7 +203,7 @@
                       <div class="row g-3">
                         
                         <div class="col-sm-4">
-                          <label class="form-label" for="contact_type">Type</label>
+                          <label class="form-label" for="contact_type">Type</label> <span class="requiredLabel">*</span>
                           <select id="contact_type" name="contact_type[]" class="form-control select2 form-select" data-allow-clear="true">
                             <option value="">Select</option>
                             <option value="All">All</option>
@@ -204,7 +214,7 @@
                           </select>
                         </div>
                         <div class="col-sm-4">
-                           {{ Form::label('fullname', __('Full Name'), ['class' => 'form-label']) }}
+                           {{ Form::label('fullname', __('Full Name'), ['class' => 'form-label']) }} <span class="requiredLabel">*</span>
                             {{ Form::text('fullname[]', null, ['class' => 'form-control','id'=>'fullname', 'placeholder' => __('Full Name')]) }}
                             @error('fullname')
                                 <small class="invalid-name" role="alert">
@@ -256,12 +266,12 @@
 
                         
                         <div class="col-12 d-flex justify-content-between mt-4">
-                          <button class="btn btn-label-secondary btn-prev">
+                          <button class="btn btn-label-primary btn-prev">
                             <i class="ti ti-arrow-left ti-xs me-sm-1 me-0"></i>
                             <span class="align-middle d-sm-inline-block d-none">Previous</span>
                           </button>
                           <button class="btn btn-primary btn-next">
-                            <span class="align-middle d-sm-inline-block d-none me-sm-1">Next</span>
+                            <span class="align-middle d-sm-inline-block d-none me-sm-1">Create</span>
                             <i class="ti ti-arrow-right ti-xs"></i>
                           </button>
                         </div>

@@ -1,5 +1,5 @@
-{{Form::model($payment,array('route' => array('payment-update', $payment->id), 'method' => 'POST')) }}
-
+{{Form::model($payment,array('route' => array('payment-update', $payment->id), 'method' => 'POST','enctype'=>'multipart/form-data', 'files'=>true)) }}
+ <input type="hidden" name="old_image" value="{{ $payment->payment_image }}">
 <div class="modal-body">
     <div class="row">
         <div class="col-md-4">
@@ -42,8 +42,8 @@
         <div class="col-md-6">
             <div class="mb-3">
                 {{ Form::label('payment_method', __('Payment Method'), ['class' => 'form-label']) }} <span class="requiredLabel">*</span>
-               <select class="form-select" id="payment-method" name="payment_method">
-                    <option value="" selected disabled>Select payment method</option>
+               <select class="form-select" id="payment-method" name="payment_method" required>
+                    <option value="" selected >Select payment method</option>
                     <option value="Cash" {{($payment->payment_method=='Cash')?'selected' :'' }}>Cash</option>
                     <option value="Bank Transfer" {{($payment->payment_method=='Bank Transfer')?'selected' :'' }}>Bank Transfer</option>
                     <option value="Debit Card" {{($payment->payment_method=='Debit Card')?'selected' :'' }}>Debit Card</option>
@@ -72,6 +72,20 @@
                         <strong class="text-danger">{{ $message }}</strong>
                     </small>
                 @enderror
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="mb-3">
+                {{ Form::label('payment_image', __('Payment Receipt'), ['class' => 'form-label']) }}
+                {{ Form::file('payment_image', null, ['class' => 'form-control', 'placeholder' => __('Payment Receipt')]) }}
+                @error('reference_no')
+                    <small class="invalid-name" role="alert">
+                        <strong class="text-danger">{{ $message }}</strong>
+                    </small>
+                @enderror
+                 @if(!empty($payment->payment_image))
+                <span><a href="{{url('/')}}/{{ $payment->payment_image}}" download><i class="fa fa-download"></i></a></span>
+                @endif
             </div>
         </div>
         <div class="col-md-12">

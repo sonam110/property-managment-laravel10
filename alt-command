@@ -1,0 +1,8 @@
+ALTER TABLE `rent_cals` CHANGE `price` `inc_percentage` DECIMAL(10,2) NULL DEFAULT NULL;
+
+
+ALTER TABLE `property_units` ADD `cam_square` DECIMAL(10,2) NULL AFTER `price`;
+
+ALTER TABLE `property_units` ADD `total_rent` DECIMAL(10,2) NULL AFTER `cam_price`, ADD `total_cam` DECIMAL(10,2) NULL AFTER `total_rent`;
+
+ALTER TABLE `leases` ADD `total_rent` DECIMAL(10,2) NULL DEFAULT '0' AFTER `camp_price`, ADD `total_cam` DECIMAL(10,2) NULL DEFAULT '0' AFTER `total_rent`;

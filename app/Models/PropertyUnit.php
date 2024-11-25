@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class PropertyUnit extends Model
 {
      protected $fillable = [
-        'property_id ',
+        'property_id',
         'property_code',
         'unit_type',
         'unit_name',

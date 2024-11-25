@@ -2,7 +2,7 @@
           <div class="app-brand demo">
           
               <a class="header-brand" href="{{url('/')}}" class="app-brand-link">
-                <img src="{{url('/')}}/{{ $appSetting->app_logo}}" class="" alt="{{$appSetting->app_name}}">
+                <img src="{{url('/')}}/{{ $appSetting->app_logo}}" class="" alt="{{$appSetting->app_name}}" height="65px">
               </a>
             
             <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto">
@@ -24,23 +24,12 @@
                 <div data-i18n="Dashboards">Dashboard</div>
               </a>
             </li>
-            @can('user-browse')
-            <!--<li class="menu-header small text-uppercase">
-              <span class="menu-header-text">USER MANAGEMENT</span>
-            </li>-->
-            <li class="menu-item {{ (request()->is('users*') ? 'active' : '')}}">
-              <a href="{{ route('users.index') }}" class="menu-link">
-                 <i class="menu-icon tf-icons ti ti-user"></i>
-                <div data-i18n="Users">Users</div>
-              </a>
-            </li>
-            @endcan
-             
-            <li class="menu-item {{ (request()->is('roles*') || request()->is('permissions*') ? 'active open' : '')}}">
+           
+            <li class="menu-item {{ (request()->is('roles*') || request()->is('permissions*') || request()->is('users*') ? 'active open' : '')}}">
               <a href="javascript:void(0);" class="menu-link menu-toggle">
                 <i class="menu-icon tf-icons ti ti-layout-sidebar"></i>
               
-                <div data-i18n="Roles & Permissions">Roles & Permissions</div>
+                <div data-i18n="User Management">User Management</div>
               </a>
               <ul class="menu-sub">
                 @can('role-browse')
@@ -51,61 +40,64 @@
                 </li>
                 @endcan
                 @can('permission-browse')
-                <li class="menu-item {{ (request()->is('permissions*') ? 'active' : '')}}">
+               <!--  <li class="menu-item {{ (request()->is('permissions*') ? 'active' : '')}}">
                   <a href="{{ route('permissions.index') }}" class="menu-link">
                     <div data-i18n="Permission">Permission</div>
+                  </a>
+                </li> -->
+                @endcan
+                 @can('user-browse')
+                <li class="menu-item {{ (request()->is('users*') ? 'active' : '')}}">
+                  <a href="{{ route('users.index') }}" class="menu-link">
+                    <div data-i18n="Users">Users</div>
                   </a>
                 </li>
                 @endcan
               </ul>
             </li>
 
-             <!-- PROPERTY -->
-             @can('property-browse')
-            <!--<li class="menu-header small text-uppercase">
-              <span class="menu-header-text">PROPERTY MANAGEMENT</span>
-            </li>-->
-           
-            <li class="menu-item {{ (request()->is('property*') ? 'active' : '')}}">
-              <a href="{{ route('property.index') }}" class="menu-link">
+             <li class="menu-item {{ (request()->is('property*') || request()->is('tenants*') || request()->is('leases*') ? 'active open' : '')}}">
+              <a href="javascript:void(0);" class="menu-link menu-toggle">
                  <i class="menu-icon tf-icons ti ti-home"></i>
-                <div data-i18n="Properties">Properties</div>
+              
+                <div data-i18n="Property">Property Management</div>
+              </a>
+              <ul class="menu-sub">
+                @can('property-browse')
+          
+                  <li class="menu-item {{ (request()->is('property*') ? 'active' : '')}}">
+                    <a href="{{ route('property.index') }}" class="menu-link">
+                       <i class="menu-icon tf-icons ti ti-home"></i>
+                      <div data-i18n="Properties">Properties</div>
+                    </a>
+                  </li>
+                  @endcan
+                 @can('tenant-browse')
+                <li class="menu-item {{ (request()->is('tenants*') ? 'active' : '')}}">
+                  <a href="{{ route('tenants.index') }}" class="menu-link">
+                     <i class="menu-icon tf-icons ti ti-user"></i>
+                    <div data-i18n="Tenants">Tenants</div>
+                  </a>
+                </li>
+                 @endcan
+                 @can('lease-browse')
+                    <li class="menu-item {{ (request()->is('leases*') ? 'active' : '')}}">
+                      <a href="{{ route('leases.index') }}" class="menu-link">
+                         <i class="menu-icon tf-icons ti ti-server"></i>
+                        <div data-i18n="Leases">Leases</div>
+                      </a>
+                    </li>
+                    @endcan
+              </ul>
+            </li>
+
+            @can('invoice-browse')
+            <li class="menu-item {{ (request()->is('tenant-utility*') ? 'active' : '')}}">
+              <a href="{{ route('tenant-utility.index') }}" class="menu-link">
+                 <i class="menu-icon tf-icons ti ti-bulb"></i>
+                <div data-i18n="Electricity Utility">Electricity Utility</div>
               </a>
             </li>
-            @endcan
-            <!-- TENANT -->
-            <!--<li class="menu-header small text-uppercase">
-              <span class="menu-header-text">LEASE MANAGEMENT</span>
-            </li>-->
-             @can('tenant-browse')
-            <li class="menu-item {{ (request()->is('tenants*') ? 'active' : '')}}">
-              <a href="{{ route('tenants.index') }}" class="menu-link">
-                 <i class="menu-icon tf-icons ti ti-user"></i>
-                <div data-i18n="Tenants">Tenants</div>
-              </a>
-            </li>
-             @endcan
-             @can('lease-browse')
-            <li class="menu-item {{ (request()->is('leases*') ? 'active' : '')}}">
-              <a href="{{ route('leases.index') }}" class="menu-link">
-                 <i class="menu-icon tf-icons ti ti-server"></i>
-                <div data-i18n="Leases">Leases</div>
-              </a>
-            </li>
-            @endcan
-            @can('lease-contract')
-            
-             <!--  <li class="menu-item {{ (request()->is('contract-document*') ? 'active' : '')}}">
-                <a href="{{ route('contract-document') }}" class="menu-link">
-                   <i class="menu-icon tf-icons ti ti-files"></i>
-                  <div data-i18n="Contract Document">Contract Document </div>
-                </a>
-              </li> -->
-              @endcan
-              @can('invoice-browse')
-             <!--<li class="menu-header small text-uppercase">
-              <span class="menu-header-text">INVOICE MANAGEMENT</span>
-            </li>-->
             <li class="menu-item {{ (request()->is('invoice*') ? 'active' : '')}}">
               <a href="{{ route('invoice') }}" class="menu-link">
                  <i class="menu-icon tf-icons ti ti-file-invoice"></i>
@@ -119,19 +111,23 @@
               </a>
             </li>
              @endcan
-              <!--<li class="menu-header small text-uppercase">
-              <span class="menu-header-text">ACCOUNT MANAGEMENT</span>
-            </li>-->
+             
             <li class="menu-item {{ (request()->is('expense*') ? 'active' : '')}}">
               <a href="{{ route('expense.index') }}" class="menu-link">
                  <i class="menu-icon tf-icons ti ti-file"></i>
                 <div data-i18n="Expenses">Expenses</div>
               </a>
             </li>
+            <li class="menu-item {{ (request()->is('report*') ? 'active' : '')}}">
+              <a href="{{ route('report') }}" class="menu-link">
+                 <i class="menu-icon tf-icons ti ti-mail"></i>
+                <div data-i18n="Report">Report</div>
+              </a>
+            </li>
+
+             
              @can('app-setting')
-            <!--<li class="menu-header small text-uppercase">
-              <span class="menu-header-text">SETTINGS</span>
-            </li>-->
+           
             <li class="menu-item {{ (request()->is('app-setting*')  || request()->is('app-setting*') || request()->is('tenant-setting*') || request()->is('user-profile*') || request()->is('property-type*') ? 'active' : '')}}">
               <a href="{{ route('app-setting.index') }}" class="menu-link">
                   <i class="menu-icon tf-icons ti ti-settings"></i>
