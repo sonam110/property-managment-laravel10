@@ -108,6 +108,16 @@
                    <tr class="rent">
                   
                     <td class="">4</td>
+                    <td class="">PF Incentive</td>
+                   
+                    <td class="">{{ $data->pf_incentive }}</td>
+                    
+                   
+                   
+                  </tr>
+                   <tr class="rent">
+                  
+                    <td class="">5</td>
                     <td class="">TOD(Net Sum)</td>
                    
                     <td class="">{{ $data->tod_net_sum }}</td>
@@ -118,7 +128,7 @@
                   </tr>
                    <tr class="rent">
                   
-                    <td class="">5</td>
+                    <td class="">6</td>
                     <td class="">Energy Charge As PER BILL</td>
                    
                     <td class="">{{ $data->energy_charge_as_per_bill }}</td>
@@ -128,7 +138,7 @@
                   </tr>
                    <tr class="rent">
                   
-                    <td class="">6</td>
+                    <td class="">7</td>
                     <td class="">Total Unit</td>
                     
                     <td class=""> {{ $data->total_units }}</td>
@@ -137,7 +147,7 @@
                     
                     <tr class="rent">
                   
-                    <td class="">7</td>
+                    <td class="">8</td>
                     <td class="">Total Tenant Units</td>
                     
                     <td class=""> {{ $data->total_tenant_units }}</td>
@@ -145,14 +155,14 @@
                   </tr>
                    <tr class="rent">
                   
-                    <td class="">8</td>
+                    <td class="">9</td>
                     <td class="">Per Unit Charge</td>
                     <td class=""> {{ $data->per_unit_charge }}</td>
                    
                   </tr>
                    <tr class="rent">
                   
-                    <td class="">9</td>
+                    <td class="">10</td>
                     <td class="">Unit Lost</td>
                     
                     <td class=""> {{ $data->unit_lost }}</td>
@@ -160,7 +170,7 @@
                   </tr>
                    <tr class="rent">
                   
-                    <td class="">10</td>
+                    <td class="">11</td>
                     <td class="">Energy Losses</td>
                     
                     <td class=""> {{ $data->energy_losses }}</td>
@@ -168,7 +178,7 @@
                   </tr>
                    <tr class="rent">
                   
-                    <td class="">11</td>
+                    <td class="">12</td>
                     <td class="">Energy Losses Per Tenant</td>
                     
                     <td class=""> {{ $data->energy_losses_per_tenant_unit }}</td>
@@ -176,7 +186,7 @@
                   </tr>
                    <tr class="rent">
                   
-                    <td class="">12</td>
+                    <td class="">13</td>
                     <td class="">Energy Per Unit Charge</td>
                     
                     <td class=""> {{ $data->energy_unit_per_unit }}</td>

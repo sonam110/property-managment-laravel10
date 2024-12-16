@@ -35,8 +35,10 @@ class LeaseController extends Controller
 {
      public function __construct()
     {
-        $this->middleware('permission:invoice-browse',['only' => ['index']]);
-        $this->middleware('permission:invoice-read', ['only' => ['show']]);
+        $this->middleware('permission:lease-browse',['only' => ['index']]);
+        $this->middleware('permission:lease-read', ['only' => ['shleaseShowow']]);
+        $this->middleware('permission:lease-add', ['only' => ['store']]);
+        $this->middleware('permission:lease-edit', ['only' => ['update']]);
     }
 
     public function index($id = NULL)
@@ -165,12 +167,12 @@ private function generateLeaseContent($lease,$request)
             ->editColumn('property_id', function ($query)
             {
                 
-                return $query->property->property_name;
+                return @$query->property->property_name;
             })
             ->editColumn('tenant_id', function ($query)
             {
                 
-                return $query->tenant->firm_name;
+                return @$query->tenant->firm_name;
             })
             ->editColumn('start_date', function ($query)
             {
@@ -201,18 +203,23 @@ private function generateLeaseContent($lease,$request)
 
             ->addColumn('action', function ($query)
             {
-
-               
-                $edit =' <a class="btn btn-sm btn-primary" href="'.route('leases.edit', $query->id) .'" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"><i class="ti ti-pencil"></i></a>';
-                
+                $edit ="";
+                $delete ="";
+                $view ="";
+                if (auth()->user()->can('lease-edit')) {
+                    $edit =' <a class="btn btn-sm btn-primary" href="'.route('leases.edit', $query->id) .'" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"><i class="ti ti-pencil"></i></a>';
+                }
+                if (auth()->user()->can('lease-delete')) {
                 $delete = '<a href="'.route('leases-destroy', $query->id) .'" 
                                  class="btn btn-sm btn-danger"
                                 onClick="return confirm(\'Are you sure you want to delete this?\');" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete">
                                 <i class="ti ti-trash"></i>
                             </a>';
-                $view =' <a class="btn btn-sm btn-primary" href="'.route('generate-pdf', $query->id) .'" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"><i class="ti ti-eye"></i></a>';
+                }
+                if (auth()->user()->can('lease-read')) {
+                    $view =' <a class="btn btn-sm btn-primary" href="'.route('generate-pdf', $query->id) .'" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"><i class="ti ti-eye"></i></a>';
 
-
+                }
 
                 return '<div class="btn-group btn-group-xs">'.$edit.$view.$delete.'</div>';
             })
@@ -584,8 +591,8 @@ private function generateLeaseContent($lease,$request)
             $extraCharges = ExtraCharge::orderby('id','desc')->get()->pluck('display_name', 'id');
             $paymentSetting = PropertyPaymentSetting::orderby('id','desc')->where('lease_id',$id)->with('partner')->get();
             $leaseDocuments = LeaseDocument::orderby('id','desc')->where('lease_id',$id)->get();
-            $rentCals = RentCal::orderby('id','desc')->where('lease_id',$id)->where('type','1')->orderby('id','ASC')->get();
-            $camCals = RentCal::orderby('id','desc')->where('lease_id',$id)->where('type','2')->orderby('id','ASC')->get();
+            $rentCals = RentCal::orderby('from_month','asc')->where('lease_id',$id)->where('type','1')->orderby('id','ASC')->get();
+            $camCals = RentCal::orderby('from_month','asc')->where('lease_id',$id)->where('type','2')->orderby('id','ASC')->get();
             $partners = User::orderby('id','desc')->where('role_id','2')->get()->pluck('first_name', 'id');
             return View('lease.edit',compact('lease','properties','tenants','leaseDeposits','leaseExtraCharges','leaseUtilities','utilities','extraCharges','propertyUnit','unit_ids','rented_units','paymentSetting','partners','leaseDocuments','rentCals','camCals'));
         } else {

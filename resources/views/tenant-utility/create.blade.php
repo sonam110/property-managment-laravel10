@@ -29,8 +29,8 @@
          
         <div class="col-md-6">
             <div class="mb-3">
-                {{ Form::label('energy_charge', __('Energy Charge'), ['class' => 'form-label']) }}
-                {{ Form::number('energy_charge', null, ['class' => 'form-control','id'=>'energy_charge','required'=>'required', 'placeholder' => __('Energy Charge')]) }}
+                {{ Form::label('energy_charge', __('Energy Charge'), ['class' => 'form-label']) }}<span class="requiredLabel">*</span>
+                {{ Form::number('energy_charge', null, ['class' => 'form-control','id'=>'energy_charge','step'=>'any','required'=>'required', 'placeholder' => __('Energy Charge')]) }}
                 @error('energy_charge')
                     <small class="invalid-name" role="alert">
                         <strong class="text-danger">{{ $message }}</strong>
@@ -41,7 +41,7 @@
         <div class="col-md-6">
             <div class="mb-3">
                 {{ Form::label('fppas', __('FPPAS'), ['class' => 'form-label']) }}
-                {{ Form::number('fppas', null, ['class' => 'form-control','id'=>'fppas','required'=>'required', 'placeholder' => __('FPPAS')]) }}
+                {{ Form::number('fppas', null, ['class' => 'form-control','id'=>'fppas','step'=>'any', 'placeholder' => __('FPPAS')]) }}
                 @error('fppas')
                     <small class="invalid-name" role="alert">
                         <strong class="text-danger">{{ $message }}</strong>
@@ -52,7 +52,7 @@
         <div class="col-md-6">
             <div class="mb-3">
                 {{ Form::label('energy_duty', __('Energy Duty'), ['class' => 'form-label']) }}
-                {{ Form::number('energy_duty', null, ['class' => 'form-control','id'=>'energy_duty','required'=>'required', 'placeholder' => __('Energy Duty')]) }}
+                {{ Form::number('energy_duty', null, ['class' => 'form-control','id'=>'energy_duty','step'=>'any', 'placeholder' => __('Energy Duty')]) }}
                 @error('energy_duty')
                     <small class="invalid-name" role="alert">
                         <strong class="text-danger">{{ $message }}</strong>
@@ -60,10 +60,21 @@
                 @enderror
             </div>
         </div>
-         <div class="col-md-6">
+        <div class="col-md-6">
+            <div class="mb-3">
+                {{ Form::label('pf_incentive', __('PF Incentive'), ['class' => 'form-label']) }}
+                {{ Form::number('pf_incentive', null, ['class' => 'form-control','id'=>'pf_incentive','step'=>'any', 'placeholder' => __('PF Incentive')]) }}
+                @error('pf_incentive')
+                    <small class="invalid-name" role="alert">
+                        <strong class="text-danger">{{ $message }}</strong>
+                    </small>
+                @enderror
+            </div>
+        </div>
+         <div class="col-md-4">
             <div class="mb-3">
                 {{ Form::label('tod_net_sum', __('TOD (Net sum)'), ['class' => 'form-label']) }}
-                {{ Form::number('tod_net_sum', null, ['class' => 'form-control','id'=>'tod_net_sum','required'=>'required', 'placeholder' => __('TOD (Net sum)')]) }}
+                {{ Form::number('tod_net_sum', null, ['class' => 'form-control','id'=>'tod_net_sum','step'=>'any', 'placeholder' => __('TOD (Net sum)')]) }}
                 @error('tod_net_sum')
                     <small class="invalid-name" role="alert">
                         <strong class="text-danger">{{ $message }}</strong>
@@ -71,10 +82,10 @@
                 @enderror
             </div>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-4">
             <div class="mb-3">
                 {{ Form::label('energy_charge_as_per_bill', __('Energy Charge As Per Bill'), ['class' => 'form-label']) }}
-                {{ Form::number('energy_charge_as_per_bill', null, ['class' => 'form-control','id'=>'energy_charge_as_per_bill','readonly'=>'readonly', 'placeholder' => __('Energy Charge As Per Bill')]) }}
+                {{ Form::number('energy_charge_as_per_bill', null, ['class' => 'form-control','step'=>'any','id'=>'energy_charge_as_per_bill','readonly'=>'readonly', 'placeholder' => __('Energy Charge As Per Bill')]) }}
                 @error('energy_charge_as_per_bill')
                     <small class="invalid-name" role="alert">
                         <strong class="text-danger">{{ $message }}</strong>
@@ -82,10 +93,10 @@
                 @enderror
             </div>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-4">
             <div class="mb-3">
                 {{ Form::label('total_units', __('Total Units Consumed As per bill'), ['class' => 'form-label']) }}
-                {{ Form::number('total_units', null, ['class' => 'form-control','required'=>'required', 'placeholder' => __('Total Units Consumed As per bill')]) }}
+                {{ Form::number('total_units', null, ['class' => 'form-control','step'=>'any','required'=>'required', 'placeholder' => __('Total Units Consumed As per bill')]) }}
                 @error('total_units')
                     <small class="invalid-name" role="alert">
                         <strong class="text-danger">{{ $message }}</strong>
@@ -93,7 +104,7 @@
                 @enderror
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
             <div class="mb-3">
                 {{ Form::label('tenant_id', __('Tenant'), ['class' => 'form-label']) }} <span class="requiredLabel">*</span>
                 {!! Form::select('tenant_id[]', ['' => __('Select Tenant')], null, ['class' => 'form-control select tenant_id select2 form-select','required'=>'required', 'id' => 'tenant_id']) !!}
@@ -105,10 +116,10 @@
             </div>
         </div>
 
-        <div class="col-md-4">
+        <div class="col-md-3">
             <div class="mb-3">
                 {{ Form::label('no_units_consume', __('No of Units Consumed'), ['class' => 'form-label']) }}<span class="requiredLabel">*</span>
-                {{ Form::number('no_units_consume[]', null, ['class' => 'form-control no_units_consume', 'required' => 'required', 'placeholder' => __('No of units consumed')]) }}
+                {{ Form::number('no_units_consume[]', null, ['class' => 'form-control no_units_consume','step'=>'any', 'required' => 'required', 'placeholder' => __('No of units consumed')]) }}
                 @error('no_units_consume')
                     <small class="invalid-name" role="alert">
                         <strong class="text-danger">{{ $message }}</strong>
@@ -116,10 +127,17 @@
                 @enderror
             </div>
         </div>
-        <div class="col-md-4" style="margin-top: 23px;">
+        <div class="col-md-3">
+            <div class="mb-3">
+                {{ Form::label('document', __('Choose Documents'), ['class' => 'form-label']) }}
+               <input type="file" name="document[0][]" class="form-control document" multiple="multiple" />
+               
+            </div>
+        </div>
+        <div class="col-md-3" style="margin-top: 23px;">
             <div class="mb-3">
                 <label>&nbsp;</label>
-                <button class="btn btn-primary" id="addMoreButton">+ Add More</button>
+                <button type="button" class="btn btn-primary" id="addMoreButton">+ Add More</button>
             </div>
         </div>
 
@@ -156,7 +174,7 @@
 
             <div class="col-md-4">
                 <div class="mb-3">
-                    {{ Form::label('energy_unit_per_unit', __('Energy Unit Per Unit'), ['class' => 'form-label']) }}
+                    {{ Form::label('energy_unit_per_unit', __('Energy Cost Per Unit After Losses'), ['class' => 'form-label']) }}
                     {{ Form::text('energy_unit_per_unit', null, ['class' => 'form-control', 'id' => 'energy_unit_per_unit', 'readonly' => 'readonly']) }}
                 </div>
             </div>
@@ -180,7 +198,7 @@ $(document).ready(function() {
     var i =0
   $("#addMoreButton").click(function(){
     i++;
-        var textBoxHtml = '<div class="row g-3 textBoxWrapper"> <div class="col-sm-4"> <div class="mb-3"> <label for="tenant_id" class="form-label">Tenant</label><span class="requiredLabel">*</span> <select name="tenant_id[]" class="form-control select tenant_id select2 form-select" id="tenant_id'+i+'"> <option value="">Select Tenant</option> </select> </div> </div> <div class="col-md-4"> <div class="mb-3"> <label for="no_units_consume" class="form-label">No of Units Consumed</label><span class="requiredLabel">*</span> <input type="number" name="no_units_consume[]" class="form-control no_units_consume" required="required" placeholder="No of units consumed" /> </div> </div>  <div class="col-sm-4"> <label for="button" class="form-label">&nbsp;<label><button type="button" class="removeButton btn btn-sm btn-danger"  style="margin:10px; margin-top: 28px;"><i class="ti ti-trash text-white"></i></button>  </div></div> <br>';
+        var textBoxHtml = '<div class="row g-3 textBoxWrapper"> <div class="col-sm-3"> <div class="mb-3"> <label for="tenant_id" class="form-label">Tenant</label><span class="requiredLabel">*</span> <select name="tenant_id[]" class="form-control select tenant_id select2 form-select" id="tenant_id'+i+'"> <option value="">Select Tenant</option> </select> </div> </div> <div class="col-md-3"> <div class="mb-3"> <label for="no_units_consume" class="form-label">No of Units Consumed</label><span class="requiredLabel">*</span> <input type="number" name="no_units_consume[]" class="form-control no_units_consume" required="required" placeholder="No of units consumed" /> </div></div>  <div class="col-md-3"> <div class="mb-3"> <label for="no_units_consume" class="form-label">Choose Documents</label> <input type="file" name="document['+i+'][]" class="form-control document" multiple="multiple" /> </div></div>  <div class="col-sm-3"> <label for="button" class="form-label">&nbsp;<label><button type="button" class="removeButton btn btn-sm btn-danger"  style="margin:10px; margin-top: 28px;"><i class="ti ti-trash text-white"></i></button>  </div></div> <br>';
         
         gettenants(i);
         $("#tenantUnitContainer").append(textBoxHtml);
@@ -281,7 +299,7 @@ function gettenants(divid){
       });
     });
   }
-$(document).on("input chnage keyup", "#energy_charge,#fppas,#energy_duty,#tod_net_sum ,#total_units,.no_units_consume", function () {
+$(document).on("input chnage keyup", "#energy_charge,#fppas,#energy_duty,#tod_net_sum ,#pf_incentive,#total_units,.no_units_consume", function () {
     calculateEnergyDetails();
 });
 
@@ -293,8 +311,9 @@ function calculateEnergyDetails() {
     let fppas = parseFloat($("#fppas").val()) || 0;
     let energy_duty = parseFloat($("#energy_duty").val()) || 0;
     let tod_net_sum = parseFloat($("#tod_net_sum").val()) || 0;
-     console.log(tod_net_sum);
-    let energy_charge_as_per_bill = energyCharge+fppas+energy_duty+(tod_net_sum);
+    let pf_incentive = parseFloat($("#pf_incentive").val()) || 0;
+
+    let energy_charge_as_per_bill = energyCharge+fppas+energy_duty+(tod_net_sum)+(pf_incentive);
     $("#energy_charge_as_per_bill").val(energy_charge_as_per_bill);
     let totalUnits = parseFloat($("#total_units").val()) || 0;
     let totalTenantUnit = 0;

@@ -244,6 +244,7 @@
     </table>
   </div>
 </div>
+<div id="dynamicOffcanvasContainer"></div>
 
 @endsection
 @section('extrajs')     
@@ -497,6 +498,129 @@ $('#property_id, #status,#lease_id,#tenant_id,#type,#start_date, #end_date').on(
           }
       });
   }
+  $(document).on('click', '.payment-model', function() {
+    let id = $(this).data('id'); // Get the dynamic ID
+    $.ajax({
+        url: "{{ route('payment.modal') }}", 
+        type: "POST",
+         headers: {
+              'X-CSRF-TOKEN': '{{ csrf_token() }}'
+          },
+        data: { id: id },
+        success: function (response) {
+            // Inject the returned HTML into the offcanvas container
+            $('#dynamicOffcanvasContainer').html(response);
+
+            // Initialize and show the offcanvas
+            let offcanvasElement = document.getElementById('addPaymentOffcanvas');
+            if (offcanvasElement) {
+                let offcanvas = new bootstrap.Offcanvas(offcanvasElement);
+                offcanvas.show();
+            } else {
+                console.error('Offcanvas element not found.');
+            }
+        },
+        error: function (xhr) {
+            console.error('Error fetching invoice data:', xhr.responseText);
+        }
+    });
+});
+
+$(document).ready(function() {
+    // Function to format the number as Indian currency
+    function formatIndianCurrency(amount) {
+        if (isNaN(amount)) return '0';
+        return amount.toLocaleString('en-IN', { style: 'currency', currency: 'INR' });
+    }
+
+    // Attach submit event handler to the form
+  $(document).ready(function() {
+    // Use event delegation for dynamic form elements
+    $(document).on('click', '.submitForm', function(e) {
+        e.preventDefault(); // Prevent the default form submission
+
+        var $button = $(this); // Reference to the clicked button
+        var type = $button.data('type'); // Get the action type ('submit' or 'send')
+
+        // Find the closest offcanvas-body
+        var $offcanvasBody = $button.closest('.offcanvas-body'); 
+
+        // Ensure the required fields are available from the specific offcanvas form
+        var formData = new FormData();
+        formData.append('id',  $offcanvasBody.find('.invoice_id').val());
+        formData.append('type', $offcanvasBody.find('.type').val());
+        formData.append('grand_total', $offcanvasBody.find('.grand_total').val());
+        formData.append('totalAmount', $offcanvasBody.find('.totalAmount').val());
+        formData.append('invoiceAmount', $offcanvasBody.find('#invoiceAmount').val());
+        formData.append('paymentDate', $offcanvasBody.find('#payment-date').val());
+        formData.append('paymentStatus', $offcanvasBody.find('#payment-status').val());
+        formData.append('paymentMethod', $offcanvasBody.find('#payment-method').val());
+        formData.append('paymentNote', $offcanvasBody.find('#payment-note').val());
+        formData.append('reference_no', $offcanvasBody.find('#reference_no').val());
+        formData.append('type', type); // Add action type for "submit" or "send"
+
+        // Append the file input (if any)
+        var fileInput = $offcanvasBody.find('#payment_image')[0].files[0];  // Get the selected file
+        if (fileInput) {
+            formData.append('payment_image', fileInput);
+        }
+
+        // Debugging: Log form data to ensure it’s being collected correctly
+        console.log('Form Data:', formData);
+
+        // AJAX request to save the payment data
+        $.ajax({
+            url: appurl + 'add-payment', // Replace with your endpoint URL
+            type: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            data: formData,
+            processData: false,
+            contentType: false, 
+            success: function(response) {
+                // Handle the response from the server
+                toastr.success(response.message || "Payment Added successfully!");
+                $('#addPaymentOffcanvas').offcanvas('hide'); // Hide the offcanvas
+                window.location.reload(); // Optionally, reload the page to reflect changes
+            },
+            error: function(xhr) {
+                const errors = xhr.responseJSON.errors;
+                let errorMessage = '';
+                if (errors) {
+                    $.each(errors, function(key, messages) {
+                        errorMessage += messages.join('<br>') + '<br>';
+                    });
+                } else {
+                    errorMessage = "An unexpected error occurred.";
+                }
+                toastr.error(errorMessage);
+            }
+        });
+    });
+});
+
+
+
+    // Event handler for keyup event on the invoiceAmount input field (delegated for dynamically added content)
+    $(document).on('keyup', '.invoice-amount', function() {
+        var $invoiceListing = $(this).closest('.offcanvas-body'); // Find the parent offcanvas body of the current input field
+        var invoiceBalance = parseFloat($invoiceListing.find('.invoice-balance').text().replace(/[^0-9.-]+/g, '')) || 0; // Get the invoice balance for the current invoice
+        var paymentAmount = parseFloat($(this).val().replace(/[^0-9.-]+/g, '')) || 0; // Get the current payment amount from the input field
+
+        // Calculate the remaining balance
+        var remainingBalance = invoiceBalance - paymentAmount;
+
+        if (paymentAmount > invoiceBalance) {
+            $(this).val('0'); // Reset the input to 0
+            $invoiceListing.find('.remaining').text(formatIndianCurrency(0)); // Update remaining balance
+            $invoiceListing.find('.warning').text('Payment amount exceeds invoice balance.').show(); // Show warning
+        } else {
+            $invoiceListing.find('.remaining').text(formatIndianCurrency(remainingBalance)); // Update remaining balance
+            $invoiceListing.find('.warning').hide(); // Hide warning
+        }
+    });
+});
 
 </script>
 @endsection

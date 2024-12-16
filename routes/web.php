@@ -145,6 +145,7 @@ Route::group(['middleware' => ['auth']], function () {
 
           Route::get('invoice-template/{id}', [InvoiceController::class, 'invoiceTemplate'])->name('invoice-template');
           Route::post('invoice-update', [InvoiceController::class, 'invoiceUpdate'])->name('invoice-update');
+          Route::post('payment-modal', [InvoiceController::class, 'invoiceModel'])->name('payment.modal');
 
 
     

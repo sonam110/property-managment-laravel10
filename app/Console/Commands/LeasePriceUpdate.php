@@ -28,7 +28,7 @@ class LeasePriceUpdate extends Command
     {
         $leases = Lease::where('status','Approved')->get();
         foreach ($leases as $lease) {
-             $startDate = new \DateTime($lease->start_date);
+            $startDate = new \DateTime($lease->start_date);
             $numberOfMonths = $lease->end_month;
 
             // Calculate the end date based on start date and number of months

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\PartnerBankDetail;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
@@ -17,11 +18,11 @@ class UserController extends Controller
     
     public function __construct()
     {
-        $this->middleware('permission:role-browse',['only' => ['index']]);
-        $this->middleware('permission:role-add', ['only' => ['store']]);
-        $this->middleware('permission:role-edit', ['only' => ['update']]);
-        $this->middleware('permission:role-read', ['only' => ['show']]);
-        $this->middleware('permission:role-delete', ['only' => ['destroy']]);
+        $this->middleware('permission:user-browse',['only' => ['index']]);
+        $this->middleware('permission:user-add', ['only' => ['store']]);
+        $this->middleware('permission:user-edit', ['only' => ['update']]);
+        $this->middleware('permission:user-read', ['only' => ['show']]);
+        $this->middleware('permission:user-delete', ['only' => ['destroy']]);
     }
     /**
      * Display a listing of the resource.
@@ -84,21 +85,38 @@ class UserController extends Controller
             ->addColumn('action', function ($query)
             {
 
+                $edit ="";
+                $delete ="";
+                $view ="";
+                if (auth()->user()->can('user-edit')) {
+
                 $edit =' <a href="#!" data-size="lg"
                                 data-url="'.route('users.edit', $query->id) .'" 
                                 data-ajax-popup="true" class="btn btn-sm btn-primary"
                                 data-bs-original-title="User Edit">
                                 <i class="ti ti-pencil"></i>
                             </a>';
+                    }
+                 if (auth()->user()->can('user-read')) {
+
+                $view =' <a href="#!" data-size="lg"
+                                data-url="'.route('users.show', $query->id) .'" 
+                                data-ajax-popup="true" class="btn btn-sm btn-warning"
+                                data-bs-original-title="User View">
+                                <i class="ti ti-eye"></i>
+                            </a>';
+                    }
+                 if (auth()->user()->can('user-delete')) {
+
                 $delete = '<a 
                                 href="'.route('user-delete', $query->id) .'" 
                                  class="btn btn-sm btn-danger"
                                 onClick="return confirm(\'Are you sure you want to delete this?\');" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete">
                                 <i class="ti ti-trash"></i>
                             </a>';
+                        }
 
-
-                return '<div class="btn-group btn-group-xs">'.$edit.$delete.'</div>';
+                return '<div class="btn-group btn-group-xs">'.$edit.$view.$delete.'</div>';
             })
         ->escapeColumns(['action'])
         ->addIndexColumn()
@@ -189,13 +207,33 @@ class UserController extends Controller
             $user->national_id_no = $request->national_id_no;
             $user->postal_address = $request->postal_address;
             $user->residential_address = $request->residential_address;
-            $user->bank_name     = $request->bank_name;
-            $user->account_holder_name     = $request->account_holder_name;
-            $user->account_no     = $request->account_no;
-            $user->bank_ifsc_code     = $request->bank_ifsc_code;
-            $user->bank_address     = $request->bank_address;
+            //$user->bank_name     = $request->bank_name;
+           // $user->account_holder_name     = $request->account_holder_name;
+           // $user->account_no     = $request->account_no;
+            //$user->bank_ifsc_code     = $request->bank_ifsc_code;
+            //$user->bank_address     = $request->bank_address;
             $user->created_by = auth()->user()->id;
             $user->save();
+            if($user){
+               if(is_array(@$request->bank_name) && count(@$request->bank_name) >0 ){
+                    for ($i = 0;$i <= count(@$request->bank_name);$i++) {
+                        if (!empty(@$request->bank_name[$i])) {
+                            $partnetBank = new PartnerBankDetail;
+                            $partnetBank->user_id  = $user->id;
+                            $partnetBank->bank_se_name     = @$request->bank_se_name[$i];
+                            $partnetBank->bank_name     = @$request->bank_name[$i];
+                            $partnetBank->account_holder_name     = @$request->account_holder_name[$i];
+                            $partnetBank->account_no     = @$request->account_no[$i];
+                            $partnetBank->bank_ifsc_code     = @$request->bank_ifsc_code[$i];
+                            $partnetBank->bank_address     = @$request->bank_address[$i];
+                            $partnetBank->for_type     = @$request->for_type[$i];
+                            $partnetBank->save();
+                            
+
+                        }
+                    }
+                }
+            }
            
             //Role and permission sync
             $role = Role::where('id', $request->role_id)->first();
@@ -230,12 +268,13 @@ class UserController extends Controller
     {
         $user = User::findOrFail($id);
         $roles = Role::whereNotIn('id',['1','3'])->get()->pluck('name', 'id');
+        $partnerBanks = PartnerBankDetail::where('user_id',$id)->get();
         $countries = DB::table('countries')->get();
         $statsList = DB::table('states')->where('country_id','101')->pluck('name', 'id')->toArray();
         if (\Auth::user()->can('user-edit')) {
            
 
-            return view('user.edit', compact('user', 'roles','countries','statsList'));
+            return view('user.edit', compact('user', 'roles','countries','statsList','partnerBanks'));
         } else {
             return redirect()->back();
         }
@@ -268,9 +307,11 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show()
+    public function show($id)
     {
-        return redirect()->route('user.index');
+        $user = User::findOrFail($id);
+        $partnerBanks = PartnerBankDetail::where('user_id',$id)->get();
+        return view('user.show',compact('user','partnerBanks'));
     }
 
     
@@ -323,12 +364,33 @@ class UserController extends Controller
             $user->gst_no = $request->gst_no;
             $user->postal_address = $request->postal_address;
             $user->residential_address = $request->residential_address;
-            $user->bank_name     = $request->bank_name;
-            $user->account_holder_name     = $request->account_holder_name;
-            $user->account_no     = $request->account_no;
-            $user->bank_ifsc_code     = $request->bank_ifsc_code;
-            $user->bank_address     = $request->bank_address;
+            //$user->bank_name     = $request->bank_name;
+           // $user->account_holder_name     = $request->account_holder_name;
+           // $user->account_no     = $request->account_no;
+            //$user->bank_ifsc_code     = $request->bank_ifsc_code;
+            //$user->bank_address     = $request->bank_address;
             $user->save();
+            if($user){
+               if(is_array(@$request->bank_name) && count(@$request->bank_name) >0 ){
+                    $deleteOld = PartnerBankDetail::where('user_id',$user->id)->delete();
+                    for ($i = 0;$i <= count(@$request->bank_name);$i++) {
+                        if (!empty(@$request->bank_name[$i])) {
+                            $partnetBank = new PartnerBankDetail;
+                            $partnetBank->user_id  = $user->id;
+                            $partnetBank->bank_se_name     = @$request->bank_se_name[$i];
+                            $partnetBank->bank_name     = @$request->bank_name[$i];
+                            $partnetBank->account_holder_name     = @$request->account_holder_name[$i];
+                            $partnetBank->account_no     = @$request->account_no[$i];
+                            $partnetBank->bank_ifsc_code     = @$request->bank_ifsc_code[$i];
+                            $partnetBank->bank_address     = @$request->bank_address[$i];
+                            $partnetBank->for_type     = @$request->for_type[$i];
+                            $partnetBank->save();
+                            
+
+                        }
+                    }
+                }
+            }
 
             //delete old role and permissions
             DB::table('model_has_roles')->where('model_id', $user->id)->delete();

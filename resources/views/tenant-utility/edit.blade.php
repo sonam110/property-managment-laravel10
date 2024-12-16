@@ -1,6 +1,18 @@
+<style type="text/css">
+.existing-documents {
+    display: grid; /* Enables grid layout */
+    grid-template-columns: repeat(4, 1fr); /* Three columns in each row */
+    gap: 15px; /* Space between grid items */
+    margin-top: 15px; /* Optional: Adds space above the grid */
+}
 
+
+
+
+</style>
 
 {{Form::model($tenantUtility,array('route' => array('tenant-utility.update', $tenantUtility->id), 'method' => 'PUT','enctype'=>'multipart/form-data', 'files'=>true)) }}
+  <input type="hidden" name="doc_ids" id="doc_ids" >
 <div class="modal-body">
     <div class="row">
       
@@ -29,8 +41,8 @@
         </div>
         <div class="col-md-6">
             <div class="mb-3">
-                {{ Form::label('energy_charge', __('Energy Charge'), ['class' => 'form-label']) }}
-                {{ Form::number('energy_charge', null, ['class' => 'form-control','id'=>'energy_charge','required'=>'required', 'placeholder' => __('Energy Charge')]) }}
+                {{ Form::label('energy_charge', __('Energy Charge'), ['class' => 'form-label']) }}<span class="requiredLabel">*</span>
+                {{ Form::number('energy_charge', null, ['class' => 'form-control','step'=>'any','id'=>'energy_charge','required'=>'required', 'placeholder' => __('Energy Charge')]) }}
                 @error('energy_charge')
                     <small class="invalid-name" role="alert">
                         <strong class="text-danger">{{ $message }}</strong>
@@ -38,10 +50,11 @@
                 @enderror
             </div>
         </div>
+       
         <div class="col-md-6">
             <div class="mb-3">
                 {{ Form::label('fppas', __('FPPAS'), ['class' => 'form-label']) }}
-                {{ Form::number('fppas', null, ['class' => 'form-control','id'=>'fppas','required'=>'required', 'placeholder' => __('FPPAS')]) }}
+                {{ Form::number('fppas', null, ['class' => 'form-control','step'=>'any','id'=>'fppas', 'placeholder' => __('FPPAS')]) }}
                 @error('fppas')
                     <small class="invalid-name" role="alert">
                         <strong class="text-danger">{{ $message }}</strong>
@@ -52,7 +65,7 @@
         <div class="col-md-6">
             <div class="mb-3">
                 {{ Form::label('energy_duty', __('Energy Duty'), ['class' => 'form-label']) }}
-                {{ Form::number('energy_duty', null, ['class' => 'form-control','id'=>'energy_duty','required'=>'required', 'placeholder' => __('Energy Duty')]) }}
+                {{ Form::number('energy_duty', null, ['class' => 'form-control','step'=>'any','id'=>'energy_duty', 'placeholder' => __('Energy Duty')]) }}
                 @error('energy_duty')
                     <small class="invalid-name" role="alert">
                         <strong class="text-danger">{{ $message }}</strong>
@@ -62,8 +75,19 @@
         </div>
          <div class="col-md-6">
             <div class="mb-3">
+                {{ Form::label('pf_incentive', __('PF Incentive'), ['class' => 'form-label']) }}
+                {{ Form::number('pf_incentive', null, ['class' => 'form-control','id'=>'pf_incentive','step'=>'any', 'placeholder' => __('PF Incentive')]) }}
+                @error('pf_incentive')
+                    <small class="invalid-name" role="alert">
+                        <strong class="text-danger">{{ $message }}</strong>
+                    </small>
+                @enderror
+            </div>
+        </div>
+         <div class="col-md-4">
+            <div class="mb-3">
                 {{ Form::label('tod_net_sum', __('TOD (Net sum)'), ['class' => 'form-label']) }}
-                {{ Form::number('tod_net_sum', null, ['class' => 'form-control','id'=>'tod_net_sum','required'=>'required', 'placeholder' => __('TOD (Net sum)')]) }}
+                {{ Form::number('tod_net_sum', null, ['class' => 'form-control','step'=>'any','id'=>'tod_net_sum', 'placeholder' => __('TOD (Net sum)')]) }}
                 @error('tod_net_sum')
                     <small class="invalid-name" role="alert">
                         <strong class="text-danger">{{ $message }}</strong>
@@ -71,10 +95,10 @@
                 @enderror
             </div>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-4">
             <div class="mb-3">
                 {{ Form::label('energy_charge_as_per_bill', __('Energy Charge As Per Bill'), ['class' => 'form-label']) }}
-                {{ Form::number('energy_charge_as_per_bill', null, ['class' => 'form-control','id'=>'energy_charge_as_per_bill','readonly'=>'readonly', 'placeholder' => __('Energy Charge As Per Bill')]) }}
+                {{ Form::number('energy_charge_as_per_bill', null, ['class' => 'form-control','step'=>'any','id'=>'energy_charge_as_per_bill','readonly'=>'readonly', 'placeholder' => __('Energy Charge As Per Bill')]) }}
                 @error('energy_charge_as_per_bill')
                     <small class="invalid-name" role="alert">
                         <strong class="text-danger">{{ $message }}</strong>
@@ -82,10 +106,10 @@
                 @enderror
             </div>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-4">
             <div class="mb-3">
                 {{ Form::label('total_units', __('Total Units Consumed As per bill'), ['class' => 'form-label']) }}
-                {{ Form::number('total_units', null, ['class' => 'form-control','id'=>'total_units','required'=>'required', 'placeholder' => __('Total Units Consumed As per bill')]) }}
+                {{ Form::number('total_units', null, ['class' => 'form-control','step'=>'any','id'=>'total_units', 'placeholder' => __('Total Units Consumed As per bill')]) }}
                 @error('total_units')
                     <small class="invalid-name" role="alert">
                         <strong class="text-danger">{{ $message }}</strong>
@@ -96,8 +120,9 @@
        
         <div id="tenantUnitContainer" class=""> 
             @foreach($tenantDetails as $key=> $detail)
+            @php $alldocument = \App\Models\TenantUtilityDocument::where('tenant_property_utility_id',$tenantUtility->id)->where('tenant_id',$detail['tenant_id'])->get();  @endphp
                 <div class="row g-3 textBoxWrapper">
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="mb-3">
                         {{ Form::label('tenant_id', __('Tenant'), ['class' => 'form-label']) }} <span class="requiredLabel">*</span>
                         {!! Form::select('tenant_id[]', ['' => __('Select Tenant')] + $tenants, $detail['tenant_id'], ['class' => 'form-control select tenant_id select2 form-select', 'id' => 'tenant_id']) !!}
@@ -109,10 +134,10 @@
                     </div>
                 </div>
 
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="mb-3">
                         {{ Form::label('no_units_consume', __('No of Units Consumed'), ['class' => 'form-label']) }}<span class="requiredLabel">*</span>
-                        {{ Form::number('no_units_consume[]', $detail['no_units_consume'], ['class' => 'form-control no_units_consume', 'required' => 'required', 'placeholder' => __('No of units consumed')]) }}
+                        {{ Form::number('no_units_consume[]', $detail['no_units_consume'], ['class' => 'form-control no_units_consume','step'=>'any', 'required' => 'required', 'placeholder' => __('No of units consumed')]) }}
                         @error('no_units_consume')
                             <small class="invalid-name" role="alert">
                                 <strong class="text-danger">{{ $message }}</strong>
@@ -120,14 +145,40 @@
                         @enderror
                     </div>
                 </div>
-                 <div class="col-sm-1"><button type="button" class="removeButton btn btn-danger btn-sm" style="margin:10px; margin-top: 28px;"><i class="ti ti-trash text-white"></i></button>  </div>
-                @if($key+1 ==1)
-                 <div class="col-md-3" style="margin-top: 23px;">
+                <div class="col-md-3">
                     <div class="mb-3">
-                        <label>&nbsp;</label>
-                        <button class="btn btn-primary" id="addMoreButton">+ Add More</button>
+                        {{ Form::label('document', __('Documents'), ['class' => 'form-label']) }}
+                        <input type="file" name="document[{{$key}}][]" class="form-control document" multiple="multiple" />
+                        
                     </div>
                 </div>
+                 <div class="col-sm-1"><button type="button" class="removeButton btn btn-danger btn-sm" style="margin:10px; margin-top: 28px;"><i class="ti ti-trash text-white"></i></button>  </div>
+                @if($key+1 ==1)
+                 <div class="col-md-2" style="margin-top: 23px;">
+                    <div class="mb-3">
+                        <label>&nbsp;</label>
+                        <button  type="button" class="btn btn-primary" id="addMoreButton">+ Add More</button>
+                    </div>
+                </div>
+                @endif
+            </div>
+            <div class="col-md-12">
+            @if ($alldocument)
+                    <div class="existing-documents">
+                    @foreach ($alldocument as $doc)
+                        <div class="document-item">
+                            <span class="me-3">{{ basename($doc->document) }}</span>
+                            <a href="{{ url('/') }}/{{ $doc->document }}"  download>
+                             <i class="fa fa-download"></i> 
+                            </a>
+                            <a href="#" class="delete-document delbtn" style="color:red" onclick="deleteDocument(this)" data-docids="{{ $doc->id }}">
+                                 X
+                            </a>
+                        </div>
+                    @endforeach
+                </div>
+
+
                 @endif
             </div>
                 @endforeach
@@ -163,7 +214,7 @@
 
             <div class="col-md-4">
                 <div class="mb-3">
-                    {{ Form::label('energy_unit_per_unit', __('Energy Unit Per Unit'), ['class' => 'form-label']) }}
+                    {{ Form::label('energy_unit_per_unit', __('Energy Cost Per Unit After Losses'), ['class' => 'form-label']) }}
                     {{ Form::text('energy_unit_per_unit', null, ['class' => 'form-control', 'id' => 'energy_unit_per_unit', 'readonly' => 'readonly']) }}
                 </div>
             </div>
@@ -183,12 +234,31 @@
 {{Form::close()}}
 
 <script type="text/javascript">
+let deletedDocIds = [];
+    function deleteDocument(button) {
+     const docId = $('.delbtn').data('docids');
+     console.log(docId);
+    const docItem = button.parentElement;
+    const fileName = docItem.querySelector('span').textContent;
+    
+    if (confirm(`Are you sure you want to delete ${fileName}?`)) {
+
+        deletedDocIds.push(docId);
+         console.log(deletedDocIds);
+        $('#doc_ids').val(deletedDocIds);
+        docItem.remove();
+      
+      // Here you can send a request to the server to delete the document
+      // Use the id or other identifier to remove the document from the server
+    }
+  }
 $(document).ready(function() {
     var i =0
+    var j = '{{ count($tenantDetails) }}';
   $("#addMoreButton").click(function(){
     i++;
-        var textBoxHtml = '<div class="row g-3 textBoxWrapper"> <div class="col-sm-4"> <div class="mb-3"> <label for="tenant_id" class="form-label">Tenant</label><span class="requiredLabel">*</span> <select name="tenant_id[]" class="form-control select tenant_id select2 form-select" id="tenant_id'+i+'"> <option value="">Select Tenant</option> </select> </div> </div> <div class="col-md-4"> <div class="mb-3"> <label for="no_units_consume" class="form-label">No of Units Consumed</label><span class="requiredLabel">*</span> <input type="number" name="no_units_consume[]" class="form-control no_units_consume" required="required" placeholder="No of units consumed" /> </div> </div>  <div class="col-sm-4"> <label for="button" class="form-label">&nbsp;<label><button type="button" class="removeButton btn btn-sm btn-danger"  style="margin:10px; margin-top: 28px;"><i class="ti ti-trash text-white"></i></button>  </div></div> <br>';
-        
+       var textBoxHtml = '<div class="row g-3 textBoxWrapper"> <div class="col-sm-3"> <div class="mb-3"> <label for="tenant_id" class="form-label">Tenant</label><span class="requiredLabel">*</span> <select name="tenant_id[]" class="form-control select tenant_id select2 form-select" id="tenant_id'+i+'"> <option value="">Select Tenant</option> </select> </div> </div> <div class="col-md-3"> <div class="mb-3"> <label for="no_units_consume" class="form-label">No of Units Consumed</label><span class="requiredLabel">*</span> <input type="number" name="no_units_consume[]" class="form-control no_units_consume" required="required" placeholder="No of units consumed" /> </div></div>  <div class="col-md-3"> <div class="mb-3"> <label for="no_units_consume" class="form-label">Choose Documents</label> <input type="file" name="document['+j+'][]" class="form-control document" multiple="multiple" /> </div></div>  <div class="col-sm-3"> <label for="button" class="form-label">&nbsp;<label><button type="button" class="removeButton btn btn-sm btn-danger"  style="margin:10px; margin-top: 28px;"><i class="ti ti-trash text-white"></i></button>  </div></div> <br>';
+        j++;
         gettenants(i);
         $("#tenantUnitContainer").append(textBoxHtml);
     });
@@ -289,7 +359,7 @@ function gettenants(divid){
       });
     });
   }
-  $(document).on("input chnage keyup", "#energy_charge,#fppas,#energy_duty,#tod_net_sum ,#total_units,.no_units_consume", function () {
+  $(document).on("input chnage keyup", "#energy_charge,#fppas,#energy_duty,#tod_net_sum,#pf_incentive,#total_units,.no_units_consume", function () {
     calculateEnergyDetails();
 });
 
@@ -301,8 +371,9 @@ function calculateEnergyDetails() {
     let fppas = parseFloat($("#fppas").val()) || 0;
     let energy_duty = parseFloat($("#energy_duty").val()) || 0;
     let tod_net_sum = parseFloat($("#tod_net_sum").val()) || 0;
-     console.log(tod_net_sum);
-    let energy_charge_as_per_bill = energyCharge+fppas+energy_duty+(tod_net_sum);
+    let pf_incentive = parseFloat($("#pf_incentive").val()) || 0;
+
+    let energy_charge_as_per_bill = energyCharge+fppas+energy_duty+(tod_net_sum)+(pf_incentive);
     $("#energy_charge_as_per_bill").val(energy_charge_as_per_bill);
     let totalUnits = parseFloat($("#total_units").val()) || 0;
     let totalTenantUnit = 0;

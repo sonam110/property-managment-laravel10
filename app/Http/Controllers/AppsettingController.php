@@ -14,6 +14,12 @@ use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
 class AppsettingController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:app-setting',['only' => ['index']]);
+        $this->middleware('permission:app-update', ['only' => ['update']]);
+       
+    }
     public function index()
     {
         $data = AppSetting::first();

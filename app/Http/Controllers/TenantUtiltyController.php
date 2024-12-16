@@ -13,6 +13,7 @@ use App\Models\Property;
 use App\Models\Tenant;
 use App\Models\Lease;
 use App\Models\TenantPropertyUtility;
+use App\Models\TenantUtilityDocument;
 class TenantUtiltyController extends Controller
 {
     public function index()
@@ -62,23 +63,34 @@ class TenantUtiltyController extends Controller
             ->addColumn('action', function ($query)
             {
 
+
+                $edit ="";
+                $delete ="";
+                $view ="";
+                $copy ="";
+                if (auth()->user()->can('electricity-edit')) {
                 $edit =' <a href="#!" data-size="lg"
                                 data-url="'.route('tenant-utility.edit', $query->id) .'" 
                                 data-ajax-popup="true" class="btn btn-sm btn-primary"
-                                data-bs-original-title="Expense Edit">
+                                data-bs-original-title="Utility Edit">
                                 <i class="ti ti-pencil"></i>
+                          
                             </a>';
+                    }
+                if (auth()->user()->can('electricity-delete')) {
                 $delete = '<a 
                                 href="'.route('tenant-utility-destroy', $query->id) .'" 
                                  class="btn btn-sm btn-danger"
                                 onClick="return confirm(\'Are you sure you want to delete this?\');" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete">
                                 <i class="ti ti-trash"></i>
                             </a>';
+                        }
+                if (auth()->user()->can('electricity-edit')) {
                 $view =' <a href="'.route('tenant-utility.show', $query->id).'" class="btn btn-sm btn-info"
                                 data-toggle="tooltip" data-placement="top" title="" data-original-title="View">
                                 <i class="ti ti-eye"></i>
                             </a>';
-                
+                }
 
                 return '<div class="btn-group btn-group-xs">'.$edit.$view.$delete.'</div>';
             })
@@ -149,7 +161,7 @@ class TenantUtiltyController extends Controller
                 ];
             }
            
-            $energy_charge_as_per_bill =  $request->energy_charge+$request->fppas+$request->energy_duty+$request->tod_net_sum;
+            $energy_charge_as_per_bill =  $request->energy_charge+$request->fppas+$request->energy_duty+$request->tod_net_sum+ $request->pf_incentive;
            	$per_unit_charge = $energy_charge_as_per_bill/$request->total_units;
            	$unit_lost = $request->total_units-$totalTenantUnit;;
            	$energy_losses = $unit_lost*$per_unit_charge;
@@ -163,6 +175,7 @@ class TenantUtiltyController extends Controller
             $tenantUtility->fppas = $request->fppas;
             $tenantUtility->energy_duty = $request->energy_duty;
             $tenantUtility->tod_net_sum = $request->tod_net_sum;
+            $tenantUtility->pf_incentive = $request->pf_incentive;
             $tenantUtility->energy_charge_as_per_bill = $energy_charge_as_per_bill;
             $tenantUtility->total_units = $request->total_units;
             $tenantUtility->tenants_units =  json_encode($tenantDetails);
@@ -175,7 +188,28 @@ class TenantUtiltyController extends Controller
             $tenantUtility->energy_losses_per_tenant_unit  = $energy_losses_per_tenant_unit;
             $tenantUtility->energy_unit_per_unit  = $energy_unit_per_unit;
             $tenantUtility->save();
-           
+            if($tenantUtility) {
+                foreach ($request->tenant_id as $key => $tenantId) {
+                    if (isset($request->document[$key])) {
+                        foreach ($request->document[$key] as $file) {
+                            $destinationPath = 'assets/uploads/';
+                            $fileName = $file->getClientOriginalName();
+                            $path = $file->storeAs($destinationPath, $fileName, 'customer_uploads');
+
+                            $saveFile = $destinationPath . $fileName;
+
+                            // Save document associated with the tenant
+                            $leaseDocument = new TenantUtilityDocument;
+                            $leaseDocument->tenant_property_utility_id = $tenantUtility->id;
+                            $leaseDocument->tenant_id = $tenantId;
+                            $leaseDocument->document = $saveFile;
+                            $leaseDocument->save();
+                        }
+                    }
+                }
+                
+
+            }
             
             DB::commit();
             return redirect()->route('tenant-utility.index')->with('success', __('Utility successfully Added.'));
@@ -253,7 +287,7 @@ class TenantUtiltyController extends Controller
                 ];
             }
            
-            $energy_charge_as_per_bill =  $request->energy_charge+$request->fppas+$request->energy_duty+$request->tod_net_sum;
+            $energy_charge_as_per_bill =  $request->energy_charge+$request->fppas+$request->energy_duty+$request->tod_net_sum+$request->pf_incentive;
             $per_unit_charge = $energy_charge_as_per_bill/$request->total_units;
             $unit_lost = $request->total_units-$totalTenantUnit;;
             $energy_losses = $unit_lost*$per_unit_charge;
@@ -266,6 +300,7 @@ class TenantUtiltyController extends Controller
             $tenantUtility->fppas = $request->fppas;
             $tenantUtility->energy_duty = $request->energy_duty;
             $tenantUtility->tod_net_sum = $request->tod_net_sum;
+            $tenantUtility->pf_incentive = $request->pf_incentive;
             $tenantUtility->energy_charge_as_per_bill = $energy_charge_as_per_bill;
             $tenantUtility->total_units = $request->total_units;
             $tenantUtility->tenants_units =  json_encode($tenantDetails);
@@ -278,6 +313,32 @@ class TenantUtiltyController extends Controller
             $tenantUtility->energy_losses_per_tenant_unit  = $energy_losses_per_tenant_unit;
             $tenantUtility->energy_unit_per_unit  = $energy_unit_per_unit;
             $tenantUtility->save();
+            if($tenantUtility) {
+                if(!empty(@$request->doc_ids)){
+                    $doc_ids = explode(',',$request->doc_ids);
+                    $deleleOldDoc = TenantUtilityDocument::whereIn('id',$doc_ids)->delete();
+                }
+
+                foreach ($request->tenant_id as $key => $tenantId) {
+                    if (isset($request->document[$key])) {
+                        foreach ($request->document[$key] as $file) {
+                            $destinationPath = 'assets/uploads/';
+                            $fileName = $file->getClientOriginalName();
+                            $path = $file->storeAs($destinationPath, $fileName, 'customer_uploads');
+
+                            $saveFile = $destinationPath . $fileName;
+
+                            // Save document associated with the tenant
+                            $leaseDocument = new TenantUtilityDocument;
+                            $leaseDocument->tenant_property_utility_id = $tenantUtility->id;
+                            $leaseDocument->tenant_id = $tenantId;
+                            $leaseDocument->document = $saveFile;
+                            $leaseDocument->save();
+                        }
+                    }
+                }
+                
+            }
 
             DB::commit();
             return redirect()->route('tenant-utility.index')->with('success', __('Utility successfully updated.'));

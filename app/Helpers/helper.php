@@ -1,8 +1,67 @@
 <?php
+use App\Models\PartnerBankDetail;
+function getIndianCurrency($amount) {
+    $words = array(
+        0 => "Zero", 1 => "One", 2 => "Two", 3 => "Three", 4 => "Four",
+        5 => "Five", 6 => "Six", 7 => "Seven", 8 => "Eight", 9 => "Nine",
+        10 => "Ten", 11 => "Eleven", 12 => "Twelve", 13 => "Thirteen", 14 => "Fourteen",
+        15 => "Fifteen", 16 => "Sixteen", 17 => "Seventeen", 18 => "Eighteen", 19 => "Nineteen",
+        20 => "Twenty", 30 => "Thirty", 40 => "Forty", 50 => "Fifty",
+        60 => "Sixty", 70 => "Seventy", 80 => "Eighty", 90 => "Ninety"
+    );
+
+    $suffixes = array("", "Thousand", "Million", "Billion", "Trillion");
+
+    if ($amount == 0) {
+        return "Zero Rupees";
+    }
+
+    $amount = number_format($amount, 2, ".", "");
+    list($integerPart, $decimalPart) = explode(".", $amount);
+    $integerPart = (int)$integerPart;
+    $decimalPart = (int)$decimalPart;
+
+    $wordsArray = array();
+    $place = 0;
+
+    while ($integerPart > 0) {
+        $chunk = $integerPart % 1000;
+        if ($chunk > 0) {
+            $wordsArray[] = convertChunkToWords($chunk) . " " . $suffixes[$place];
+        }
+        $integerPart = (int)($integerPart / 1000);
+        $place++;
+    }
+
+    $finalWords = implode(" ", array_reverse($wordsArray)) . " Rupees";
+    return ucfirst($finalWords); // Capitalize the first letter of the currency word
+}
+
+function convertChunkToWords($chunk) {
+    $words = array(
+        0 => "Zero", 1 => "One", 2 => "Two", 3 => "Three", 4 => "Four",
+        5 => "Five", 6 => "Six", 7 => "Seven", 8 => "Eight", 9 => "Nine",
+        10 => "Ten", 11 => "Eleven", 12 => "Twelve", 13 => "Thirteen", 14 => "Fourteen",
+        15 => "Fifteen", 16 => "Sixteen", 17 => "Seventeen", 18 => "Eighteen", 19 => "Nineteen",
+        20 => "Twenty", 30 => "Thirty", 40 => "Forty", 50 => "Fifty",
+        60 => "Sixty", 70 => "Seventy", 80 => "Eighty", 90 => "Ninety"
+    );
+
+    if ($chunk < 20) {
+        return $words[$chunk];
+    } elseif ($chunk < 100) {
+        $tens = (int)($chunk / 10) * 10;
+        $ones = $chunk % 10;
+        return $words[$tens] . ($ones ? " " . $words[$ones] : "");
+    } else {
+        $hundreds = (int)($chunk / 100);
+        $remainder = $chunk % 100;
+        return $words[$hundreds] . " Hundred" . ($remainder ? " " . convertChunkToWords($remainder) : "");
+    }
+}
 
 
-
-function getIndianCurrency(float $number)
+/*function getIndianCurrency(float $number)
 {
     $decimal = round($number - ($no = floor($number)), 2) * 100;
     $hundred = null;
@@ -33,7 +92,7 @@ function getIndianCurrency(float $number)
     $Rupees = implode('', array_reverse($str));
     $paise = ($decimal > 0) ? "." . ($words[$decimal / 10] . " " . $words[$decimal % 10]) . '' : '';
     return ($Rupees ? $Rupees . ' ' :'').$paise;
-}
+}*/
 
 function formatIndianCurrency($amount) {
     // Remove any existing formatting (e.g., commas) and convert to float
@@ -81,6 +140,24 @@ function formatIndianCurrencyPdf($amount) {
 
     // Add decimal part and currency symbol
     return '₹ ' . $formattedIntegerPart . '.' . str_pad($decimalPart, 2, '0', STR_PAD_LEFT);
+}
+
+
+function partnetBankDetail($id,$type){
+    $for_type = '1';
+    if($type=='rent'){
+        $for_type = '1';
+    }
+    if($type=='cam'){
+        $for_type = '2';
+    }
+     if($type=='utility' || $type =='electricity'){
+        $for_type = '2';
+    }
+    $bankDetail = PartnerBankDetail::where('user_id',$id)->where('for_type',$for_type)->first();
+    return (!empty($bankDetail)) ? $bankDetail : NULL;
+
+
 }
 
 

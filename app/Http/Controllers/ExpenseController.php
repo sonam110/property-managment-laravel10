@@ -13,6 +13,13 @@ use App\Models\Property;
 
 class ExpenseController extends Controller
 {   
+    public function __construct()
+    {
+        $this->middleware('permission:expense-browse',['only' => ['index']]);
+        $this->middleware('permission:expense-add', ['only' => ['store']]);
+        $this->middleware('permission:expense-edit', ['only' => ['update']]);
+        $this->middleware('permission:expense-delete', ['only' => ['destroy']]);
+    }
      public function index()
     {   
         $propertyTypes = Property::get()->pluck('property_name', 'id');
@@ -72,18 +79,27 @@ class ExpenseController extends Controller
             ->addColumn('action', function ($query)
             {
 
+                $edit ="";
+                $delete ="";
+                $view ="";
+
+                if (auth()->user()->can('expense-edit')) {
                 $edit =' <a href="#!" data-size="lg"
                                 data-url="'.route('expense.edit', $query->id) .'" 
                                 data-ajax-popup="true" class="btn btn-sm btn-primary"
                                 data-bs-original-title="Expense Edit">
                                 <i class="ti ti-pencil"></i>
                             </a>';
+                        }
+                if (auth()->user()->can('expense-delete')) {
                 $delete = '<a 
                                 href="'.route('expense-destroy', $query->id) .'" 
                                  class="btn btn-sm btn-danger"
                                 onClick="return confirm(\'Are you sure you want to delete this?\');" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete">
                                 <i class="ti ti-trash"></i>
                             </a>';
+
+                }
                 $download ='';
                 if(!empty($query->receipt)){
                     $downloadUrl = asset($query->receipt); // Modify path if necessary

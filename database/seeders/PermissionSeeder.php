@@ -460,6 +460,41 @@ class PermissionSeeder extends Seeder
           'guard_name' => 'web',
          
         ],
+         [ 
+          'name' => 'expense-browse',
+          'se_name' => 'expense-browse',
+          'group_name' => 'expense',
+          'guard_name' => 'web',
+         
+        ],
+        [ 
+          'name' => 'expense-add',
+          'se_name' => 'expense-add',
+          'group_name' => 'expense',
+          'guard_name' => 'web',
+         
+        ],
+        [ 
+          'name' => 'expense-edit',
+          'se_name' => 'expense-edit',
+          'group_name' => 'expense',
+          'guard_name' => 'web',
+         
+        ],
+        [ 
+          'name' => 'expense-delete',
+          'se_name' => 'expense-delete',
+          'group_name' => 'expense',
+          'guard_name' => 'web',
+         
+        ],
+        [ 
+          'name' => 'payment-browse',
+          'se_name' => 'payment-browse',
+          'group_name' => 'payment',
+          'guard_name' => 'web',
+         
+        ],
         [ 
           'name' => 'payment-add',
           'se_name' => 'payment-add',
@@ -478,6 +513,34 @@ class PermissionSeeder extends Seeder
           'name' => 'payment-delete',
           'se_name' => 'payment-delete',
           'group_name' => 'payment',
+          'guard_name' => 'web',
+         
+        ],
+         [ 
+          'name' => 'electricity-browse',
+          'se_name' => 'electricity-browse',
+          'group_name' => 'electricity',
+          'guard_name' => 'web',
+         
+        ],
+        [ 
+          'name' => 'electricity-add',
+          'se_name' => 'electricity-add',
+          'group_name' => 'electricity',
+          'guard_name' => 'web',
+         
+        ],
+        [ 
+          'name' => 'electricity-edit',
+          'se_name' => 'electricity-edit',
+          'group_name' => 'electricity',
+          'guard_name' => 'web',
+         
+        ],
+        [ 
+          'name' => 'electricity-delete',
+          'se_name' => 'electricity-delete',
+          'group_name' => 'electricity',
           'guard_name' => 'web',
          
         ],

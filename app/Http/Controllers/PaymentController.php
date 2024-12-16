@@ -21,7 +21,14 @@ use Mail;
 use Carbon\Carbon;
 use App\Mail\SendReciptMail;
 class PaymentController extends Controller
-{
+{   
+    public function __construct()
+    {
+        $this->middleware('permission:payment-browse',['only' => ['index']]);
+        $this->middleware('permission:payment-add', ['only' => ['store']]);
+        $this->middleware('permission:payment-edit', ['only' => ['update']]);
+        $this->middleware('permission:payment-delete', ['only' => ['destroy']]);
+    }
 
      public function index($id = NULL)
     {
@@ -134,24 +141,31 @@ class PaymentController extends Controller
                 $checkTotalPay = Payment::where('invoice_id',$query->invoice_id)->sum('amount');
                 $edit ='';
                 $delete ='';
+                $view ="";
+                $lease ="";
                 if($checkTotalPay < $query->grand_total) {
-
-                $edit =' <a href="#!" data-size="lg"
+                if (auth()->user()->can('payment-edit')) {
+                    $edit =' <a href="#!" data-size="lg"
                                 data-url="'.route('edit-payment', $query->id) .'" 
                                 data-ajax-popup="true" class=" btn btn-sm btn-primary"
                                 data-bs-original-title="Payment Edit">
                                 <i class="ti ti-pencil"></i>
                             </a>';
-                $delete = '<a 
-                                href="'.route('payment-delete', $query->id) .'" 
-                                 class=" btn btn-sm btn-danger"
-                                onClick="return confirm(\'Are you sure you want to delete this?\');" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete">
-                                <i class="ti ti-trash"></i>
-                            </a>';
+                        }
+                if (auth()->user()->can('payment-delete')) {
+                    $delete = '<a 
+                                    href="'.route('payment-delete', $query->id) .'" 
+                                     class=" btn btn-sm btn-danger"
+                                    onClick="return confirm(\'Are you sure you want to delete this?\');" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete">
+                                    <i class="ti ti-trash"></i>
+                                </a>';
+                    }
                 }
-
+                 $uplaodReceipt='';
+                 $mail='';
+                if (auth()->user()->can('payment-browse')) {
                 $download =' <a class="btn btn-sm btn-warning" href="'.route('download-recipt', $query->id) .'" data-toggle="tooltip" data-placement="top" title="" data-original-title="download"><i class="ti ti-download"></i></a>';
-                $uplaodReceipt='';
+               
                 if($query->payment_image){
                     $uplaodReceipt =' <a class="btn btn-sm btn-primary" href="'.url($query->payment_image) .'" data-toggle="tooltip" data-placement="top" title="" data-original-title="Uploded Data" download><i class="ti ti-download"></i></a>';
 
@@ -162,6 +176,7 @@ class PaymentController extends Controller
                                 onClick="return confirm(\'Are you sure you want to send receipt?\');" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete">
                                 <i class="ti ti-mail"></i>
                             </a>';
+                }
                 return '<div class="btn-group btn-group-xs">'.$edit.$delete.$download.$uplaodReceipt.$mail.'</div>';
             })
         ->escapeColumns(['action'])

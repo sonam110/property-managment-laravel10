@@ -40,26 +40,26 @@ class GenerateInvoice extends Command
             $allLease = Lease::with('property','tenant')->where('status','Approved')->get();
         }
         $appSetting = AppSetting::find(1);
-        $currentDate = Carbon::now();  // This gets the current date and time
+        $currentDate = Carbon::now(); 
+        $daysInMonth = $currentDate->daysInMonth;          
+
         foreach ($allLease as $key => $lease) {
-            $leaseStartDate = Carbon::parse($lease->start_date);  // Convert to Carbon instance
-            $monthsToAdd = $lease->end_month; // Duration in months to add to the start date
+            $leaseStarts = Carbon::parse($lease->start_date);  
+            $leaseStartDate = Carbon::parse($lease->start_date);  
+            $monthsToAdd = $lease->end_month; 
             
-            $leaseEndDate = $leaseStartDate->addMonths($monthsToAdd); // Add months using Carbon
-            // Log dates for debugging
-            \Log::info("Lease End Date: " . $leaseEndDate->format('Y-m'));
-            \Log::info("Current Date: " . $currentDate->format('Y-m'));
-            \Log::info("Lease: " . $lease->id);
+            $leaseEndDate = $leaseStartDate->addMonths($monthsToAdd);
+           
             if ($currentDate->lessThanOrEqualTo($leaseEndDate)) {
 
                 $leasePartners = PropertyPaymentSetting::where('lease_id',$lease->id)->get();
                 if($leasePartners->count() >0){
                     $random_no = \Str::random(15);
                     if($lease->lease_invoice_type =='1'){
-                        $firstDayOfMonth = new \DateTime('first day of next month'); // First day of next month
+                        $firstDayOfMonth = new \DateTime('first day of next month'); 
                         $firstDateFormatted = $firstDayOfMonth->format('F j, Y');
 
-                        $lastDayOfMonth = new \DateTime('last day of next month'); // Last day of next month
+                        $lastDayOfMonth = new \DateTime('last day of next month');
                         $lastDateFormatted = $lastDayOfMonth->format('F j, Y');
                     } else{
                         $firstDayOfMonth = new \DateTime('first day of this month');
@@ -69,18 +69,55 @@ class GenerateInvoice extends Command
                         $lastDateFormatted = $lastDayOfMonth->format('F j, Y');
 
                     }
+                    
+                  
+                    if ($currentDate->month == $leaseStarts->month && $currentDate->year == $leaseStarts->year) {
+                        $startDay = $leaseStarts->day;         
+                       
+                        $remainingDays = $daysInMonth - $startDay + 1; 
+                        $perDayRent = $lease->total_rent/$daysInMonth; 
+                        $perDayCam= $lease->total_cam/$daysInMonth; 
+                          
+                        $totalRent = $perDayRent * $remainingDays;
+                        $totalCam = $perDayCam * $remainingDays;
+                        $lease_price = $totalRent;
+                        $cam_price = $totalCam;
+                        \Log::info("Partial First Month Rent for Lease {$lease->id}: {$totalRent}");
+                    }
 
-                    $total_amount = $lease->total_rent;
+                    elseif($currentDate->month == $leaseEndDate->month && $currentDate->year == $leaseEndDate->year) {
+                        $endDay = $leaseEndDate->day;                 
+                        $remainingDays = $daysInMonth - $endDay + 1;                        
+                        $perDayRent = $lease->total_rent/$daysInMonth; 
+                        $perDayCam= $lease->total_cam/$daysInMonth; 
+                        // Adjust rent and other amounts
+                        $totalRent = $perDayRent * $remainingDays;
+                        $totalCam = $perDayCam * $remainingDays;
+                        $lease_price = $totalRent;
+                        $cam_price = $totalCam;
+
+                        \Log::info("Partial Last Month Rent for Lease {$lease->id}: {$totalRent}");
+                    } else{
+                        $totalRent =$lease->total_rent;
+                        $totalCam =$lease->total_cam;
+                        $lease_price = $lease->price;
+                        $cam_price = $lease->cam_price;
+                        \Log::info("full  Month Rent for Lease {$lease->id}: {$totalRent}");
+                    }
+                  
+                   
+
+                    $total_amount = $totalRent;
                     $cgst_amount = ($total_amount*$appSetting->tax_per)/100;
                     $sgst_amount = ($total_amount*$appSetting->tax_per)/100;
 
 
-                    $cam_total_amount = $lease->total_cam;
+                    $cam_total_amount = $totalCam;
                     $cam_cgst_amount = ($cam_total_amount*$appSetting->tax_per)/100;
                     $cam_sgst_amount = ($cam_total_amount*$appSetting->tax_per)/100;
-                    $tenant_code = (!empty(@$lease->tenant->unique_id)) ?  $lease->tenant->unique_id.'/':'';
 
-                   
+
+                    $tenant_code = (!empty(@$lease->tenant->unique_id)) ?  $lease->tenant->unique_id.'/':'';
                     foreach ($leasePartners as $key => $part) {
                         $invoice_no = $tenant_code.date('M').'/'.date('Y').'/'.rand(0,9999);
                         //\Log::info($part->is_gst);
@@ -138,7 +175,7 @@ class GenerateInvoice extends Command
                             $rentInvoice->random_id = $random_no;
                             $rentInvoice->item_desc = 'RENT INCOME -'.$firstDateFormatted.'-'.$lastDateFormatted;
                             $rentInvoice->quantity = $lease->total_square;
-                            $rentInvoice->rate = $lease->price;
+                            $rentInvoice->rate = $lease_price;
                             $rentInvoice->amount = $amountp;
                             $rentInvoice->sub_total = $total_amount;
                             $rentInvoice->partner_share = $part->commission_value;;
@@ -190,7 +227,7 @@ class GenerateInvoice extends Command
                    
                     $addCamInvoice = new Invoice;
                     $addCamInvoice->random_no = $random_no;
-                    $addCamInvoice->invoice_no =  $tenant_code.date('M').'/'.date('Y').'/'.rand(0,9999);
+                    $addCamInvoice->invoice_no =  $tenant_code.date('M').'/'.date('Y').'/'.rand(0,999999);
                     $addCamInvoice->user_id = '1';
                     $addCamInvoice->lease_id = $lease->id;
                     $addCamInvoice->partner_id = $default_partner->user_id;
@@ -214,9 +251,9 @@ class GenerateInvoice extends Command
                         $camInvoice->random_id = $random_no;
                         $camInvoice->item_desc = 'CAM CHARGES -'.$firstDateFormatted.'-'.$lastDateFormatted;
                         $camInvoice->quantity = $lease->total_square;
-                        $camInvoice->rate = $lease->camp_price;
-                        $camInvoice->amount = $lease->total_cam;
-                        $camInvoice->sub_total = $lease->total_cam;
+                        $camInvoice->rate = $cam_price;
+                        $camInvoice->amount = $cam_total_amount;
+                        $camInvoice->sub_total = $cam_total_amount;
                         $camInvoice->type = 'cam';
                         $camInvoice->item_type = 'rent';
                         $camInvoice->save();
@@ -258,7 +295,7 @@ class GenerateInvoice extends Command
 
                     $addUtilityInvoice = new Invoice;
                     $addUtilityInvoice->random_no = $random_no;
-                    $addUtilityInvoice->invoice_no = $tenant_code.date('M').'/'.date('Y').'/'.rand(0,9999);
+                    $addUtilityInvoice->invoice_no = $tenant_code.date('M').'/'.date('Y').'/'.rand(0,9999999);
                     $addUtilityInvoice->user_id = '1';
                     $addUtilityInvoice->lease_id = $lease->id;
                     $addUtilityInvoice->partner_id = $default_partner->user_id;
@@ -298,7 +335,7 @@ class GenerateInvoice extends Command
                                 if($charge->extra_charge_type == '1'){
                                     $amount = $charge->extra_charge_value;
                                 } else{
-                                    $amount =  ($lease->total_rent * $charge->extra_charge_value) / 100;
+                                    $amount =  ($total_amount * $charge->extra_charge_value) / 100;
                                 }
                                 if ($charge->frequency == '1' &&  $checkInvoiceCount =='1') {
                                     $utilityTotal += $amount;

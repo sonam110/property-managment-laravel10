@@ -120,7 +120,7 @@ class AuthenticatedSessionController extends Controller
             $login_detail->ip = $ip;
             $login_detail->date = date('Y-m-d H:i:s');
             $login_detail->Details = $json;
-            $login_detail->created_by = \Auth::user()->creatorId();
+            $login_detail->created_by = \Auth::user()->id;
             $login_detail->save();
 
     }

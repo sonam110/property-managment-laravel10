@@ -15,6 +15,12 @@ use Yajra\DataTables\DataTables;
 
 class ReportController extends Controller
 {
+     public function __construct()
+    {
+        $this->middleware('permission:report-browse',['only' => ['index']]);
+       
+       
+    }
 	public function report()
     {   
         $propertyTypes = Property::get()->pluck('property_name', 'id');

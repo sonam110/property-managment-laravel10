@@ -31,13 +31,20 @@ class SendInvoiceMail extends Mailable
         $filename =  $this->content['FileName']; 
         $mime =  $this->content['mime']; 
         $subject =  $this->content['subject']; 
-        return $this->markdown('email.send-invoice-to-mail')
+        $email = $this->markdown('email.send-invoice-to-mail')
             ->from(env('MAIL_FROM_ADDRESS','support@signature.in'),'Signature Group Team')
             ->subject($subject)
             ->attach($htmlFilePath, [
                 'as' => $filename,
                 'mime' => $mime,
-            ])
-            ->with($this->content);
+            ]);
+           // Attach additional documents
+            if (!empty($this->content['additionalDocuments'])) {
+                foreach ($this->content['additionalDocuments'] as $docPath) {
+                    $email->attach($docPath);
+                }
+            }
+
+            return $email->with($this->content);
     }
 }

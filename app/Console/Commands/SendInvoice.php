@@ -10,6 +10,7 @@ use App\Models\InvoiceDetail;
 use App\Models\LeaseUtility;
 use App\Models\PropertyPaymentSetting;
 use App\Models\TenantContactInfo;
+use App\Models\TenantUtilityDocument;
 use Str;
 use DB;
 use PDF;
@@ -126,6 +127,7 @@ class SendInvoice extends Command
                         }
 
                 }
+                /*for extra charges*/
                 if($contact->contact_type =='Utility' || $contact->contact_type =='All'){
                     $data = Invoice::where('property_id',$contact->property_id)->where('lease_id',$contact->lease_id)->where('invoice_type','utility')->whereMonth('invoice_generate_date',date('m'))->with('tenant','property','lease','partner')->first();
                         if(!empty($data)){
@@ -145,6 +147,53 @@ class SendInvoice extends Command
                                     "FilePath" => $path,
                                     "mime" => $mime,
                                     "subject" => 'Utility Invoice',
+                                ];
+                                $email = $contact->email;
+
+                                if (env('IS_MAIL_ENABLE', false) == true) {
+                                    $recevier = Mail::to($email)->send(new SendInvoiceMail($content));
+                                    if ($recevier) {
+                                        \Log::channel('automation_emails_log')->info($email);
+                                    }
+                                }
+                                $data->status = 'Sent';
+                                $data->invoice_date = date('Y-m-d');
+                                $data->save();
+                            }
+                        }
+
+                }
+                /*For electricity invoice*/
+                if($contact->contact_type =='Utility' || $contact->contact_type =='All'){
+                    $data = Invoice::where('property_id',$contact->property_id)->where('lease_id',$contact->lease_id)->where('invoice_type','electricity')->whereMonth('invoice_generate_date',date('m'))->with('tenant','property','lease','partner')->first();
+                        if(!empty($data)){
+                            $invoice_date = date('M-d-Y',strtotime($data->invoice_date));
+                            $grand_total = InvoiceDetail::where('invoice_id',$data->id)->sum('amount');
+                            if($grand_total >0) {
+                                $rent_invoices = InvoiceDetail::where('invoice_id',$data->id)->where('type','electricity')->orderBy('id','ASC')->get();
+                                $FileName = @$data->tenant->firm_name.'-Elec-'.$invoice_date.'.pdf';
+                                $pdf = PDF::loadView('invoice-electricity',compact('rent_invoices', 'data'));
+                                $FilePath = 'pdf/' . $FileName;
+                                \Storage::disk('public')->put($FilePath, $pdf->output(), 'public');
+
+                                $path = \Storage::path('public/'.$FilePath);
+                                $mime = "application/pdf";
+                                $additionalDocuments = []; // Array for additional document paths
+                                $tenantDocs = TenantUtilityDocument::where('tenant_property_utility_id', $data->tenant_property_utility_id)->where('tenant_id',$data->tenant_id)->get();
+
+                                foreach ($tenantDocs as $doc) {
+                                    $documentPath = public_path($doc->document);
+                                    if (file_exists($documentPath)) {
+                                        $additionalDocuments[] = $documentPath;
+                                    }
+                                }
+                              
+                                $content = [
+                                    "FileName" => $FileName,
+                                    "FilePath" => $path,
+                                    "mime" => $mime,
+                                    "subject" => 'Electricity Bill Invoice',
+                                    "additionalDocuments" => $additionalDocuments
                                 ];
                                 $email = $contact->email;
 

@@ -4,6 +4,7 @@ $invoiceDateObject = new \DateTime($invoiceDate);
 $due_on = $invoiceDateObject->modify('+' . $paymentDueTerms . ' days');
 $partner_per = $data->partner_per;
 $partner_type = $data->partner_type;
+$bankdata = (!empty(partnetBankDetail(@$data->partner->id,$data->invoice_type))) ? partnetBankDetail(@$data->partner->id,$data->invoice_type) : NULL;
 @endphp
 <!DOCTYPE html>
 <html lang="en">
@@ -285,19 +286,19 @@ $partner_type = $data->partner_type;
                 </tr>
                 <tr>
                     <td>A/c Holder's Name:</td>
-                    <td>{{ $data->partner->account_holder_name  }}</td>
+                    <td>{{ (!empty($bankdata)) ? $bankdata->account_holder_name : NULL;  }}</td>
                 </tr>
                 <tr>
                     <td>Bank Name:</td>
-                    <td>{{ $data->partner->bank_name  }}</td>
+                    <td>{{ (!empty($bankdata)) ? $bankdata->bank_name : NULL;  }}</td>
                 </tr>
                 <tr>
                     <td>A/c No.:</td>
-                    <td>{{ $data->partner->account_no  }}</td>
+                    <td>{{ (!empty($bankdata)) ? $bankdata->account_no : NULL; }}</td>
                 </tr>
                 <tr>
                     <td>Branch & IFS Code:</td>
-                    <td> {{ $data->partner->bank_address  }},{{ $data->partner->bank_ifsc_code  }}</td>
+                    <td> {{ (!empty($bankdata)) ? $bankdata->bank_address: NULL ; }},{{ (!empty($bankdata)) ? $bankdata->bank_ifsc_code : NULL ; }}</td>
                 </tr>
             </table>
         </div>

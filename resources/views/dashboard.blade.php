@@ -48,8 +48,8 @@
           $countData['totalCamPaid']= App\Models\Payment::where('property_id',$id)->where('invoice_type','cam')->whereIn('status',['Full','Partial'])->sum('amount');
           $countData['totalCamUnPaid']= $countData['totalCamInVoiceAmount']-$countData['totalCamPaid'];
 
-          $countData['totalUtilityInVoiceAmount']=  App\Models\InvoiceDetail::join('invoices','invoice_details.invoice_id','invoices.id')->where('invoices.property_id', $id)->whereIn('invoice_details.type',['utility','utility-gst'])->sum('invoice_details.amount');
-          $countData['totalUtilityPaid']= App\Models\Payment::where('property_id',$id)->where('invoice_type','utility')->whereIn('status',['Full','Partial'])->sum('amount');
+          $countData['totalUtilityInVoiceAmount']=  App\Models\InvoiceDetail::join('invoices','invoice_details.invoice_id','invoices.id')->where('invoices.property_id', $id)->where('invoice_details.type','electricity')->sum('invoice_details.amount');
+          $countData['totalUtilityPaid']= App\Models\Payment::where('property_id',$id)->where('invoice_type','electricity')->whereIn('status',['Full','Partial'])->sum('amount');
           $countData['totalUtilityUnPaid']= $countData['totalUtilityInVoiceAmount']-$countData['totalUtilityPaid'];
           
           $camExpense= App\Models\Expense::where('property_id',$id)->where('type','1')->sum('price');
@@ -61,7 +61,7 @@
             <h4 class="text-center property-header">
               <a
                href="{{ route('property-units',$property->id) }}">
-              {{ strtolower($property->property_name) }} ( {{ $property->property_code }})
+              {{ strtolower($property->property_name) }} ({{ $property->property_code }})
               </a>
             </h4>
 

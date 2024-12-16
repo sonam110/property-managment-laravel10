@@ -16,11 +16,14 @@
         href="javascript:;">
         Print
       </a>
+       @can('invoice-edit')
       @if($data->status !='Paid' && $data->status !='Sent')
       <a href="{{ route('invoice-edit',$data->id) }}" class="btn btn-label-warning">
         Edit Invoice
       </a>
          @endif
+         @endcan
+         @can('payment-add')
       @if($data->payment_status!='Full' && $data->status=='Sent')
       <button
         class="btn btn-primary"
@@ -30,6 +33,7 @@
           >Add Payment</span
         >
       </button>
+      @endif
       @endif
 
     </div>

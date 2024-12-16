@@ -193,6 +193,7 @@ $invoiceDateObject = new \DateTime($invoiceDate);
 $due_on = $invoiceDateObject->modify('+' . $paymentDueTerms . ' days');
 $partner_per = $data->partner_per;
 $partner_type = $data->partner_type;
+$bankdata = (!empty(partnetBankDetail(@$data->partner->id,$data->invoice_type))) ? partnetBankDetail(@$data->partner->id,$data->invoice_type) : NULL;
 @endphp
 
  @include('invoice.invoice-head')
@@ -201,7 +202,7 @@ $partner_type = $data->partner_type;
   <!-- Invoice -->
   <div class="col-xl-12 col-md-12 col-12 mb-md-0 mb-4">
   
- <div class="card invoice-preview-card">
+ <div class="invoice-preview-card">
         <div class="invoice-box">
         <table style="width: 100%; border-collapse: collapse; border: 1px solid black;vertical-align: top;;">
             <tr>
@@ -478,32 +479,32 @@ $partner_type = $data->partner_type;
 
             <tr style="border-bottom: 1px solid;">
                 <td colspan="2" style="text-align: center; border-right: 1px solid;">  Company's Bank Details </td>
-                <td colspan="2"> Remarks: </td>
+                <td colspan="2"> Remarks: {{ $data->partner->id}} </td>
 
             </tr>
 
             <tr>
                 <td>A/c Holder's Name:</td>
-                <td>{{ $data->partner->account_holder_name  }}</td>
+                <td>{{ (!empty($bankdata)) ? $bankdata->account_holder_name : NULL;  }}</td>
                 <td style="text-align: right;border-left: 1px solid;"></td>
                 <td style="text-align: right;">(E & O.E.)</td>
             </tr>
 
             <tr>
                 <td>Bank Name:</td>
-                <td>{{ $data->partner->bank_name  }}</td>    
+                <td>{{ (!empty($bankdata)) ? $bankdata->bank_name : NULL;  }}</td>    
                 <td rowspan="3" style=" border-left: 1px solid;"><b>Company's PAN : {{ $data->partner->pan_no  }}</b></td>
                 <td rowspan="3" style="text-align: right;"></td>
             </tr>
 
             <tr>
                 <td>A/c No.:</td>
-                <td> {{ $data->partner->account_no  }}</td>
+                <td> {{ (!empty($bankdata)) ? $bankdata->account_no : NULL; }}</td>
             </tr>
 
             <tr>
                 <td>Branch & IFS Code:</td>
-                <td>   {{ $data->partner->bank_address  }},{{ $data->partner->bank_ifsc_code  }}</td>
+                <td>   {{ (!empty($bankdata)) ? $bankdata->bank_address: NULL ; }},{{ (!empty($bankdata)) ? $bankdata->bank_ifsc_code : NULL ; }}</td>
 
 
             </tr>

@@ -14,6 +14,7 @@ class TenantPropertyUtility extends Model
         'fppas',
         'energy_duty',
         'tod_net_sum',
+        'pf_incentive',
         'energy_charge_as_per_bill',
         'total_units',
         'tenants_units',

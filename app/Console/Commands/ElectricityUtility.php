@@ -101,7 +101,14 @@ class ElectricityUtility extends Command
                     $electricityInvoice1->save();
 
 
+                    $totalUnitLoad = $getLease->load_taken*100;
+                    $totalTenantUnits = $jdata['no_units_consume'];
                     $avalue2 = 0;
+                    if($totalTenantUnits < $totalUnitLoad){
+                        $valAmount = $totalUnitLoad-$totalTenantUnits;
+                        $avalue2 = $valAmount*$lease->energy_unit_per_unit;
+                    }
+                   
                     $electricityInvoice2 = new InvoiceDetail;
                     $electricityInvoice2->invoice_id = $invoice->id;
                     $electricityInvoice2->random_id = $random_no;

@@ -80,7 +80,7 @@
                         </div>
                        
                         <div class="col-sm-6">
-                            {{ Form::label('email', __('Email'), ['class' => 'form-label']) }} <span class="requiredLabel">*</span>
+                            {{ Form::label('email', __('Email'), ['class' => 'form-label']) }} 
                             {{ Form::text('email', $tenant->email, ['class' => 'form-control', 'placeholder' => __('User Email')]) }}
                             @error('email')
                                 <small class="invalid-email" role="alert">
@@ -91,7 +91,7 @@
                         </div>
                     
                         <div class="col-sm-6">
-                            {{ Form::label('phone', __('Phone'), ['class' => 'form-label']) }}<span class="requiredLabel">*</span>
+                            {{ Form::label('phone', __('Phone'), ['class' => 'form-label']) }}
                             {{ Form::text('phone', $tenant->phone, ['class' => 'form-control', 'placeholder' => __('User Phone')]) }}
                             @error('phone')
                                 <small class="invalid-email" role="alert">
@@ -128,7 +128,7 @@
                                 </small>
                               @enderror
                         </div>
-                        <div class="col-sm-4">
+                       <!--  <div class="col-sm-4">
                            {{ Form::label('business_industry', __('Business industry'), ['class' => 'form-label']) }}
                             {{ Form::text('business_industry',  $tenant->business_industry, ['class' => 'form-control','id'=>'business_industry', 'placeholder' => __('Business industry')]) }}
                             @error('business_industry')
@@ -136,13 +136,13 @@
                                     <strong class="text-danger">{{ $message }}</strong>
                                 </small>
                               @enderror
-                        </div>
-                        <div class="col-sm-4">
+                        </div> -->
+                        <div class="col-sm-6">
                             {{ Form::label('state', __('State'), ['class' => 'form-label']) }}
                                {!! Form::select('state', $statsList, $tenant->state, ['class' => 'form-control select state select2 form-select', 'required' => 'required']) !!}
                        
                         </div>
-                        <div class="col-sm-4">
+                        <div class="col-sm-6">
                                 {{ Form::label('city', __('City'), ['class' => 'form-label']) }}
                                 {{ Form::text('city', $tenant->city, ['class' => 'form-control', 'placeholder' => __('User City')]) }}
                                 @error('city')
@@ -229,7 +229,7 @@
                                     </div>
 
                                     <div class="col-sm-4">
-                                       {{ Form::label('contact_email', __('Email'), ['class' => 'form-label']) }}
+                                       {{ Form::label('contact_email', __('Email'), ['class' => 'form-label']) }}<span class="requiredLabel">*</span>
                                         {{ Form::text('contact_email[]', $info->email, ['class' => 'form-control','id'=>'contact_email', 'placeholder' => __('Email')]) }}
                                         @error('contact_email')
                                             <small class="invalid-name" role="alert">

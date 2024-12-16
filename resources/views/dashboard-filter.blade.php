@@ -83,7 +83,7 @@
           ->sum('amount');
           $countData['totalCamUnPaid']= $countData['totalCamInVoiceAmount']-$countData['totalCamPaid'];
 
-          $countData['totalUtilityInVoiceAmount']=  App\Models\InvoiceDetail::join('invoices','invoice_details.invoice_id','invoices.id')->where('invoices.property_id', $id)->whereIn('invoice_details.type',['utility','utility-gst'])
+          $countData['totalUtilityInVoiceAmount']=  App\Models\InvoiceDetail::join('invoices','invoice_details.invoice_id','invoices.id')->where('invoices.property_id', $id)->where('invoice_details.type','electricity')
            ->when($fromDate, function($query) use ($fromDate) {
                 return $query->whereDate('invoices.created_at', '>=', $fromDate);
             })
@@ -91,7 +91,7 @@
                 return $query->whereDate('invoices.created_at', '<=', $toDate);
             })
           ->sum('invoice_details.amount');
-          $countData['totalUtilityPaid']= App\Models\Payment::where('property_id',$id)->where('invoice_type','utility')->whereIn('status',['Full','Partial'])
+          $countData['totalUtilityPaid']= App\Models\Payment::where('property_id',$id)->where('invoice_type','electricity')->whereIn('status',['Full','Partial'])
           ->when($fromDate, function($query) use ($fromDate) {
                 return $query->whereDate('payment_date', '>=', $fromDate);
             })

@@ -39,11 +39,8 @@ class InvoiceController extends Controller
 {
      public function __construct()
     {
-        $this->middleware('permission:lease-browse',['only' => ['index']]);
-        $this->middleware('permission:lease-add', ['only' => ['store']]);
-        $this->middleware('permission:lease-edit', ['only' => ['update']]);
-        $this->middleware('permission:lease-read', ['only' => ['show']]);
-        $this->middleware('permission:lease-delete', ['only' => ['destroy']]);
+        $this->middleware('permission:invoice-browse',['only' => ['invoice']]);
+      
     }
 
     public function invoice()
@@ -64,8 +61,8 @@ class InvoiceController extends Controller
             $countData['totalCamPaid']= Payment::where('invoice_type','cam')->whereIn('status',['Full','Partial'])->sum('amount');
             $countData['totalCamUnPaid']= $countData['totalCamInVoiceAmount']-$countData['totalCamPaid'];
 
-            $countData['totalUtilityInVoiceAmount']= InvoiceDetail::whereIn('type',['utility','utility-gst'])->sum('amount');
-            $countData['totalUtilityPaid']= Payment::where('invoice_type','utility')->whereIn('status',['Full','Partial'])->sum('amount');
+            $countData['totalUtilityInVoiceAmount']= InvoiceDetail::where('type','electricity')->sum('amount');
+            $countData['totalUtilityPaid']= Payment::where('invoice_type','electricity')->whereIn('status',['Full','Partial'])->sum('amount');
             $countData['totalUtilityUnPaid']=  $countData['totalUtilityInVoiceAmount']-$countData['totalUtilityPaid'];
             
             return View('invoice.index',compact('propertyTypes','leases','partners','countData','tenants'));
@@ -131,6 +128,11 @@ class InvoiceController extends Controller
             {
                 
                 return @$query->partner->first_name.'  '.@$query->partner->lastname;
+            })
+             ->editColumn('invoice_type', function ($query)
+            {
+                
+                return ucfirst($query->invoice_type);
             })
             ->editColumn('grand_total', function ($query)
             {
@@ -205,16 +207,30 @@ class InvoiceController extends Controller
                 
                 $view ='';
                 $campview ='';
+                $payment ='';
                 $utilityview ='';
-                if (\Gate::allows('invoice-rent')) {
+                if (\Gate::allows('invoice-view')) {
                     $view =' <a class="btn btn-sm btn-info" href="'.route('invoice-view', $query->id) .'" data-bs-toggle="tooltip" data-placement="top" title="View" data-original-title="view">View</a>';
                 }
+                if (\Gate::allows('payment-add')) {
+                    if($query->payment_status!='Full' && $query->status=='Sent') {
+                        $payment= '<button
+                        class="btn btn-primary payment-model"
+                        data-bs-toggle="offcanvas"
+                        data-bs-target="#addPaymentOffcanvas"   data-id="'.$query->id.'">
+                        <span class="d-flex align-items-center justify-content-center text-nowrap"
+                           data-id="'.$query->id.'">Add Payment</span
+                        >
+                      </button>';
+                  }
+                }
+
                 
                 
 
 
 
-                return '<div class="btn-group btn-group-xs">'.$view.'</div>';
+                return '<div class="btn-group btn-group-xs">'.$view.$payment.'</div>';
             })
         ->escapeColumns(['action'])
         ->addIndexColumn()
@@ -559,49 +575,58 @@ class InvoiceController extends Controller
     }
 }
 
-public function generateInvoice()
-{
-    try {
-       
-        Invoice::orderby('id','DESC')->delete();
-        InvoiceDetail::orderby('id','DESC')->delete();
-        Payment::orderby('id','DESC')->delete();
-        Expense::orderby('id','DESC')->delete();
+    public function generateInvoice()
+    {
+        try {
+           
+            Invoice::orderby('id','DESC')->delete();
+            InvoiceDetail::orderby('id','DESC')->delete();
+            Payment::orderby('id','DESC')->delete();
+            Expense::orderby('id','DESC')->delete();
 
-         // Reset AUTO_INCREMENT counters for each table
-        \DB::statement('ALTER TABLE invoices AUTO_INCREMENT = 1');
-        \DB::statement('ALTER TABLE invoice_details AUTO_INCREMENT = 1');
-        \DB::statement('ALTER TABLE payments AUTO_INCREMENT = 1');
-       
-        Artisan::call('app:generate-invoice 2'); 
-        Artisan::call('app:generate-invoice 1'); 
-        Artisan::call('app:electricity-utility'); 
+             // Reset AUTO_INCREMENT counters for each table
+            \DB::statement('ALTER TABLE invoices AUTO_INCREMENT = 1');
+            \DB::statement('ALTER TABLE invoice_details AUTO_INCREMENT = 1');
+            \DB::statement('ALTER TABLE payments AUTO_INCREMENT = 1');
+           
+            Artisan::call('app:generate-invoice 2'); 
+            Artisan::call('app:generate-invoice 1'); 
+            Artisan::call('app:electricity-utility'); 
 
 
-        return redirect()->route('invoice')->with('success', __('Generated successfully.'));
-        
-    } catch (\Exception $e) {
-        // Log the exception for debugging
-        \Log::error('Invoice generation failed: ' . $e->getMessage());
+            return redirect()->route('invoice')->with('success', __('Generated successfully.'));
+            
+        } catch (\Exception $e) {
+            // Log the exception for debugging
+            \Log::error('Invoice generation failed: ' . $e->getMessage());
 
-        return redirect()->back()->with('error', __('Something went wrong.'));
+            return redirect()->back()->with('error', __('Something went wrong.'));
+        }
     }
-}
-public function sendInvoice()
-{
-    try {
-       
-       Invoice::orderby('id','DESC')->update(['status'=>'Sent']);
+    public function sendInvoice()
+    {
+        try {
+           
+           Invoice::orderby('id','DESC')->update(['status'=>'Sent']);
 
-        return redirect()->route('invoice')->with('success', __('Sent successfully.'));
-        
-    } catch (\Exception $e) {
-        // Log the exception for debugging
-        \Log::error('Invoice generation failed: ' . $e->getMessage());
+            return redirect()->route('invoice')->with('success', __('Sent successfully.'));
+            
+        } catch (\Exception $e) {
+            // Log the exception for debugging
+            \Log::error('Invoice generation failed: ' . $e->getMessage());
 
-        return redirect()->back()->with('error', __('Something went wrong.'));
+            return redirect()->back()->with('error', __('Something went wrong.'));
+        }
     }
-}
+    public function invoiceModel(Request $request)
+    {
+        $id = $request->id;
+        $data = Invoice::with('tenant','property','lease','partner','TenantPropertyUtility')->findOrFail($id);
+        $grand_total = InvoiceDetail::where('invoice_id',$id)->sum('amount');
+        $invoiceBalance = (!empty($data->remaining_amount)) ? $data->remaining_amount : formatIndianCurrency($grand_total);
+      
+        return view('invoice.payment', compact('data','invoiceBalance','grand_total'));
+    }
 
 
     

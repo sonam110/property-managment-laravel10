@@ -7,16 +7,17 @@ use Illuminate\Support\Collection;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Auth;
+use App\Models\User;
 
 class RoleController extends Controller
 {
 
     public function __construct()
     {
-        $this->middleware('permission:permission-browse',['only' => ['index']]);
-        $this->middleware('permission:permission-add', ['only' => ['store']]);
-        $this->middleware('permission:permission-edit', ['only' => ['update']]);
-        $this->middleware('permission:permission-delete', ['only' => ['destroy']]);
+        $this->middleware('permission:role-browse',['only' => ['index']]);
+        $this->middleware('permission:role-add', ['only' => ['store']]);
+        $this->middleware('permission:role-edit', ['only' => ['update']]);
+        $this->middleware('permission:role-delete', ['only' => ['destroy']]);
     }
     
     public function index()
@@ -151,7 +152,21 @@ class RoleController extends Controller
 
                 $p = Permission::where('id', '=', $permission)->firstOrFail();
                 $role->givePermissionTo($p);
+
+                $roleUsers = \DB::table('model_has_roles')
+                    ->where('role_id',$role->id)
+                    ->get();
+                foreach ($roleUsers as $key => $value) 
+                {
+                    $user = User::find($value->model_id);
+                    if($user)
+                    {
+                        $user->syncPermissions($p);
+                    }
+                }
             }
+            
+                    
 
             return redirect()->route('roles.index')->with('success' , 'Role successfully updated.', 'Role ' . $role->name . ' updated!');
         }

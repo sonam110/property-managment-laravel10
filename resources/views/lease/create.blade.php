@@ -392,7 +392,7 @@
                         </div>
                         <div class="col-sm-3">
                            {{ Form::label('cam_from_month', __('From Month'), ['class' => 'form-label']) }}
-                            {{ Form::number('cam_from_month[]', null, ['class' => 'form-control','id'=>'cam_from_month','min'=>'1','step'=>'1', 'placeholder' => __('From Month')]) }}
+                            {{ Form::number('cam_from_month[]', null, ['class' => 'form-control cam_from_month','id'=>'cam_from_month','min'=>'1','step'=>'1', 'placeholder' => __('From Month')]) }}
                             @error('cam_from_month')
                                 <small class="invalid-name" role="alert">
                                     <strong class="text-danger">{{ $message }}</strong>
@@ -401,7 +401,7 @@
                         </div>
                         <div class="col-sm-3">
                            {{ Form::label('cam_to_month', __('To Month'), ['class' => 'form-label']) }}
-                            {{ Form::number('cam_to_month[]', null, ['class' => 'form-control','id'=>'cam_to_month','min'=>'1','step'=>'1','placeholder' => __('To Month')]) }}
+                            {{ Form::number('cam_to_month[]', null, ['class' => 'form-control cam_to_month','id'=>'cam_to_month','min'=>'1','step'=>'1','placeholder' => __('To Month')]) }}
                             @error('cam_to_month')
                                 <small class="invalid-name" role="alert">
                                     <strong class="text-danger">{{ $message }}</strong>
@@ -773,7 +773,21 @@
       fileNameElement.classList.add('d-none'); // Hide if no file selected
     }
   }
+function initializePreCheckedUnits() {
 
+    // Get all the checkboxes (assuming they have the class 'unit-checkbox')
+    const checkboxes = document.querySelectorAll('.unit-checkbox');
+    // Loop through all checkboxes and invoke unitCheckboxClicked for checked ones
+    checkboxes.forEach(checkbox => {
+        if (checkbox.checked) {
+        
+            unitCheckboxClicked(checkbox); // Trigger the function for pre-selected checkboxes
+        }
+
+        // Add event listener for changes on click
+       
+    });
+}
   function resetFileName() {
     const fileInput = document.getElementById('upload');
     const fileNameElement = document.getElementById('file-name');
@@ -788,13 +802,23 @@
             updateUnitsDropdown(pid);
         }
         // Function to handle the "Select All" button click
-         $(document).on('click','.select-all',function() { 
-            // Get the floor value from the button's data attribute
-            var floor = $(this).data('floor');
-            //alert(floor);
-            // Select all checkboxes in the corresponding floor section
-            $('.floor[data-floor="' + floor + '"] input[type="checkbox"]:not(:disabled)').prop('checked', true);
-        });
+         $(document).on('click', '.select-all', function() { 
+          var floor = $(this).data('floor');
+
+          var checkboxes = $('.floor[data-floor="' + floor + '"] input[type="checkbox"]:not(:disabled)');
+          var allChecked = checkboxes.filter(':checked').length === checkboxes.length;
+  
+          checkboxes.prop('checked', !allChecked);
+          if (allChecked) {
+              $(this).text('Select All'); 
+          } else {
+              $(this).text('Unselect All'); 
+          }
+
+          // Call any additional functions if needed
+          clearPreviousUnits();
+          initializePreCheckedUnits();
+      });
     });
 
 
@@ -993,47 +1017,42 @@ $(document).on('input paste change', 'input[name="camp_total"],input[name="cam_s
       calculateIncreCam();
 });
 function calculateIncreRent() {
-  const rentIncreRows = document.querySelectorAll('.rent-increment-row'); // Assuming each rent increment row has this class
-  const finalTotal = parseFloat($("#final_total").val()) || 0;
-   rentIncreRows.forEach(row => {
-      const rentIncPercentageInput = row.querySelector('.set_price');
-      const setPercentage = parseFloat(rentIncPercentageInput.value);
-      if(setPercentage){
-        const rentIncAmount = (finalTotal * setPercentage) / 100;
-         const incRentTotalInput = row.querySelector('.inc_rent_amount');
+    const rows = $(".rent-increment-row");
+    const finalTotal = parseFloat($("#final_total").val()) || 0;
 
-        const rowIncTotal = finalTotal + rentIncAmount;
-        
-        incRentTotalInput.value = rowIncTotal.toFixed(2);
-        
-      }
-  
+    rows.each(function (index, row) {
+        const setPercentage = parseFloat($(row).find(".set_price").val()) || 0;
+        const previousRent = index > 0 
+            ? parseFloat($(rows[index - 1]).find(".inc_rent_amount").val()) || finalTotal
+            : finalTotal;
+
+        const rentIncrementAmount = (previousRent * setPercentage) / 100;
 
        
+        //console.log(rentIncrementAmount);
+        const newRent = previousRent + rentIncrementAmount;
+        $(row).find(".inc_rent_amount").val(newRent.toFixed(2));
     });
-
 }
 function calculateIncreCam() {
-  const camIncreRows = document.querySelectorAll('.cam-increment-row'); // Assuming each rent increment row has this class
-  const finalTotal = parseFloat($("#camp_total").val()) || 0;
-   camIncreRows.forEach(row => {
-      const camIncPercentageInput = row.querySelector('.cam_set_price');
-      const setPercentage = parseFloat(camIncPercentageInput.value);
-      if(setPercentage){
-        const camIncAmount = (finalTotal * setPercentage) / 100;
-         const incRentTotalInput = row.querySelector('.inc_cam_amount');
+    const rows = $(".cam-increment-row");
+    const finalTotal = parseFloat($("#camp_total").val()) || 0;
 
-        const rowIncTotal = finalTotal + camIncAmount;
-        
-        incRentTotalInput.value = rowIncTotal.toFixed(2);
-        
-      }
-  
+    rows.each(function (index, row) {
+        const setPercentage = parseFloat($(row).find(".cam_set_price").val()) || 0;
+        const previousRent = index > 0 
+            ? parseFloat($(rows[index - 1]).find(".inc_cam_amount").val()) || finalTotal
+            : finalTotal;
+
+        const camIncrementAmount = (previousRent * setPercentage) / 100;
 
        
+        console.log(camIncrementAmount);
+        const newRent = previousRent + camIncrementAmount;
+        $(row).find(".inc_cam_amount").val(newRent.toFixed(2));
     });
-
 }
+
 
  // Add text box
 $(document).ready(function() {
@@ -1176,6 +1195,39 @@ $(document).ready(function() {
               $(this).val(''); // Clear the invalid input
           }
          });
+
+        $("#RentCalContainer").on("change", ".from_month, .to_month", function () {
+            const rows = $(".rent-increment-row");
+            let isValid = true;
+
+            rows.each(function (index, row) {
+                const fromMonth = parseInt($(row).find(".from_month").val());
+                const toMonth = parseInt($(row).find(".to_month").val());
+                const prevToMonth = index > 0 ? parseInt($(rows[index - 1]).find(".to_month").val()) : 0;
+                if (index > 0 && fromMonth !== prevToMonth + 1) {
+                    toastr.error(`From Month must be ${prevToMonth + 1}`);
+                    $(row).find(".from_month").val(""); // Clear invalid input
+                    isValid = false;
+                }
+
+                if (toMonth && toMonth < fromMonth) {
+                    toastr.error("To Month must be greater than or equal to From Month.");
+                    $(row).find(".to_month").val(""); // Clear invalid input
+                    isValid = false;
+                }
+
+                const maxMonth = $('#end_month').val(); 
+                if (toMonth && toMonth > maxMonth) {
+                    toastr.error(`To Month cannot exceed ${maxMonth}.`);
+                    $(row).find(".to_month").val(""); // Clear invalid input
+                    isValid = false;
+                }
+            });
+
+            return isValid;
+        });
+
+
         $("#cam").on("input", "#cam_from_month, #cam_to_month", function() {
           var value = parseInt($(this).val());
           var expiry_month = $('.end_month').val();
@@ -1186,13 +1238,44 @@ $(document).ready(function() {
          });
 
         $("#addCamCalButton").click(function(){
-            var textBoxHtml = '<div class="row g-3 textBoxWrapper cam-increment-row"><br><hr class="my-0" /><br>  <div class="col-sm-3"> <label for="cam_from_month" class="form-label">From Month</label> <input class="form-control" id="cam_from_month" placeholder="From Month" name="cam_from_month[]" type="number" step="1" min="1"> </div><div class="col-sm-3"> <label for="cam_to_month" class="form-label">To Month</label> <input class="form-control" id="cam_to_month" placeholder="To Month" name="cam_to_month[]" type="number" step="1" min="1"> </div><div class="col-sm-3"> <label for="cam_set_price" class="form-label">Percentage</label> <input class="form-control cam_set_price" id="cam_set_price" placeholder="Percentage" name="cam_set_price[]" type="number" step="any" > </div> <div class="col-sm-3"> <label for="inc_cam_amount" class="form-label">Cam Total</label> <input class="form-control inc_cam_amount" id="inc_cam_amount" placeholder="Cam Total" name="inc_cam_amount[]" type="number" step="any" > </div> <div class="col-sm-3"> <label for="button" class="form-label">&nbsp;<label><button type="button" class="removeButton btn btn-sm btn-danger"  style="margin:10px; margin-top: 28px;"><i class="ti ti-trash text-white"></i></button>  </div></div> <br>';
+            var textBoxHtml = '<div class="row g-3 textBoxWrapper cam-increment-row"><br><hr class="my-0" /><br>  <div class="col-sm-3"> <label for="cam_from_month" class="form-label">From Month</label> <input class="form-control cam_from_month" id="cam_from_month" placeholder="From Month" name="cam_from_month[]" type="number" step="1" min="1"> </div><div class="col-sm-3"> <label for="cam_to_month" class="form-label">To Month</label> <input class="form-control cam_to_month" id="cam_to_month" placeholder="To Month" name="cam_to_month[]" type="number" step="1" min="1"> </div><div class="col-sm-3"> <label for="cam_set_price" class="form-label">Percentage</label> <input class="form-control cam_set_price" id="cam_set_price" placeholder="Percentage" name="cam_set_price[]" type="number" step="any" > </div> <div class="col-sm-3"> <label for="inc_cam_amount" class="form-label">Cam Total</label> <input class="form-control inc_cam_amount" id="inc_cam_amount" placeholder="Cam Total" name="inc_cam_amount[]" type="number" step="any" > </div> <div class="col-sm-3"> <label for="button" class="form-label">&nbsp;<label><button type="button" class="removeButton btn btn-sm btn-danger"  style="margin:10px; margin-top: 28px;"><i class="ti ti-trash text-white"></i></button>  </div></div> <br>';
             $("#CamCalContainer").append(textBoxHtml);
         });
 
         // Remove text box
         $("#CamCalContainer").on("click", ".removeButton", function(){
             $(this).closest(".textBoxWrapper").remove();
+        });
+
+        $("#CamCalContainer").on("change", ".cam_from_month, .cam_to_month", function () {
+            const rows = $(".cam-increment-row");
+            let isValid = true;
+
+            rows.each(function (index, row) {
+                const fromMonth = parseInt($(row).find(".cam_from_month").val());
+                const toMonth = parseInt($(row).find(".cam_to_month").val());
+                const prevToMonth = index > 0 ? parseInt($(rows[index - 1]).find(".cam_to_month").val()) : 0;
+                if (index > 0 && fromMonth !== prevToMonth + 1) {
+                    toastr.error(`From Month must be ${prevToMonth + 1}`);
+                    $(row).find(".cam_from_month").val(""); // Clear invalid input
+                    isValid = false;
+                }
+
+                if (toMonth && toMonth < fromMonth) {
+                    toastr.error("To Month must be greater than or equal to From Month.");
+                    $(row).find(".cam_to_month").val(""); // Clear invalid input
+                    isValid = false;
+                }
+
+                const maxMonth = $('#end_month').val(); 
+                if (toMonth && toMonth > maxMonth) {
+                    toastr.error(`To Month cannot exceed ${maxMonth}.`);
+                    $(row).find(".cam_to_month").val(""); // Clear invalid input
+                    isValid = false;
+                }
+            });
+
+            return isValid;
         });
 
 

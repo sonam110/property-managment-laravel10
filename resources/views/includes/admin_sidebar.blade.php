@@ -24,7 +24,7 @@
                 <div data-i18n="Dashboards">Dashboard</div>
               </a>
             </li>
-           
+             @can('user-browse')
             <li class="menu-item {{ (request()->is('roles*') || request()->is('permissions*') || request()->is('users*') ? 'active open' : '')}}">
               <a href="javascript:void(0);" class="menu-link menu-toggle">
                 <i class="menu-icon tf-icons ti ti-layout-sidebar"></i>
@@ -55,7 +55,8 @@
                 @endcan
               </ul>
             </li>
-
+             @endcan
+              @can('property-browse')
              <li class="menu-item {{ (request()->is('property*') || request()->is('tenants*') || request()->is('leases*') ? 'active open' : '')}}">
               <a href="javascript:void(0);" class="menu-link menu-toggle">
                  <i class="menu-icon tf-icons ti ti-home"></i>
@@ -80,7 +81,7 @@
                   </a>
                 </li>
                  @endcan
-                 @can('lease-browse')
+                  @can('lease-browse')
                     <li class="menu-item {{ (request()->is('leases*') ? 'active' : '')}}">
                       <a href="{{ route('leases.index') }}" class="menu-link">
                          <i class="menu-icon tf-icons ti ti-server"></i>
@@ -90,20 +91,26 @@
                     @endcan
               </ul>
             </li>
+              @endcan
 
-            @can('invoice-browse')
+           
+            @can('electricity-browse')
             <li class="menu-item {{ (request()->is('tenant-utility*') ? 'active' : '')}}">
               <a href="{{ route('tenant-utility.index') }}" class="menu-link">
                  <i class="menu-icon tf-icons ti ti-bulb"></i>
                 <div data-i18n="Electricity Utility">Electricity Utility</div>
               </a>
             </li>
+             @endcan
+            @can('invoice-browse')
             <li class="menu-item {{ (request()->is('invoice*') ? 'active' : '')}}">
               <a href="{{ route('invoice') }}" class="menu-link">
                  <i class="menu-icon tf-icons ti ti-file-invoice"></i>
                 <div data-i18n="Invoices">Invoices</div>
               </a>
             </li>
+            @endcan
+              @can('payment-browse')
             <li class="menu-item {{ (request()->is('payment-history') ? 'active' : '')}}">
               <a href="{{ route('payment-history') }}" class="menu-link">
                  <i class="menu-icon tf-icons ti ti-bookmarks"></i>
@@ -111,20 +118,22 @@
               </a>
             </li>
              @endcan
-             
+            @can('expense-browse')
             <li class="menu-item {{ (request()->is('expense*') ? 'active' : '')}}">
               <a href="{{ route('expense.index') }}" class="menu-link">
                  <i class="menu-icon tf-icons ti ti-file"></i>
                 <div data-i18n="Expenses">Expenses</div>
               </a>
             </li>
+              @endcan
+             @can('report-browse')
             <li class="menu-item {{ (request()->is('report*') ? 'active' : '')}}">
               <a href="{{ route('report') }}" class="menu-link">
                  <i class="menu-icon tf-icons ti ti-mail"></i>
                 <div data-i18n="Report">Report</div>
               </a>
             </li>
-
+              @endcan
              
              @can('app-setting')
            

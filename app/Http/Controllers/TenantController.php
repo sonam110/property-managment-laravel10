@@ -46,18 +46,26 @@ class TenantController extends Controller
     
             ->addColumn('action', function ($query)
             {
+                $edit ="";
+                $delete ="";
+                $view ="";
+                $lease ="";
 
+                if (auth()->user()->can('tenant-edit')) {
                 $edit =' <a class="btn btn-sm btn-primary" href="'.route('tenants.edit', $query->id) .'" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit" title="Edit"><i class="ti ti-pencil"></i></a>';
+                    }
+                 if (auth()->user()->can('tenant-delete')) {
                 $delete = '<a href="'.route('tenants-destroy', $query->id) .'" 
                                  class="btn btn-sm btn-danger"
                                 onClick="return confirm(\'Are you sure you want to delete this?\');" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete" title="Delete">
                                 <i class="ti ti-trash"></i>
                             </a>';
-
+                        }
+                if (auth()->user()->can('tenant-read')) {
                 $view =' <a class="btn btn-sm btn-info" href="'.route('tenants.show', $query->id) .'" data-toggle="tooltip" data-placement="top" title="" data-original-title="View"  title="View"><i class="ti ti-eye"></i></a>';
 
-                $lease =' <a class="btn btn-sm btn-secondary" href="'.route('tenant-leases', $query->id) .'" data-toggle="tooltip" data-placement="top" title="" data-original-title="View"  title="View"><i class="ti ti-home"></i></a>';
-
+                    $lease =' <a class="btn btn-sm btn-secondary" href="'.route('tenant-leases', $query->id) .'" data-toggle="tooltip" data-placement="top" title="" data-original-title="View"  title="View"><i class="ti ti-home"></i></a>';
+                }
 
                 return '<div class="btn-group btn-group-xs">'.$edit.$view.$delete.$lease.'</div>';
             })
@@ -94,7 +102,6 @@ class TenantController extends Controller
 
             $validator = \Validator::make($request->all(), [
                 'full_name'      => 'required',
-                'email'     => 'required|email|unique:tenants,email,'.$request->id,
             ]);
 
             if ($validator->fails()) {
@@ -108,7 +115,6 @@ class TenantController extends Controller
 
             $validator = \Validator::make($request->all(), [
                 'full_name'      => 'required',
-                'email'     => 'required|email|unique:tenants,email',
             ]);
 
             if ($validator->fails()) {

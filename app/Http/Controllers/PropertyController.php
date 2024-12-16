@@ -89,18 +89,27 @@ class PropertyController extends Controller
             {
 
                 $checkLeaseExist = Lease::where('property_id',$query->id)->count();
+                $edit ="";
+                $delete ="";
+                $view ="";
+                $copy ="";
+                if (auth()->user()->can('property-edit')) {
+
                 
-                    $edit =' <a class="btn btn-sm btn-primary" href="'.route('property.edit', $query->id) .'" data-toggle="tooltip" data-placement="top" title="Edit" data-original-title="Edit"><i class="ti ti-pencil"></i></a>';
+                $edit =' <a class="btn btn-sm btn-primary" href="'.route('property.edit', $query->id) .'" data-toggle="tooltip" data-placement="top" title="Edit" data-original-title="Edit"><i class="ti ti-pencil"></i></a>';
                
+                }
+                if (auth()->user()->can('property-delete')) {
                 $delete = '<a href="'.route('property-destroy', $query->id) .'" 
                                  class="btn btn-sm btn-danger"
                                 onClick="return confirm(\'Are you sure you want to delete this?\');" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete">
                                 <i class="ti ti-trash"></i>
                             </a>';
                 $copy =' <a class="btn btn-sm btn-info" href="'.route('property-copy', $query->id) .'"  onClick="return confirm(\'Are you sure you want to copy this?\');" data-toggle="tooltip" data-placement="top" title="" data-original-title="Copy"><i class="ti ti-copy"></i></a>';
-
-                $view =' <a class="btn btn-sm btn-warning" href="'.route('property-units', $query->id) .'" data-toggle="tooltip" data-placement="top" title="Units" data-original-title="Units"><i class="ti ti-eye"></i></a>';
-
+                }
+                if (auth()->user()->can('property-read')) {
+                    $view =' <a class="btn btn-sm btn-warning" href="'.route('property-units', $query->id) .'" data-toggle="tooltip" data-placement="top" title="Units" data-original-title="Units"><i class="ti ti-eye"></i></a>';
+                }
 
                 
 
@@ -294,8 +303,8 @@ class PropertyController extends Controller
             $countData['totalCamPaid']= Payment::where('property_id',$id)->where('invoice_type','cam')->whereIn('status',['Full','Partial'])->sum('amount');
             $countData['totalCamUnPaid']= $countData['totalCamInVoiceAmount']-$countData['totalCamPaid'];
 
-            $countData['totalUtilityInVoiceAmount']= InvoiceDetail::join('invoices','invoice_details.invoice_id','invoices.id')->where('invoices.property_id',$id)->whereIn('invoice_details.type',['utility','utility-gst'])->sum('invoice_details.amount');
-            $countData['totalUtilityPaid']= Payment::where('property_id',$id)->where('invoice_type','utility')->whereIn('status',['Full','Partial'])->sum('amount');
+            $countData['totalUtilityInVoiceAmount']= InvoiceDetail::join('invoices','invoice_details.invoice_id','invoices.id')->where('invoices.property_id',$id)->where('invoice_details.type','electricity')->sum('invoice_details.amount');
+            $countData['totalUtilityPaid']= Payment::where('property_id',$id)->where('invoice_type','electricity')->whereIn('status',['Full','Partial'])->sum('amount');
             $countData['totalUtilityUnPaid']= $countData['totalUtilityInVoiceAmount']-$countData['totalUtilityPaid'];
             
             $expense = Expense::query();

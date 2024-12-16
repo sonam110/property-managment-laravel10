@@ -237,7 +237,8 @@
             }
           ]
         },
-        {
+        { 
+              @can('electricity-add')
                 text: '<i class="ti ti-plus me-0 me-sm-1 ti-xs"></i><span class="d-none d-sm-inline-block">Add Utility</span>',
                 className: 'add-new btn btn-primary',
                 action: function (e, dt, node, config) {
@@ -249,6 +250,7 @@
                         $('#commonModalOver').modal('show');
                     });
                 }
+                @endcan
             }
       ],
         preDrawCallback: function(settings) {

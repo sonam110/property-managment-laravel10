@@ -21,6 +21,7 @@ return new class extends Migration
             $table->decimal('fppas',10,2)->nullable();
             $table->decimal('energy_duty',10,2)->nullable();
             $table->decimal('tod_net_sum',10,2)->nullable();
+            $table->decimal('pf_incentive',10,2)->nullable();
             $table->decimal('energy_charge_as_per_bill',10,2)->nullable();
             $table->decimal('total_units',10,2)->nullable();
             $table->longText('tenants_units')->nullable();

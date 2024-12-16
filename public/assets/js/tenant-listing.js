@@ -57,19 +57,10 @@
           }
         },
         
-        email: {
-          validators: {
-            notEmpty: {
-              message: 'Please enter email'
-            }
-          }
-        },
+       
         
       phone: {
         validators: {
-          notEmpty: {
-            message: 'Please enter phone number '
-          },
            regexp: {
                     // Regex to check for exactly 10 digits
                     message: 'The phone number must be exactly 10 digits',
@@ -118,6 +109,13 @@
           }
         },
         'fullname[]': {
+          validators: {
+            notEmpty: {
+              message: 'Please enter full name'
+            }
+          }
+        },
+        'contact_email[]': {
           validators: {
             notEmpty: {
               message: 'Please enter full name'
